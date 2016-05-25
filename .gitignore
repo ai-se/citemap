@@ -60,3 +60,13 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#Mac
+.DS_Store
+
+#IDEA
+.idea
+
+# Large files
+acm/acm.txt
+DBLP_Citation_2014_May
