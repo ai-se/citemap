@@ -33,7 +33,7 @@ class Graph(O):
     author_nodes = {}
     ref_nodes = {}
     with open(file_name, 'rb') as f:
-      column_names = f.readline().strip().split(delimiter)
+      column_names = f.readline().strip().lower().split(delimiter)
       print(column_names)
       for line in f.readlines():
         columns = line.strip().split(delimiter)
@@ -41,8 +41,8 @@ class Graph(O):
         for name, val in zip(column_names, columns):
           paper_node[name] = val
         paper_node["type"] = "paper"
-        if paper_node.Ref_ID:
-          ref_nodes[paper_node.Ref_ID] = paper_node
+        if paper_node.ref_id:
+          ref_nodes[paper_node.ref_id] = paper_node
         paper_nodes[paper_node.id] = paper_node
         for author in columns[-2].split(","):
           if author in author_nodes:
@@ -56,10 +56,10 @@ class Graph(O):
           edge = Edge(source=author_node.id, target=paper_node.id, edge_type="author")
           edges[edge.id] = edge
       for paper_id, paper in paper_nodes.items():
-        if not paper.Ref_ID: continue
-        references = paper.Cites
+        if not paper.ref_id: continue
+        references = paper.cites
         if not references: continue
-        target = ref_nodes[paper.Ref_ID]
+        target = ref_nodes[paper.ref_id]
         for ref_id in references.split(","):
           if not ref_nodes.get(ref_id, None): continue
           source = ref_nodes[ref_id]
@@ -71,4 +71,5 @@ class Graph(O):
     graph.edges = edges
     return graph
 
-Graph.from_file("citemap.csv")
+if __name__ == "__main__":
+  Graph.from_file("citemap.csv")
