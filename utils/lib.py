@@ -39,3 +39,39 @@ class Paper(O):
      refs = [str]
     """
     O.__init__(self, **kwargs)
+
+class PC(O):
+  def __init__(self):
+    """
+
+    """
+    O.__init__(self)
+    self.author_id = None
+    self.conference_id = None
+    self.year = None
+    self.role = None
+
+  def set_short_role(self, role):
+    if role == "General Chair":
+      self.role = "GC"
+    elif role == "Program Chair":
+      self.role = "PC"
+    elif role == "PC member main track":
+      self.role = "PCM"
+    else:
+      raise RuntimeError("Invalid role  %s"%role)
+
+
+class Node(O):
+  id = 1
+  def __init__(self, **params):
+    O.__init__(self, **params)
+    #self.id = Node.id
+    Node.id += 1
+
+class Edge(O):
+  id = 1
+  def __init__(self, **params):
+    O.__init__(self, **params)
+    #self.id =  Edge.id
+    Edge.id += 1

@@ -2,7 +2,7 @@ from __future__ import print_function, division
 import sys, os
 sys.path.append(os.path.abspath("."))
 import MySQLdb
-from utils.lib import O, Paper
+from utils.lib import O, Paper, PC, Node
 import csv
 
 class DB(O):
@@ -61,28 +61,60 @@ def dump(to_csv=True, file_name='citemap.csv', delimiter="$|$"):
     paper.ref_id = row[9]
     paper.cites = row[10].split(",") if row[10] else []
     paper.authors = []
+    paper.author_sql_ids = []
     paper.abstract = row[11]
     cur_authors = db.cursor()
-    cur_authors.execute("SELECT persons.name "
+    cur_authors.execute("SELECT persons.id, persons.name "
                 "FROM persons, authorship "
                 "WHERE persons.id = authorship.person_id AND authorship.paper_id = %d"%int(paper.id))
     for authors in cur_authors.fetchall():
-      paper.authors.append(authors[0])
+      paper.author_sql_ids.append(str(int(authors[0])))
+      paper.authors.append(authors[1])
     papers.append(paper)
   if not to_csv:
     return papers
-  header = ["ID", "Conference", "Year", "Title", "H2", "H3", "Ref_ID", "Cites", "Authors", "Abstract"]
+  header = ["ID", "Conference", "Year", "Title", "H2", "H3", "Ref_ID", "Cites", "Author_IDs", "Authors", "Abstract"]
   with open(file_name, 'wb') as f:
     f.write(delimiter.join(header)+"\n")
     for i, paper in enumerate(papers):
       cites = ",".join(paper.cites) if paper.cites else ""
       authors = ",".join(paper.authors) if paper.authors else ""
-      row = [paper.id, paper.conference_id, paper.year, paper.title, paper.h2, paper.h3, paper.ref_id, cites, authors,
-             paper.abstract]
+      author_ids = ",".join(paper.author_sql_ids) if paper.author_sql_ids else ""
+      row = [paper.id, paper.conference_id, paper.year, paper.title, paper.h2, paper.h3, paper.ref_id, cites,
+             author_ids, authors, paper.abstract]
       f.write(delimiter.join(map(str, row)) + "\n")
+  DB.close()
 
+def get_pc_membership():
+  db = DB.get()
+  cur = db.cursor()
+  cur.execute("SELECT * FROM pc_membership")
+  pc_members = {}
+  for row in cur.fetchall():
+    pc = PC()
+    pc.author_id = int(row[1])
+    pc.conference_id = int(row[2])
+    pc.year = int(row[3])
+    pc.set_short_role(row[4])
+    programs = pc_members.get(pc.author_id, [])
+    programs.append(pc)
+    pc_members[pc.author_id] = programs
+  DB.close()
+  return pc_members
 
+def get_authors():
+  db = DB.get()
+  cur = db.cursor()
+  cur.execute("SELECT * FROM persons")
+  author_nodes = {}
+  for row in cur.fetchall():
+    author_node = Node()
+    author_node.id = int(row[0])
+    author_node.name = row[1]
+    author_node.type = "author"
+    author_nodes[int(row[0])] = author_node
+  DB.close()
+  return author_nodes
 
-
-
-dump()
+if __name__ == "__main__":
+  get_pc_membership()
