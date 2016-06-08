@@ -2,7 +2,7 @@ from __future__ import print_function, division
 import sys, os
 sys.path.append(os.path.abspath("."))
 import MySQLdb
-from utils.lib import O, Paper, PC, Node
+from utils.lib import O, Paper, PC, Node, Conference
 import csv
 
 class DB(O):
@@ -116,5 +116,20 @@ def get_authors():
   DB.close()
   return author_nodes
 
+def get_conferences():
+  db = DB.get()
+  cur =db.cursor()
+  cur.execute("SELECT * FROM conferences")
+  conferences = []
+  for row in cur.fetchall():
+    conference = Conference()
+    conference.id = str(row[0])
+    conference.acronym = str(row[1])
+    conference.name = str(row[2])
+    conference.impact = int(row[3])
+    conferences.append(conference)
+  DB.close()
+  return conferences
+
 if __name__ == "__main__":
-  get_pc_membership()
+  get_conferences()

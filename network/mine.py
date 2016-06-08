@@ -18,6 +18,7 @@ BETA = None
 
 class Document(O):
   def __init__(self, raw=None):
+    O.__init__(self)
     self.raw = raw
     self.vector = None
     self.topics_count = None
