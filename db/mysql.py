@@ -92,9 +92,9 @@ def get_pc_membership():
   pc_members = {}
   for row in cur.fetchall():
     pc = PC()
-    pc.author_id = int(row[1])
-    pc.conference_id = int(row[2])
-    pc.year = int(row[3])
+    pc.author_id = str(int(row[1]))
+    pc.conference_id = str(int(row[2]))
+    pc.year = str(int(row[3]))
     pc.set_short_role(row[4])
     programs = pc_members.get(pc.author_id, [])
     programs.append(pc)
@@ -109,10 +109,10 @@ def get_authors():
   author_nodes = {}
   for row in cur.fetchall():
     author_node = Node()
-    author_node.id = int(row[0])
+    author_node.id = str(int(row[0]))
     author_node.name = row[1]
     author_node.type = "author"
-    author_nodes[int(row[0])] = author_node
+    author_nodes[str(int(row[0]))] = author_node
   DB.close()
   return author_nodes
 

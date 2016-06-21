@@ -2,12 +2,12 @@ from __future__ import print_function, division
 import os, sys
 sys.path.append(os.path.abspath("."))
 from itertools import groupby
-from lib import O
 import unicodedata
 import string
 import warnings
 from unicoder import UTF8Recoder
 from db import mongo
+from utils.lib import Paper
 
 warnings.filterwarnings("ignore")
 

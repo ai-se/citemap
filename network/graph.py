@@ -32,7 +32,8 @@ class Graph(O):
           ref_nodes[paper_node.ref_id] = paper_node
         paper_nodes[paper_node.id] = paper_node
         for author_id, author in zip(columns[-3].split(","), columns[-2].split(",")):
-          author_node = author_nodes[int(author_id)]
+          #author_node = author_nodes[int(author_id)]
+          author_node = author_nodes[author_id]
           # if author in author_nodes:
           #   author_node = author_nodes[author]
           # else:
@@ -66,10 +67,10 @@ class Graph(O):
       author = authors[member_id]
       author.membership = membership
 
-  def get_authors_by_conference(self):
+  def get_committee_by_conference(self):
     """
       :return:{
-        <conference_id> : [(<year>, <author_id>, <role>) , ...]
+        <conference_id> : [(<author_id>, <year>, <role>) , ...]
       }
       """
     conferences = {}
@@ -78,10 +79,10 @@ class Graph(O):
         continue
       for pc in author.membership:
         conference = conferences.get(pc.conference_id, [])
-        conference.append((pc.year, pc.author_id, pc.role))
+        conference.append((pc.author_id, pc.year, pc.role))
         conferences[pc.conference_id] = conference
     for conference_id, conference in conferences.items():
-      conferences[conference_id] = sorted(conference, key=lambda tup: (tup[0], tup[2], tup[1]))
+      conferences[conference_id] = sorted(conference, key=lambda tup: (int(tup[1]), tup[2], tup[0]))
     return conferences
 
 
@@ -124,6 +125,6 @@ class Graph(O):
 if __name__ == "__main__":
   g = Graph.from_file("citemap.csv")
   g.add_pc_membership(mysql.get_pc_membership())
-  confs = g.get_authors_by_conference()
+  confs = g.get_committee_by_conference()
   paps = g.get_papers_by_authors()
   print(paps)
