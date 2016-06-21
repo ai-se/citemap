@@ -57,6 +57,10 @@ def super_author():
   plt.ylabel("Authors Count")
   plt.savefig("figs/super_author_bar.png")
   plt.clf()
+  n_top_words = 10
+  for index, topic_dist in enumerate(lda_model.topic_word_):
+    topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
+    print('Topic {}: {}'.format(index, ', '.join(topic_words)))
 
 def yearize(paps):
   paps = sorted(paps, key=lambda tup: tup[1], reverse=True)
@@ -195,6 +199,7 @@ def conference_evolution():
       heatmap_arr.append(dist)
     fig, ax = plt.subplots()
     heatmap_arr = np.array(heatmap_arr)
+    heatmap_arr[np.isnan(heatmap_arr)] = 0
     heatmap = ax.pcolor(heatmap_arr, cmap=plt.cm.Reds)
     plt.ylabel("Year")
     plt.xlabel("Topics")
@@ -322,8 +327,8 @@ def topic_evolution():
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))
 
 
-super_author()
+#super_author()
 conference_evolution()
-conference_diversity()
-pc_bias()
-topic_evolution()
+#conference_diversity()
+#pc_bias()
+#topic_evolution()
