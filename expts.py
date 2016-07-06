@@ -8,6 +8,9 @@ import matplotlib.patches as mpatches
 from collections import Counter, OrderedDict
 import numpy as np
 import db.mysql as mysql
+import pandas as pd
+from scipy.spatial.distance import pdist
+from scipy.cluster.hierarchy import linkage, dendrogram
 
 __author__ = "panzer"
 
@@ -145,6 +148,46 @@ def conference_diversity():
   for index, topic_dist in enumerate(lda_model.topic_word_):
     topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))
+  make_heatmap(np.transpose(heatmap_arr), row_labels, column_labels, "figs/diversity/dend_heatmap_12topics.png")
+
+
+def make_heatmap(arr, row_labels, column_labels, figname):
+    df = pd.DataFrame(arr, columns=column_labels, index=row_labels)
+    # Compute pairwise distances for columns
+    col_clusters = linkage(pdist(df.T, metric='euclidean'), method='complete')
+    # plot column dendrogram
+    fig = plt.figure(figsize=(8, 8))
+    axd2 = fig.add_axes([0.25, 0.75, 0.50, 0.10])
+    col_dendr = dendrogram(col_clusters, orientation='top',
+                           color_threshold=np.inf)  # makes dendrogram black)
+    axd2.set_xticks([])
+    axd2.set_yticks([])
+    # plot row dendrogram
+    axd1 = fig.add_axes([0.0, 0.123, 0.21, 0.555])
+    row_clusters = linkage(pdist(df, metric='euclidean'), method='complete')
+    row_dendr = dendrogram(row_clusters, orientation='left',
+                           count_sort='ascending',
+                           color_threshold=np.inf)  # makes dendrogram black
+    axd1.set_xticks([])
+    axd1.set_yticks([])
+    # remove axes spines from dendrogram
+    for i, j in zip(axd1.spines.values(), axd2.spines.values()):
+      i.set_visible(False)
+      j.set_visible(False)
+    # reorder columns and rows with respect to the clustering
+    df_rowclust = df.ix[row_dendr['leaves'][::-1]]
+    df_rowclust.columns = [df_rowclust.columns[col_dendr['leaves']]]
+    # plot heatmap
+    axm = fig.add_axes([0.25, 0.1, 0.63, 0.6])
+    cax = axm.matshow(df_rowclust, interpolation='nearest', cmap='hot_r')
+    fig.colorbar(cax)
+    print(df_rowclust.columns)
+    axm.set_xticks(np.arange(len(list(df_rowclust.columns))))
+    axm.set_xticklabels(list(df_rowclust.columns), rotation="vertical")
+    axm.set_yticks(np.arange(len(list(df_rowclust.index))))
+    axm.set_yticklabels(list(df_rowclust.index))
+    plt.savefig(figname)
+    plt.clf()
 
 
 def conference_evolution():
@@ -328,7 +371,7 @@ def topic_evolution():
 
 
 #super_author()
-conference_evolution()
-#conference_diversity()
+#conference_evolution()
+conference_diversity()
 #pc_bias()
 #topic_evolution()
