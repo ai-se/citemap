@@ -19,13 +19,30 @@ TOPIC_THRESHOLD = 3
 
 def get_color(index): return str(COLORS[index])
 
-def super_author():
+def top_authors(graph, top_percent = 0.01):
+  authors = graph.get_papers_by_authors()
+  author_cites = []
+  for author_id, papers in authors.items():
+    cite_count = 0
+    for paper_id, _, __ in papers:
+      cited = graph.paper_nodes[paper_id].cites
+      if cited:
+        cite_count += len(cited.split(","))
+    author_cites.append((author_id, cite_count))
+  tops = sorted(author_cites, key=lambda x: x[1], reverse=True)[:int(top_percent*len(author_cites))]
+  return set([t[0] for t in tops])
+
+def super_author(fig_prefix="super_author" ,top_percent=1.00):
   graph = cite_graph()
+  top_authors(graph)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(12, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   authors = graph.get_papers_by_authors()
   author_topics = {}
+  tops = top_authors(graph, top_percent)
   for author_id, papers in authors.items():
+    if author_id not in tops:
+      continue
     topics = [0]*lda_model.n_topics
     for paper_id, _, __ in papers:
       document = miner.documents[paper_id]
@@ -38,8 +55,9 @@ def super_author():
   plt.ylabel("Topic Count")
   plt.xlabel("Author ID")
   plt.title("Super Author")
+  plt.ylim(min(vals)-1, max(vals)+1)
   plt.plot(x_axis, vals)
-  plt.savefig("figs/super_author.png")
+  plt.savefig("figs/super_author/%s.png"%fig_prefix)
   plt.clf()
   counter = Counter()
   for val in vals:
@@ -52,13 +70,14 @@ def super_author():
   fig, ax = plt.subplots()
   width = 2/3
   ax.bar(bar_x, bar_y, 2/3, color='blue', align='center')
-  ax.set_xticks(np.arange(1,len(bar_x)+1))
-  ax.set_xticklabels(bar_x)
+  ax.set_xticks(np.arange(1,lda_model.n_topics+1))
+  ax.set_xticklabels(np.arange(1,lda_model.n_topics+1))
   for i, v in zip(bar_x,bar_y):
-    ax.text(i, v + 3, str(v), color='red', fontweight='bold', fontsize=7, horizontalalignment='center')
+    ax.text(i, v + 1, str(v), color='red', fontweight='bold', fontsize=7, horizontalalignment='center')
   plt.xlabel("Topics")
   plt.ylabel("Authors Count")
-  plt.savefig("figs/super_author_bar.png")
+  plt.ylim(min(bar_y) - 1, max(bar_y) + 2)
+  plt.savefig("figs/super_author/%s_bar.png"%fig_prefix)
   plt.clf()
   n_top_words = 10
   for index, topic_dist in enumerate(lda_model.topic_word_):
@@ -370,8 +389,9 @@ def topic_evolution():
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))
 
 
-#super_author()
+super_author()
+#super_author("super_author_top", 0.01)
 #conference_evolution()
-conference_diversity()
+#conference_diversity()
 #pc_bias()
 #topic_evolution()
