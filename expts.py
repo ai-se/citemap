@@ -14,8 +14,17 @@ from scipy.cluster.hierarchy import linkage, dendrogram
 
 __author__ = "panzer"
 
-COLORS = sorted(clrs.cnames.keys())
+#COLORS = sorted(clrs.cnames.keys())
 TOPIC_THRESHOLD = 3
+
+# COLORS = ["#808080", "#000000", "#FF0000", "#800000",
+#           "#FFFF00", "#808000", "#00FF00", "008000",
+#           "#00FFFF", "#008080", "#0000FF", "#000080",
+#           "#000080", "#FF00FF", "#800080", "#C0C0C0"]
+
+COLORS = ["grey", "black", "red", "maroon", "yellow",
+          "olive", "lime", "green", "aqua", "teal",
+          "blue", "navy", "fuchisa", "purple", "silver"]
 
 def get_color(index): return str(COLORS[index])
 
@@ -390,8 +399,8 @@ def topic_evolution():
 
 
 super_author()
-#super_author("super_author_top", 0.01)
-#conference_evolution()
-#conference_diversity()
-#pc_bias()
-#topic_evolution()
+super_author("super_author_top", 0.01)
+conference_evolution()
+conference_diversity()
+pc_bias()
+topic_evolution()
