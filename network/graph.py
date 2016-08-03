@@ -21,7 +21,7 @@ class Graph(O):
     ref_nodes = {}
     with open(file_name, 'rb') as f:
       column_names = f.readline().strip().lower().split(delimiter)
-      print(column_names)
+      #print(column_names)
       for line in f.readlines():
         columns = line.strip().split(delimiter)
         paper_node = Node()

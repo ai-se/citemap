@@ -11,6 +11,7 @@ import db.mysql as mysql
 import pandas as pd
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, dendrogram
+from prettytable import PrettyTable
 
 __author__ = "panzer"
 
@@ -26,7 +27,36 @@ COLORS = ["grey", "black", "red", "maroon", "yellow",
           "olive", "lime", "green", "aqua", "teal",
           "blue", "navy", "fuchisa", "purple", "silver"]
 
-def get_color(index): return str(COLORS[index])
+tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
+             (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),
+             (148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),
+             (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),
+             (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]
+
+HEX_COLORS = ["F70A41", "4C00FF", "B39500", "07F7EB",
+              "F707E3", "F78307", "076FF7", "FFFF00",
+              "8C00FF", "6D706D", "FAD2DF", "32F20C"]
+RGB_COLORS = [(int(h[:2], 16)/255.0, int(h[2:4], 16)/255.0, int(h[4:], 16)/255.0) for h in HEX_COLORS]
+for i in range(len(tableau20)):
+  r, g, b = tableau20[i]
+  tableau20[i] = (r / 255., g / 255., b / 255.)
+
+def get_spaced_colors(n):
+  max_value = 16581375  # 255**3
+  interval = int(max_value / n)
+  colors = [hex(I)[2:].zfill(6) for I in range(0, max_value, interval)]
+  return [(int(index[:2], 16), int(index[2:4], 16), int(index[4:], 16)) for index in colors]
+
+COLORS = get_spaced_colors(12)
+
+#def get_color(index): return str(COLORS[index])
+
+#def get_color(index): return tableau20[index]
+
+def get_color(index): return RGB_COLORS[index]
+
+
+
 
 def top_authors(graph, top_percent = 0.01):
   authors = graph.get_papers_by_authors()
@@ -220,13 +250,23 @@ def make_heatmap(arr, row_labels, column_labels, figname):
 
 def conference_evolution():
   legit_conferences = ["ICSE", "MSR", "FSE", "ASE"]
+  non_legit_conferences = ["GPCE", "FASE"]
   TOP_TOPIC_COUNT = 5
   graph = cite_graph()
   miner = Miner(graph)
   lda_model, vocab = miner.lda(12, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   conferences = graph.get_papers_by_conference()
-  for conference in mysql.get_conferences():
-    if conference.acronym not in legit_conferences: continue
+  f, subplts = plt.subplots(3, 3)
+  f.tight_layout()
+  y_counter = -1
+  x_counter = 0
+  for conf_index, conference in enumerate(mysql.get_conferences()):
+    # if conference.acronym not in legit_conferences: continue
+    if conference.acronym in non_legit_conferences: continue
+    y_counter += 1
+    if y_counter > 2:
+      x_counter += 1
+      y_counter = 0
     year_topics = {}
     year_heatmaps = {}
     for year, papers in yearize(conferences[conference.id]).items():
@@ -236,7 +276,6 @@ def conference_evolution():
       year_heatmaps[year] = topics
       year_topics[year] = percent_sort(topics)
     width = 0.8
-    plts = []
     x_axis = np.arange(1, len(year_topics.keys()) + 1)
     # x_axis = [c.acronym for c in mysql.get_conferences()]
     y_offset = np.array([0] * len(year_topics.keys()))
@@ -248,45 +287,106 @@ def conference_evolution():
         colors_dict[topic[0]] = get_color(topic[0])
         color.append(colors_dict[topic[0]])
         bar_val.append(topic[1])
-      plts.append(plt.bar(x_axis, bar_val, width, color=color, bottom=y_offset))
+      subplts[x_counter, y_counter].bar(x_axis, bar_val, width, color=color, bottom=y_offset)
       y_offset = np.add(y_offset, bar_val)
-    plt.ylabel("Topic Coverage %")
-    plt.xlabel("Conferences")
-    plt.xticks(x_axis + width / 2, [str(y)[2:] for y in sorted(year_topics.keys(), key=lambda x: int(x))])
-    plt.yticks(np.arange(0, 100, 10))
-    plt.title(conference.acronym)
-    #Legends
-    patches = []
-    for topic, color in colors_dict.items():
-      patches.append(mpatches.Patch(color=color, label='Topic %s' % str(topic)))
-    plt.legend(handles=patches, loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=6, fontsize=7)
-    plt.savefig("figs/evolution/%s.png"%conference.acronym)
-    plt.clf()
-    #Heatmap
-    heatmap_arr = []
-    for year in sorted(year_heatmaps.keys(), key=lambda x: int(x)):
-      tot = sum(year_heatmaps[year])
-      dist = [top / tot for top in year_heatmaps[year]]
-      heatmap_arr.append(dist)
-    fig, ax = plt.subplots()
-    heatmap_arr = np.array(heatmap_arr)
-    heatmap_arr[np.isnan(heatmap_arr)] = 0
-    heatmap = ax.pcolor(heatmap_arr, cmap=plt.cm.Reds)
-    plt.ylabel("Year")
-    plt.xlabel("Topics")
-    row_labels = range(lda_model.n_topics)
-    column_labels = [str(y)[2:] for y in sorted(year_heatmaps.keys(), key=lambda x: int(x))]
-    ax.set_xticks(np.arange(heatmap_arr.shape[1]) + 0.5, minor=False)
-    ax.set_yticks(np.arange(heatmap_arr.shape[0]) + 0.5, minor=False)
-    ax.set_xticklabels(row_labels, minor=False)
-    ax.set_yticklabels(column_labels, minor=False)
-    plt.savefig("figs/evolution/%s_heatmap.png"%conference.acronym)
-    plt.clf()
+    # subplts[x_counter, y_counter].set_ylabel("Topic Coverage %")
+    #subplts[x_counter, y_counter].set_xlabel("Conferences")
+    if len(year_topics.keys()) <= 14:
+      subplts[x_counter, y_counter].set_xticks(x_axis + width / 2)
+      subplts[x_counter, y_counter].set_xticklabels([str(y)[2:] for y in sorted(year_topics.keys(), key=lambda x: int(x))], fontsize=7)
+    else:
+      subplts[x_counter, y_counter].set_xticks(np.arange(1, len(year_topics.keys()) + 1, 2) + width / 2)
+      subplts[x_counter, y_counter].set_xticklabels([str(y)[2:] for index, y in enumerate(sorted(year_topics.keys(), key=lambda x: int(x))) if index%2 == 0], fontsize=7)
 
+    subplts[x_counter, y_counter].set_yticks(np.arange(0, 100, 20))
+    subplts[x_counter, y_counter].set_title(conference.acronym)
+  # Legends
+  patches = []
+  labels = []
+  for topic in xrange(lda_model.n_topics):
+    patches.append(mpatches.Patch(color=get_color(topic)))
+    labels.append('T%s' % str(topic))
+  f.legend(handles=patches, labels=labels, loc='upper center', bbox_to_anchor=(0.5, 0.04), ncol=12, fontsize=7)
+  #f.legend(handles=patches, labels=labels, loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=12, fontsize=7)
+
+    # plt.savefig("figs/evolution/%s.png"%conference.acronym)
+    # plt.clf()
+
+    # #Heatmap
+    # heatmap_arr = []
+    # for year in sorted(year_heatmaps.keys(), key=lambda x: int(x)):
+    #   tot = sum(year_heatmaps[year])
+    #   dist = [top / tot for top in year_heatmaps[year]]
+    #   heatmap_arr.append(dist)
+    # fig, ax = plt.subplots()
+    # heatmap_arr = np.array(heatmap_arr)
+    # heatmap_arr[np.isnan(heatmap_arr)] = 0
+    # heatmap = ax.pcolor(heatmap_arr, cmap=plt.cm.Reds)
+    # plt.ylabel("Year")
+    # plt.xlabel("Topics")
+    # row_labels = range(lda_model.n_topics)
+    # column_labels = [str(y)[2:] for y in sorted(year_heatmaps.keys(), key=lambda x: int(x))]
+    # ax.set_xticks(np.arange(heatmap_arr.shape[1]) + 0.5, minor=False)
+    # ax.set_yticks(np.arange(heatmap_arr.shape[0]) + 0.5, minor=False)
+    # ax.set_xticklabels(row_labels, minor=False)
+    # ax.set_yticklabels(column_labels, minor=False)
+    # plt.savefig("figs/evolution/%s_heatmap.png"%conference.acronym)
+    # plt.clf()
+  plt.savefig("figs/evolution/evolution.png")
+  plt.clf()
   n_top_words = 10
   for index, topic_dist in enumerate(lda_model.topic_word_):
     topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))
+
+
+def pc_bias_table():
+  def index_by_year(tups):
+    y_comm = {}
+    for tup in tups:
+      comm = y_comm.get(tup[1], set())
+      comm.add(tup[0])
+      y_comm[tup[1]] = comm
+    return y_comm
+
+  graph = cite_graph()
+  max_len = 21
+  start = 1993
+  p_conferences = graph.get_papers_by_conference()
+  p_committees = graph.get_committee_by_conference()
+  conf_year_scores = {}
+  for conference in mysql.get_conferences():
+    year_committees = index_by_year(p_committees[conference.id])
+    year_papers = index_by_year(p_conferences[conference.id])
+    year_scores = {}
+    for year in sorted(year_committees.keys(), key=lambda y: int(y)):
+      papers = year_papers.get(year, None)
+      if papers is None:
+        year_scores[int(year)] = None
+        continue
+      committee = year_committees[year]
+      comm_papers = 0
+      non_comm_papers = 0
+      for paper_id in papers:
+        paper = graph.paper_nodes[paper_id]
+        author_ids = set(paper.author_ids.strip().split(","))
+        if author_ids.intersection(committee):
+          comm_papers += 1
+        else:
+          non_comm_papers += 1
+      year_scores[int(year)] = 0 if not comm_papers else int(round(comm_papers * 100 / (comm_papers + non_comm_papers)))
+    conf_year_scores[conference.acronym] = year_scores
+  header = ["conf"] + [str(start + i) for i in xrange(max_len)]
+  table = PrettyTable(header)
+  for conf, year_scores in conf_year_scores.items():
+    row = [conf]
+    for index in xrange(max_len):
+      row.append(year_scores.get(start+index, None))
+    table.add_row(row)
+  print("```")
+  print(table)
+  print("```")
+  exit()
 
 
 def pc_bias():
@@ -398,9 +498,19 @@ def topic_evolution():
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))
 
 
-super_author()
-super_author("super_author_top", 0.01)
+# pc_bias_table()
+#
+# super_author()
+# super_author("super_author_top", 0.01)
 conference_evolution()
-conference_diversity()
-pc_bias()
-topic_evolution()
+# conference_diversity()
+# pc_bias()
+# topic_evolution()
+# y_counter = -1
+# x_counter = 0
+# for i in range(12):
+#   y_counter += 1
+#   if y_counter > 2:
+#     y_counter = 0
+#     x_counter += 1
+#   print(i, x_counter, y_counter)
