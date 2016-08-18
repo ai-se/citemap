@@ -44,6 +44,7 @@ class Graph(O):
           #   author_nodes[author_node.id] = author_node
           edge = Edge(source=author_node.id, target=paper_node.id, edge_type="author")
           edges[edge.id] = edge
+      cited_counts = {}
       for paper_id, paper in paper_nodes.items():
         if not paper.ref_id: continue
         references = paper.cites
@@ -52,8 +53,12 @@ class Graph(O):
         for ref_id in references.split(","):
           if not ref_nodes.get(ref_id, None): continue
           source = ref_nodes[ref_id]
+          source_cited = cited_counts.get(source.id, 0)
+          cited_counts[source.id] = source_cited + 1
           edge = Edge(source=source.id, target=target.id, edge_type="cite")
           edges[edge.id] = edge
+      for paper_id, paper in paper_nodes.items():
+        paper["cited_counts"] =cited_counts.get(paper_id, 0)
     graph = Graph()
     graph.paper_nodes = paper_nodes
     graph.author_nodes = author_nodes
