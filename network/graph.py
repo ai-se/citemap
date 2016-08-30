@@ -19,6 +19,7 @@ class Graph(O):
     edges = {}
     author_nodes = mysql.get_authors()
     ref_nodes = {}
+    seen = set()
     with open(file_name, 'rb') as f:
       column_names = f.readline().strip().lower().split(delimiter)
       #print(column_names)
@@ -114,7 +115,7 @@ class Graph(O):
     """
     papers = {}
     for edge in self.edges.values():
-      if edge.edge_type != "cite":
+      if edge.edge_type == "cite":
         continue
       author_papers = papers.get(edge.source, [])
       paper = self.paper_nodes[edge.target]
