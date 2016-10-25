@@ -5,6 +5,9 @@ import MySQLdb
 from utils.lib import O, Paper, PC, Node, Conference
 import csv
 
+# SCHEMA_NAME = "conferences"
+SCHEMA_NAME = "conferences_dummy"
+
 class DB(O):
   _db = None
 
@@ -14,7 +17,7 @@ class DB(O):
       DB._db =  MySQLdb.connect(host="localhost",
                          user="root",
                          passwd="root",
-                         db="conferences")
+                         db=SCHEMA_NAME)
     return DB._db
 
   @staticmethod
@@ -132,4 +135,5 @@ def get_conferences():
   return conferences
 
 if __name__ == "__main__":
-  get_conferences()
+  # get_conferences()
+  dump()

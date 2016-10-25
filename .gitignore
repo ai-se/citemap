@@ -70,3 +70,4 @@ target/
 # Large files
 acm/acm.txt
 DBLP_Citation_2014_May
+citemap*.csv
