@@ -12,11 +12,15 @@ import pandas as pd
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, dendrogram
 from prettytable import PrettyTable
-sys.do
+sys.dont_write_bytecode=True
 __author__ = "panzer"
 
 #COLORS = sorted(clrs.cnames.keys())
 TOPIC_THRESHOLD = 3
+# GRAPH_CSV = "data/citemap.csv"
+ALPHA = 0.847433736937
+BETA = 0.763774618977
+GRAPH_CSV = "data/citemap_v3.csv"
 
 # COLORS = ["#808080", "#000000", "#FF0000", "#800000",
 #           "#FFFF00", "#808000", "#00FF00", "008000",
@@ -81,7 +85,7 @@ def top_authors(graph, top_percent = 0.01, min_year=None):
   return set([t[0] for t in tops])
 
 def super_author(fig_prefix="super_author" ,top_percent=1.00):
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   authors = graph.get_papers_by_authors()
@@ -151,7 +155,7 @@ def percent_sort(arr):
 
 
 def conference_diversity():
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   conferences = graph.get_papers_by_conference()
@@ -226,7 +230,7 @@ def conference_diversity():
 
 
 def conference_evolution_2(paper_range, figname):
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   conferences = graph.get_papers_by_conference()
@@ -337,7 +341,7 @@ def conference_evolution():
   legit_conferences = ["ICSE", "MSR", "FSE", "ASE"]
   non_legit_conferences = ["GPCE", "FASE"]
   TOP_TOPIC_COUNT = 7
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   conferences = graph.get_papers_by_conference()
@@ -410,7 +414,7 @@ def pc_bias_table():
       y_comm[tup[1]] = comm
     return y_comm
 
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   max_len = 21
   start = 1993
   max_len = 5
@@ -461,7 +465,7 @@ def pc_paper_count_table():
       y_comm[tup[1]] = comm
     return y_comm
 
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   max_len = 5
   start = 2009
   p_conferences = graph.get_papers_by_conference()
@@ -506,7 +510,7 @@ def pc_bias():
 
   legit_conferences = ["ICSE", "MSR", "FSE", "ASE"]
   colors = ['r', 'g', 'b', 'y']
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   width = 0.5
   space = 0.3
   p_conferences = graph.get_papers_by_conference()
@@ -558,7 +562,7 @@ def pc_bias():
   plt.clf()
 
 def topic_evolution():
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   paper_nodes = graph.paper_nodes
@@ -623,7 +627,7 @@ def pc_topics_heatmap(year_range=None):
       y_comm[tup[1]] = comm
     return y_comm
 
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   max_len = 21
@@ -689,7 +693,7 @@ def get_top_papers():
   top_papers = {}
   for index in range(n_topics):
     top_papers[index] = []
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   for paper_id, paper in graph.paper_nodes.items():
@@ -711,7 +715,7 @@ def get_top_papers():
 
 
 def print_top_authors(top_percent= None, min_year=None):
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   tops = top_authors(graph, top_percent=top_percent, min_year=min_year)
   author_papers = graph.get_papers_by_authors()
   top_tups = []
@@ -734,7 +738,7 @@ def print_top_authors(top_percent= None, min_year=None):
       f.write("\n")
 
 def paper_bar():
-  graph = cite_graph()
+  graph = cite_graph(GRAPH_CSV)
   conferences =  graph.get_papers_by_conference()
   start = 2001
   end = 2012
@@ -761,6 +765,15 @@ def paper_bar():
   plt.clf()
 
 
+def lda_topics():
+  graph = cite_graph(GRAPH_CSV)
+  miner = Miner(graph)
+  lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
+  n_top_words = 10
+  for index, topic_dist in enumerate(lda_model.topic_word_):
+    topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
+    print('Topic {}: {}'.format(index, ', '.join(topic_words)))
+
 # pc_topics_heatmap([2009, 2010, 2011, 2012, 2013])
 # print_top_authors()
 # get_top_papers()
@@ -780,7 +793,7 @@ def paper_bar():
 # super_author("super_author_7_top")
 # super_authors_top()
 # conference_evolution()
-conference_diversity()
+# conference_diversity()
 # pc_bias()
 # topic_evolution()
 # y_counter = -1
@@ -791,3 +804,4 @@ conference_diversity()
 #     y_counter = 0
 #     x_counter += 1
 #   print(i, x_counter, y_counter)
+lda_topics()

@@ -69,8 +69,8 @@ class Miner(O):
 
 
 
-def cite_graph():
-  return Graph.from_file("citemap.csv")
+def cite_graph(file_name):
+  return Graph.from_file(file_name)
 
 def write_to_file(file_name, vals):
   with open(file_name, "w") as f:

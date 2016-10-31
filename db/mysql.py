@@ -48,7 +48,7 @@ def update_papers(paper_map):
   DB.close()
 
 
-def dump(to_csv=True, file_name='citemap.csv', delimiter="$|$"):
+def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
   db = DB.get()
   cur = db.cursor()
   cur.execute("SELECT * FROM papers")
@@ -136,4 +136,4 @@ def get_conferences():
 
 if __name__ == "__main__":
   # get_conferences()
-  dump()
+  dump(file_name='data/citemap_v3.csv')
