@@ -13,6 +13,7 @@ warnings.filterwarnings("ignore")
 
 __author__ = "panzer"
 
+
 def parse_acm_generate(file_name):
   with open(file_name, 'rb') as f:
     f = UTF8Recoder(f)
@@ -38,8 +39,9 @@ def parse_acm_generate(file_name):
         elif item.startswith('#%'):
           refs.append(item[2:])
       paper.refs = refs
-      count+=1
+      count += 1
       yield paper
+
 
 def parse_acm(filename):
   paper_map = {}
@@ -50,20 +52,22 @@ def parse_acm(filename):
 
 def insert_papers(filename):
   batch = []
-  batch_no=0
+  batch_no = 0
+  mongo.index_paper_collection()
   for paper in parse_acm_generate(filename):
     batch.append(paper.has())
     if len(batch) == 1000:
       mongo.insert_papers(batch)
       batch = []
       batch_no += 1
-      print("Batch %d"%batch_no)
+      print("Batch %d" % batch_no)
   if batch:
     mongo.insert_papers(batch)
 
 
 def de_punctuate(s):
   return reduce(lambda s1, c: s1.replace(c, ''), string.punctuation, s).strip()
+
 
 def remove_accents(s):
   if isinstance(s, unicode):

@@ -737,9 +737,10 @@ def print_top_authors(top_percent= None, min_year=None):
       f.write(str(top_tup))
       f.write("\n")
 
+
 def paper_bar():
   graph = cite_graph(GRAPH_CSV)
-  conferences =  graph.get_papers_by_conference()
+  conferences = graph.get_papers_by_conference()
   start = 2001
   end = 2012
   year_count = {}
@@ -767,12 +768,18 @@ def paper_bar():
 
 def lda_topics():
   graph = cite_graph(GRAPH_CSV)
+  last = sorted(graph.collaborator_edges.values(), key=lambda x: x.count)[-1]
+  print(last)
+  print(graph.author_nodes[last.source])
+  print(graph.author_nodes[last.target])
+  exit()
   miner = Miner(graph)
-  lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
+  lda_model, vocab = miner.lda(11, n_iter=100, alpha= 0.22359, beta=0.53915)
   n_top_words = 10
   for index, topic_dist in enumerate(lda_model.topic_word_):
     topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))
+
 
 # pc_topics_heatmap([2009, 2010, 2011, 2012, 2013])
 # print_top_authors()

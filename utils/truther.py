@@ -7,10 +7,10 @@ sys.dont_write_bytecode = True
 from utils.lib import Node, Edge
 import networkx as nx
 
-CITEMAP_FILE = 'data/citemap_v3.csv'
+CITEMAP_FILE = 'data/citemap_v4.csv'
 MIN_SIZE = 3
-SAVE_AS_NAME = True
-TRUTH_FILE = 'data/ground_truth_names.csv'
+SAVE_AS_NAME = False
+TRUTH_FILE = 'data/ground_truth_ids.csv'
 
 
 def read(file_name, delimiter='$|$'):

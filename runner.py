@@ -2,10 +2,8 @@ from __future__ import print_function, division
 import os, sys
 sys.path.append(os.path.abspath("."))
 from db import mongo, mysql
-from utils.lib import say
 
 __author__ = "panzer"
-
 
 
 def abstracts():

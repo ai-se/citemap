@@ -136,4 +136,4 @@ def get_conferences():
 
 if __name__ == "__main__":
   # get_conferences()
-  dump(file_name='data/citemap_v3.csv')
+  dump(file_name='data/citemap_v4.csv')

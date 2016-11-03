@@ -9,20 +9,38 @@ __author__ = "panzer"
 class Graph(O):
   def __init__(self):
     O.__init__(self)
-    self.paper_nodes = None
-    self.author_nodes = None
-    self.edges = None
+    self.paper_nodes = None           # Paper Nodes
+    self.author_nodes = None          # Author Nodes
+    self.author_edges = None          # Directed Edges between author and paper
+    self.cite_edges = None            # Directed Edges between reference paper and base paper
+    self.collaborator_edges = None    # Weighted Undirected edges between authors
 
   @staticmethod
   def from_file(file_name, delimiter='$|$'):
+
     paper_nodes = {}
-    edges = {}
+    author_edges = {}
+    cite_edges = {}
+    collaborator_edges = {}
     author_nodes = mysql.get_authors()
     ref_nodes = {}
-    seen = set()
+
+    def add_collaborator_edges(authors):
+      if len(authors) <= 1:
+        return
+      for i in range(len(authors)):
+        for j in range(i + 1, len(authors)):
+          low, high = min(authors[i].id, authors[j].id), max(authors[i].id, authors[j].id)
+          key = low + "-" + high
+          e = collaborator_edges.get(key, None)
+          if e is None:
+            e = Edge(source=low, target=high, edge_type="collaborator", count=1)
+          else:
+            e.count += 1
+          collaborator_edges[key] = e
+
     with open(file_name, 'rb') as f:
       column_names = f.readline().strip().lower().split(delimiter)
-      #print(column_names)
       for line in f.readlines():
         columns = line.strip().split(delimiter)
         paper_node = Node()
@@ -32,19 +50,14 @@ class Graph(O):
         if paper_node.ref_id:
           ref_nodes[paper_node.ref_id] = paper_node
         paper_nodes[paper_node.id] = paper_node
+        paper_authors = []
         for author_id, author in zip(columns[-3].split(","), columns[-2].split(",")):
-          #author_node = author_nodes[int(author_id)]
           author_node = author_nodes[author_id]
-          # if author in author_nodes:
-          #   author_node = author_nodes[author]
-          # else:
-          #   author_node = Node()
-          #   author_node["id"] = author_id
-          #   author_node["name"] = author
-          #   author_node["type"] = "author"
-          #   author_nodes[author_node.id] = author_node
+          paper_authors.append(author_node)
           edge = Edge(source=author_node.id, target=paper_node.id, edge_type="author")
-          edges[edge.id] = edge
+          author_edges[edge.id] = edge
+        add_collaborator_edges(paper_authors)
+
       cited_counts = {}
       for paper_id, paper in paper_nodes.items():
         if not paper.ref_id: continue
@@ -57,13 +70,15 @@ class Graph(O):
           source_cited = cited_counts.get(source.id, 0)
           cited_counts[source.id] = source_cited + 1
           edge = Edge(source=source.id, target=target.id, edge_type="cite")
-          edges[edge.id] = edge
+          cite_edges[edge.id] = edge
       for paper_id, paper in paper_nodes.items():
         paper["cited_counts"] =cited_counts.get(paper_id, 0)
     graph = Graph()
     graph.paper_nodes = paper_nodes
     graph.author_nodes = author_nodes
-    graph.edges = edges
+    graph.author_edges = author_edges
+    graph.cite_edges = cite_edges
+    graph.collaborator_edges = collaborator_edges
     graph.add_pc_membership(mysql.get_pc_membership())
     return graph
 
@@ -114,9 +129,7 @@ class Graph(O):
     }
     """
     papers = {}
-    for edge in self.edges.values():
-      if edge.edge_type == "cite":
-        continue
+    for edge in self.author_edges.values():
       author_papers = papers.get(edge.source, [])
       paper = self.paper_nodes[edge.target]
       author_papers.append((paper.id, paper.year, paper.conference))
