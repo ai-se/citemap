@@ -23,7 +23,9 @@ N_TOPICS = 11
 ALPHA = 0.22359
 BETA = 0.53915
 ITERATIONS = 100
-TOPICS = ["TPC %d" % d for d in range(11)]
+# TOPICS = ["TPC %d" % d for d in range(11)]
+TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
+          "SourceCode", "WebApps", "SPL", "Developer", "RE"]
 
 dendo_11_settings = O(
     fig_size=(6, 8),
@@ -204,7 +206,7 @@ def topic_evolution():
   x_axis = np.arange(1, len(yt_map.keys()) + 1)
   y_offset = np.array([0] * len(yt_map.keys()))
   colors_dict = {}
-  top_topic_count = 7
+  top_topic_count = 9
   for index in range(top_topic_count):
     bar_val, color = [], []
     for year in sorted(yt_map.keys(), key=lambda x: int(x)):
@@ -223,7 +225,7 @@ def topic_evolution():
   patches = []
   for index, (topic, color) in enumerate(colors_dict.items()):
     patches.append(mpatches.Patch(color=color, label='Topic %s' % str(topic)))
-  plt.legend(tuple(patches), tuple(TOPICS), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=5, fontsize=11,
+  plt.legend(tuple(patches), tuple(TOPICS), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=6, fontsize=10,
              handlelength=0.7)
   plt.savefig("figs/v2/topic_evolution/topic_evolution_7.png")
   plt.clf()
@@ -277,8 +279,8 @@ def pc_topics_heatmap(fig_name, dendo_settings, paper_range=None):
 
 
 if __name__ == "__main__":
-  conference_diversity("heatmap_93_00", dendo_11_settings, range(1993, 2001))
-  conference_diversity("heatmap_01_08", dendo_14_settings, range(2001, 2009))
-  conference_diversity("heatmap_09_16", dendo_16_settings, range(2009, 2017))
-  pc_topics_heatmap("pc_heatmap_09_16", dendo_16_settings, range(2009, 2017))
+  # conference_diversity("heatmap_93_00", dendo_11_settings, range(1993, 2001))
+  # conference_diversity("heatmap_01_08", dendo_14_settings, range(2001, 2009))
+  # conference_diversity("heatmap_09_16", dendo_16_settings, range(2009, 2017))
+  # pc_topics_heatmap("pc_heatmap_09_16", dendo_16_settings, range(2009, 2017))
   topic_evolution()
