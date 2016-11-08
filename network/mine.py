@@ -7,6 +7,9 @@ import lda
 from network.graph import Graph
 from sklearn.feature_extraction.text import CountVectorizer
 import warnings
+from nltk import word_tokenize
+from nltk.stem.porter import PorterStemmer
+from sklearn.feature_extraction import text
 
 __author__ = "panzer"
 
@@ -15,6 +18,26 @@ TOKEN_PATTERN = r"(?u)\b\w\w\w+\b"
 ITERATIONS = 1000
 ALPHA = None
 BETA = None
+STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering'])
+
+
+class StemTokenizer(object):
+  def __init__(self):
+    self.stemmer = PorterStemmer()
+
+  def __call__(self, doc):
+    return [self.stemmer.stem(t) for t in word_tokenize(doc)]
+
+
+class StemmedCountVectorizer(CountVectorizer):
+  def __init__(self, stemmer, **params):
+    super(StemmedCountVectorizer, self).__init__(**params)
+    self.stemmer = stemmer
+
+  def build_analyzer(self):
+    analyzer = super(StemmedCountVectorizer, self).build_analyzer()
+    return lambda doc: (self.stemmer.stem(w) for w in analyzer(doc))
+
 
 class Document(O):
   def __init__(self, raw=None):
@@ -23,6 +46,7 @@ class Document(O):
     self.vector = None
     self.topics_count = None
     self.topics_score = None
+
 
 class Miner(O):
   def __init__(self, graph):
@@ -36,13 +60,17 @@ class Miner(O):
     paper_nodes = self.graph.paper_nodes
     documents = {}
     for paper_id, paper in paper_nodes.items():
-      raw = paper.abstract if paper.abstract else paper.title
+      if paper.abstract is not None and paper.abstract != 'None':
+        raw = paper.abstract
+      else:
+        raw = paper.title
       documents[paper_id] = Document(raw)
     self.documents = documents
     return documents
 
   def vectorize(self, **params):
     if self.vectorizer is None:
+      # self.vectorizer = StemmedCountVectorizer(PorterStemmer(), **params)
       self.vectorizer = CountVectorizer(**params)
     if self.doc_2_vec is None:
       docs = [document.raw for _, document in self.get_documents().items()]
@@ -51,8 +79,8 @@ class Miner(O):
         document.vector = vector
         self.documents[paper_id] = document
 
-  def lda(self, n_topics, n_iter=1000, random_state=1, alpha = ALPHA, beta = BETA):
-    self.vectorize(stop_words='english', token_pattern=TOKEN_PATTERN)
+  def lda(self, n_topics, n_iter=1000, random_state=1, alpha=ALPHA, beta=BETA):
+    self.vectorize(stop_words=STOP_WORDS, token_pattern=TOKEN_PATTERN)
     alpha = alpha if alpha else 50/n_topics
     beta = beta if beta else 0.01
     model = lda.LDA(n_topics=n_topics, alpha=alpha, eta=beta, n_iter=n_iter, random_state=random_state)
@@ -67,10 +95,9 @@ class Miner(O):
     return model, self.vectorizer.get_feature_names()
 
 
-
-
 def cite_graph(file_name):
   return Graph.from_file(file_name)
+
 
 def write_to_file(file_name, vals):
   with open(file_name, "w") as f:
@@ -78,21 +105,16 @@ def write_to_file(file_name, vals):
       f.write("%d,%f\n"%(topic_count, ll))
 
 
-
 def _lda_authors():
   graph = cite_graph()
   miner = Miner(graph)
-  lda_model, vocab = miner.lda(22, n_iter= 100, alpha=0.847433736937, beta=0.763774618977)
+  lda_model, vocab = miner.lda(22, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   authors = graph.get_papers_by_authors()
   for author_id, papers in authors.items():
     docs = []
     for paper_id, _, __ in papers:
       print(miner.documents[paper_id])
       exit()
-
-
-
-
 
 
 def _run():
@@ -105,17 +127,11 @@ def _run():
     lda_model, vocab = miner.lda(topic_count, n_iter=ITERATIONS)
     topic_scores.append((topic_count, lda_model.loglikelihood()))
   write_to_file("scores_50.csv", topic_scores)
-
-
-
   # topic_word = lda_model.topic_word_
   # n_top_words = 8
   # for i, topic_dist in enumerate(topic_word):
   #   topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
   #   print('Topic {}: {}'.format(i, ' '.join(topic_words)))
-
-
-
 
 
 if __name__ == "__main__":

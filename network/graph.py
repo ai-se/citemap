@@ -3,6 +3,7 @@ import os, sys
 sys.path.append(os.path.abspath("."))
 from utils.lib import O, Node, Edge
 from db import mysql
+from utils.unicoder import UnicodeReader
 
 __author__ = "panzer"
 
@@ -42,6 +43,7 @@ class Graph(O):
     with open(file_name, 'rb') as f:
       column_names = f.readline().strip().lower().split(delimiter)
       for line in f.readlines():
+        line = line.decode('utf-8', 'ignore').encode("utf-8")
         columns = line.strip().split(delimiter)
         paper_node = Node()
         for name, val in zip(column_names, columns):

@@ -18,9 +18,21 @@ __author__ = "panzer"
 #COLORS = sorted(clrs.cnames.keys())
 TOPIC_THRESHOLD = 3
 # GRAPH_CSV = "data/citemap.csv"
+
+"""
+# For 7 TOPICS
+TOPICS = 7
 ALPHA = 0.847433736937
 BETA = 0.763774618977
-GRAPH_CSV = "data/citemap_v3.csv"
+"""
+
+# For 11 TOPICS
+TOPICS = 11
+ALPHA = 0.22359
+BETA = 0.53915
+
+
+GRAPH_CSV = "data/citemap_v4.csv"
 
 # COLORS = ["#808080", "#000000", "#FF0000", "#800000",
 #           "#FFFF00", "#808000", "#00FF00", "008000",
@@ -768,14 +780,10 @@ def paper_bar():
 
 def lda_topics():
   graph = cite_graph(GRAPH_CSV)
-  last = sorted(graph.collaborator_edges.values(), key=lambda x: x.count)[-1]
-  print(last)
-  print(graph.author_nodes[last.source])
-  print(graph.author_nodes[last.target])
-  exit()
   miner = Miner(graph)
-  lda_model, vocab = miner.lda(11, n_iter=100, alpha= 0.22359, beta=0.53915)
-  n_top_words = 10
+  lda_model, vocab = miner.lda(11, n_iter=100, alpha=0.22359, beta=0.53915)
+  # lda_model, vocab = miner.lda(11, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
+  n_top_words = 15
   for index, topic_dist in enumerate(lda_model.topic_word_):
     topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))

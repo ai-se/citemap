@@ -13,15 +13,16 @@ class UTF8Recoder:
   def next(self):
     return self.reader.next().encode("utf-8")
 
+
 class UnicodeReader:
   """
   A CSV reader which will iterate over lines in the CSV file "f",
   which is encoded in the given encoding.
   """
 
-  def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+  def __init__(self, f, delimiter=';', dialect=csv.excel, encoding="utf-8", **kwds):
     f = UTF8Recoder(f, encoding)
-    self.reader = csv.reader(f, delimiter=';', dialect=dialect, **kwds)
+    self.reader = csv.reader(f, delimiter=delimiter, dialect=dialect, **kwds)
 
   def next(self):
     row = self.reader.next()
@@ -36,10 +37,10 @@ class UnicodeWriter:
   which is encoded in the given encoding.
   """
 
-  def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+  def __init__(self, f, delimiter=';', dialect=csv.excel, encoding="utf-8", **kwds):
     # Redirect output to a queue
     self.queue = cStringIO.StringIO()
-    self.writer = csv.writer(self.queue, delimiter=';', dialect=dialect, **kwds)
+    self.writer = csv.writer(self.queue, delimiter=delimiter, dialect=dialect, **kwds)
     self.stream = f
     self.encoder = codecs.getincrementalencoder(encoding)()
 
