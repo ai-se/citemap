@@ -722,7 +722,7 @@ def get_top_papers():
     print("***", index, "***")
     for paper in top_papers[index]:
       paper = paper[0]
-      print(paper[0], paper[-1] + " - " + paper[1] + ", " + paper[2] )
+      print(paper[0], paper[-1] + " - " + paper[1] + ", " + paper[2])
 
 
 

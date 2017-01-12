@@ -1,0 +1,55 @@
+*** 0 ***
+20 2005 - CatchUp capturing and replaying refactorings to support API evolution, johannes henkel,amer diwan
+19 1995 - A Component and MessageBased Architectural Style for GUI Software, richard n. taylor,nenad medvidovic,kenneth m. anderson,jim whitehead,jason e. robbins
+18 2005 - The Top Ten List Dynamic Fault Prediction, ahmed e. hassan,richard c. holt
+18 2002 - Supporting reuse by delivering taskrelevant and personalized information, yunwen ye,gerhard g. fischer
+*** 1 ***
+122 2005 - CUTE a concolic unit testing engine for C, koushik sen,darko marinov,gul a. agha
+86 1999 - Dynamically Discovering Likely Program Invariants to Support Program Evolution, michael d. ernst,jake cockrell,william g. griswold,david notkin
+79 2002 - Visualization of test information to assist fault localization, james a. jones,mary jean harrold,john t. stasko
+71 2002 - Korat automated testing based on Java predicates, chandrasekhar boyapati,sarfraz khurshid,darko marinov
+*** 2 ***
+80 2000 - Model Checking Programs, willem visser,klaus havelund,guillaume p. brat,seungjoon park
+42 2002 - Automatic extraction of objectoriented component interfaces, john whaley,michael c. martin,monica s. lam
+41 2003 - Scaling StepWise Refinement, don s. batory,jacob neal sarvela,axel rauschmayer
+38 2008 - Automatic generation of software behavioral models, davide lorenzoli,leonardo mariani,mauro pezze
+*** 3 ***
+4 2009 - Identification of Extract Method Refactoring Opportunities, nikolaos tsantalis,alexander chatzigeorgiou
+2 2009 - Identifying Architectural Bad Smells, joshua garcia,daniel popescu,george edwards,nenad medvidovic
+2 2013 - Asking for and about permissions used by Android apps, ryan stevens,jonathan ganz,vladimir filkov,premkumar t. devanbu,hao chen 0003
+1 2004 - Workshop on Directions in Software Engineering Environments WoDiSEE, john c. grundy,ray welland,hermann stoeckle
+*** 4 ***
+7 2004 - Validating the Unit Correctness of Spreadsheet Programs, tudor antoniu,paul a. steckler,shriram krishnamurthi,erich neuwirth,matthias felleisen
+0 1994 - Workshop on the Intersection Between Databases and Software Engineering, roger king
+0 2015 - Witness validation and stepwise testification across software verifiers, dirk beyer 0001,matthias dangl,daniel dietsch,matthias heizmann,andreas stahlbauer
+0 2001 - Where Are We on the Fend off the Alligators  Drain the Swamp Continuum, donald c. gause,savile row
+*** 5 ***
+67 2006 - Who should fix this bug, john anvik,lyndon hiew,gail c. murphy
+50 2005 - Use of relative code churn measures to predict system defect density, nachiappan nagappan,thomas a. ball
+45 2006 - Mining metrics to predict component failures, nachiappan nagappan,thomas a. ball,andreas zeller
+41 2009 - Fair and balanced bias in bugfix datasets, christian bird,adrian bachmann,eirik aune,john duffy,abraham bernstein,vladimir filkov,premkumar t. devanbu
+*** 6 ***
+25 2001 - Identifying Similar Code with Program Dependence Graphs, jens krinke
+21 2004 - Static Checking of Dynamically Generated Queries in Database Applications, carl gould,zhendong su,premkumar t. devanbu
+14 2012 - On the naturalness of software, abram hindle,earl t. barr,zhendong su,mark gabel,premkumar t. devanbu
+12 2004 - Testing static analysis tools using exploitable buffer overflows from open source code, misha zitser,richard p. lippmann,timothy r. leek
+*** 7 ***
+21 2008 - Static detection of crosssite scripting vulnerabilities, gary wassermann,zhendong su
+8 2011 - Autolocating and fixpropagating for HTML validation errors to PHP serverside code, hung viet nguyen,hoan anh nguyen,tung thanh nguyen,tien n. nguyen
+5 2012 - Using GUI ripping for automated testing of Android applications, domenico amalfitano,anna rita fasolino,porfirio tramontana,salvatore de carmine,atif m. memon
+5 2008 - ReBA refactoringaware binary adaptation of evolving libraries, danny dig,stas negara,vibhu mohindra,ralph e. johnson
+*** 8 ***
+9 2006 - Whats in a Name A Study of Identifiers, dawn lawrie,christopher morrell,henry feild,david m. binkley
+8 2008 - Configuration Lifting Verification meets Software Configuration, hendrik post,carsten sinz
+7 2006 - Classifying Change Types for Qualifying Change Couplings, beat fluri,harald c. gall
+6 2006 - Dynamic Analysis of Software Systems using Execution Pattern Mining, hossein safyallah,kamran sartipi
+*** 9 ***
+66 2005 - When do changes induce fixes, jacek sliwerski,thomas zimmermann,andreas zeller
+50 2004 - Mining Version Histories to Guide Software Changes, thomas zimmermann,peter weissgerber,stephan diehl,andreas zeller
+49 2003 - Populating a Release History Database from Version Control and Bug Tracking Systems, michael fischer,martin pinzger,harald c. gall
+44 2005 - PRMiner automatically extracting implicit programming rules and detecting violations in large software code, zhenmin li,yuanyuan zhou
+*** 10 ***
+33 2006 - Mining email social networks, christian bird,alex gourley,premkumar t. devanbu,michael gertz,anand swaminathan
+22 2009 - The secret life of bugs Going past the errors and omissions in software repositories, jorge aranda,gina danielle venolia
+20 2010 - Codebook discovering and exploiting relationships in software repositories, andrew begel,yit phang khoo,thomas zimmermann
+18 2008 - Latent social structure in open source projects, christian bird,david s. pattison,raissa m. d'souza,vladimir filkov,premkumar t. devanbu
