@@ -78,7 +78,7 @@ def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
     return papers
   header = ["ID", "Conference", "Year", "Title", "H2", "H3", "Ref_ID", "Cites", "Author_IDs", "Authors", "Abstract"]
   with open(file_name, 'wb') as f:
-    f.write(delimiter.join(header)+"\n")
+    f.write(delimiter.join(header) + "\n")
     for i, paper in enumerate(papers):
       cites = ",".join(paper.cites) if paper.cites else ""
       authors = ",".join(paper.authors) if paper.authors else ""
