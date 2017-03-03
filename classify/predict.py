@@ -67,6 +67,7 @@ DELIMITER = '$|$'
 STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering'])
 TOKEN_PATTERN = r"(?u)\b\w\w\w+\b"
 K_BEST_RATE = 0.2
+IS_INDEPENDENT_CONFERENCE = True
 
 
 class Metrics(O):
@@ -111,7 +112,12 @@ class Metrics(O):
               self.recall.median, self.recall.iqr)
 
 
-def get_papers_and_groups(miner):
+def get_papers_and_groups(miner, is_independent=False):
+  """
+  :param miner: Miner object
+  :param is_independent: boolean - If true returns conference ID else returns group ID
+  :return:
+  """
   paper_nodes = miner.graph.paper_nodes
   papers = []
   groups = []
@@ -122,7 +128,10 @@ def get_papers_and_groups(miner):
       paper.raw = paper.title
     paper.group = GROUP_CONFERENCE_MAP[int(paper.conference)]
     papers.append(paper)
-    groups.append(paper.group)
+    if is_independent:
+      groups.append(paper.conference)
+    else:
+      groups.append(paper.group)
   return np.array(papers), np.array(groups)
 
 
@@ -202,7 +211,7 @@ def predict_conference(estimators, n_folds=10, n_topics=N_TOPICS, alpha=None, be
 
   graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
-  papers, groups = get_papers_and_groups(miner)
+  papers, groups = get_papers_and_groups(miner, is_independent=IS_INDEPENDENT_CONFERENCE)
   skf = StratifiedKFold(n_splits=n_folds)
   metrics_map = {make_key(predictor, preprocessor): [] for predictor, preprocessor in estimators}
   index = 0

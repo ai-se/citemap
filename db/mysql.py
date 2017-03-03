@@ -8,6 +8,7 @@ import csv
 # SCHEMA_NAME = "conferences"
 SCHEMA_NAME = "conferences_dummy"
 
+
 class DB(O):
   _db = None
 
@@ -27,7 +28,6 @@ class DB(O):
       DB._db = None
 
 
-
 def get_paper_names():
   db = DB.get()
   cur = db.cursor()
@@ -35,6 +35,7 @@ def get_paper_names():
   rows = [row[0] for row in cur.fetchall()]
   DB.close()
   return rows
+
 
 def update_papers(paper_map):
   db = DB.get()
@@ -88,6 +89,7 @@ def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
       f.write(delimiter.join(map(str, row)) + "\n")
   DB.close()
 
+
 def get_pc_membership():
   db = DB.get()
   cur = db.cursor()
@@ -105,6 +107,7 @@ def get_pc_membership():
   DB.close()
   return pc_members
 
+
 def get_authors():
   db = DB.get()
   cur = db.cursor()
@@ -118,6 +121,7 @@ def get_authors():
     author_nodes[str(int(row[0]))] = author_node
   DB.close()
   return author_nodes
+
 
 def get_conferences():
   db = DB.get()
@@ -133,6 +137,7 @@ def get_conferences():
     conferences.append(conference)
   DB.close()
   return conferences
+
 
 if __name__ == "__main__":
   # get_conferences()
