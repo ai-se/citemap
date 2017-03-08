@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 from utils.lib import O
 
 
-SEPERATOR = "$|$"
+SEPERATOR = "|"
 
-COOKIE = "g=DkYf04vK5NTlEgNIg3Ig; cool1=zUcwPOePMVabIhJiyo8f; cool2=OZkWCKyhip5VtBEks1pQ"
+COOKIE = "g=U41vOGVXh7oEzH5D5jyN; cool1=foy8QAwZzGRNIQ59Fstm; cool2=FbirxZH0vcnJdh7aYI8x"
 BASE_URL = "https://easychair.org/conferences"
 FILE_NAME = "classify/data.csv"
 
@@ -41,6 +41,7 @@ class Submission(O):
     self.abstract = None
     self.category = None
     self.decision = "reject"
+    self.raw_decision = "reject"
     self.conference = None
     self.year = None
     self.authors = None
@@ -58,11 +59,12 @@ class Submission(O):
 
   @staticmethod
   def make_header():
-    return SEPERATOR.join(["Conference", "Year", "Title", "Authors", "Keywords", "Abstract", "Category", "Decision"])
+    return SEPERATOR.join(["Conference", "Year", "Title", "Authors", "Keywords",
+                           "Abstract", "Category", "Decision", "Raw Decision"])
 
   def to_csv(self):
     return SEPERATOR.join([self.conference, str(self.year), self.title, ",".join(self.authors), ",".join(self.keywords),
-                           self.abstract, str(self.category), self.decision]).encode("utf8")
+                           self.abstract, str(self.category), self.decision, self.raw_decision]).encode("utf8")
 
 
 def parse_conference(name, year, url, fil):
@@ -70,7 +72,7 @@ def parse_conference(name, year, url, fil):
   if resp.status_code != 200:
     print("Failed to retrieve conference. Status Code: %s" % resp.status_code)
     return
-  soup = BeautifulSoup(resp.content)
+  soup = BeautifulSoup(resp.content, "lxml")
   table = soup.find("table", id="ec:table1")
   header = table.thead.find_all("tr")[-1]
   info_index = 0
@@ -101,7 +103,7 @@ def parse_submission(submission_link):
   if sub.status_code != 200:
     print("Failed to retrieve submission. Status Code: %s" % sub.status_code)
     return None
-  soup = BeautifulSoup(sub.content)
+  soup = BeautifulSoup(sub.content, "lxml")
   table = soup.find(id="ec:table1")
   submission = Submission()
   for row in table.tbody.find_all("tr"):
@@ -121,6 +123,8 @@ def parse_submission(submission_link):
     elif text == "Decision":
       value = cells[1].get_text().strip().lower()
       submission.decision = "accept" if "accept" in value else "reject"
+      submission.raw_decision = value
+
   author_table = soup.find(id="ec:table2")
   for row in author_table.tbody.find_all("tr")[2:]:
     cells = row.find_all("td")

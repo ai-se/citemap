@@ -15,7 +15,7 @@ import numpy as np
 import lda
 import matplotlib.pyplot as plt
 import pandas as pd
-from utils.lib import Metrics, O
+from utils.lib import O
 
 GRAPH_CSV = "data/citemap_v4.csv"
 CLASSIFY_CSV = "classify/data.csv"
@@ -31,9 +31,66 @@ ITERATIONS = 100
 TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
           "SourceCode", "WebApps", "Configuration", "Developer", "Mining"]
 TOPIC_THRESHOLD = 3
-DELIMITER = '$|$'
+DELIMITER = '|'
 STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering'])
 TOKEN_PATTERN = r"(?u)\b\w\w\w+\b"
+
+PRE_REJECT = 'pre-reject'
+
+class Metrics(O):
+  EPS = 0.00000001
+
+  def __init__(self, predicted, actual, positive, negative, raw_decisions):
+    O.__init__(self)
+    self.tp, self.fp, self.fn, self.tn = 0, 0, 0, 0
+    self.pre_reject, self.pre_reject_missed = 0, 0
+    for i, (p, a) in enumerate(zip(predicted, actual)):
+      if p == positive and a == positive:
+        self.tp += 1
+      elif p == positive and a == negative:
+        self.fp += 1
+      elif p == negative and a == positive:
+        self.fn += 1
+      else:
+        self.tn += 1
+      if raw_decisions[i] == PRE_REJECT and p == positive:
+        self.pre_reject_missed += 1
+      elif raw_decisions[i] == PRE_REJECT:
+        self.pre_reject += 1
+    self.accuracy = (self.tp + self.tn) / len(predicted)
+    self.precision = self.tp / (self.tp + self.fp + Metrics.EPS)
+    self.recall = self.tp / (self.tp + self.fn + Metrics.EPS)
+    self.specificity = self.tn / (self.tn + self.fp + Metrics.EPS)
+    self.f_score = 2 * self.precision * self.recall / (self.precision + self.recall + Metrics.EPS)
+
+  @staticmethod
+  def avg_score(metrics_arr):
+    accuracies, precisions, recalls, f_scores, specificities = [], [], [], [], []
+    pre_reject_misseds = []
+    for metrics in metrics_arr:
+      accuracies.append(metrics.accuracy)
+      precisions.append(metrics.precision)
+      recalls.append(metrics.recall)
+      f_scores.append(metrics.f_score)
+      specificities.append(metrics.specificity)
+      pre_reject_misseds.append(metrics.pre_reject_missed / (metrics.pre_reject+metrics.EPS))
+    score = O()
+    score.accuracy = O(median=Metrics.median(accuracies), iqr=Metrics.iqr(accuracies))
+    score.precision = O(median=Metrics.median(precisions), iqr=Metrics.iqr(precisions))
+    score.recall = O(median=Metrics.median(recalls), iqr=Metrics.iqr(recalls))
+    score.f_score = O(median=Metrics.median(f_scores), iqr=Metrics.iqr(f_scores))
+    score.specificity = O(median=Metrics.median(specificities), iqr=Metrics.iqr(specificities))
+    score.pre_reject_missed = O(median=Metrics.median(pre_reject_misseds), iqr=Metrics.iqr(pre_reject_misseds))
+    return score
+
+  @staticmethod
+  def iqr(x):
+    return round(np.subtract(*np.percentile(x, [75, 25])),2)
+
+  @staticmethod
+  def median(x):
+    return round(np.median(x), 2)
+
 
 
 def get_graph_lda_data(iterations=ITERATIONS):
@@ -59,6 +116,7 @@ def read_papers():
       submission.abstract = columns[5]
       submission.category = columns[6] if columns[6] != 'None' else None
       submission.decision = columns[7]
+      submission.raw_decision = columns[8]
       submissions.append(submission)
   return submissions
 
@@ -156,11 +214,12 @@ def decision_tree(*args):
   y_train = args[1]
   x_test = args[2]
   y_test = args[3]
+  y_test_raw = [x.raw_decision for x in x_test]
   x_train = [x.transformed for x in x_train]
   x_test = [x.transformed for x in x_test]
   clf = DecisionTreeClassifier(random_state=RANDOM_STATE).fit(x_train, y_train)
   predicted = clf.predict(x_test)
-  return predicted, Metrics(predicted, y_test, ACCEPTED, REJECTED)
+  return predicted, Metrics(predicted, y_test, ACCEPTED, REJECTED, y_test_raw)
 
 
 def linear_regression(*args):
@@ -168,11 +227,12 @@ def linear_regression(*args):
   y_train = args[1]
   x_test = args[2]
   y_test = args[3]
+  y_test_raw = [x.raw_decision for x in x_test]
   x_train = [x.transformed for x in x_train]
   x_test = [x.transformed for x in x_test]
   clf = LogisticRegression().fit(x_train, y_train)
   predicted = clf.predict(x_test)
-  return predicted, Metrics(predicted, y_test, ACCEPTED, REJECTED)
+  return predicted, Metrics(predicted, y_test, ACCEPTED, REJECTED, y_test_raw)
 
 
 def tfidf_preprocessor(*args):
@@ -191,10 +251,11 @@ def tfidf_decision_tree(*args):
   y_train = args[1]
   x_test = args[2]
   y_test = args[3]
+  y_test_raw = [x.raw_decision for x in x_test]
   x_train, x_test = tfidf_preprocessor(x_train, x_test)
   clf = DecisionTreeClassifier(random_state=RANDOM_STATE).fit(x_train, y_train)
   predicted = clf.predict(x_test)
-  return predicted, Metrics(predicted, y_test, ACCEPTED, REJECTED)
+  return predicted, Metrics(predicted, y_test, ACCEPTED, REJECTED, y_test_raw)
 
 
 def tfidf_linear_regression(*args):
@@ -202,10 +263,11 @@ def tfidf_linear_regression(*args):
   y_train = args[1]
   x_test = args[2]
   y_test = args[3]
+  y_test_raw = [x.raw_decision for x in x_test]
   x_train, x_test = tfidf_preprocessor(x_train, x_test)
   clf = LogisticRegression().fit(x_train, y_train)
   predicted = clf.predict(x_test)
-  return predicted, Metrics(predicted, y_test, ACCEPTED, REJECTED)
+  return predicted, Metrics(predicted, y_test, ACCEPTED, REJECTED, y_test_raw)
 
 
 def classify(classifiers):
@@ -240,9 +302,6 @@ def classify(classifiers):
     print(measures)
 
 
-
-
-classify([decision_tree, tfidf_decision_tree])
+if __name__ == "__main__":
+  classify([decision_tree, tfidf_decision_tree])
 # acceptance_pattern()
-
-
