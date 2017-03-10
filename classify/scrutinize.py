@@ -7,6 +7,10 @@ from network.mine import Miner, cite_graph
 from sklearn.feature_extraction import text
 from utils.lib import O
 from collections import OrderedDict
+from classify.model import read_papers, make_heatmap, vectorize
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 GRAPH_CSV = "data/citemap_v4.csv"
 CLASSIFY_CSV = "classify/data.csv"
@@ -30,11 +34,12 @@ ITERATIONS = 100
 TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
           "SourceCode", "WebApps", "Configuration", "Developer", "Mining"]
 TOPIC_THRESHOLD = 3
-DELIMITER = '$|$'
+DELIMITER = '|'
 STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering'])
 TOKEN_PATTERN = r"(?u)\b\w\w\w+\b"
 K_BEST_RATE = 0.2
 IS_INDEPENDENT_CONFERENCE = True
+STUDIED_CONFERENCES = ['FSE', 'MSR']
 
 
 def top_authors(graph):
@@ -54,12 +59,63 @@ def top_authors(graph):
   return author_dict
 
 
-def reputation():
-  graph = cite_graph(GRAPH_CSV)
-  miner = Miner(graph)
-  # model, vocab = miner.lda(n_topics=N_TOPICS, n_iter=ITERATIONS,
-  #                          random_state=RANDOM_STATE, alpha=ALPHA, beta=BETA)
-  print(top_authors(graph))
+def format_conf_acceptance(papers):
+  formatted = {}
+  for paper in papers:
+    if paper.conference not in STUDIED_CONFERENCES: continue
+    key = "%s-%s" % (paper.conference, paper.year)
+    if key not in formatted:
+      formatted[key] = []
+    formatted[key].append(paper)
+  return formatted
+
+
+def desk_rejects():
+  papers = read_papers()
+  vectorize(papers)
+  submissions = format_conf_acceptance(papers)
+  for conf_id, papers in submissions.items():
+    a_topics, a_count = np.array([0] * N_TOPICS), 0
+    r_topics, r_count = np.array([0] * N_TOPICS), 0
+    da_topics, da_count = np.array([0] * N_TOPICS), 0
+    dr_topics, dr_count = np.array([0] * N_TOPICS), 0
+    for paper in papers:
+      if paper.raw_decision == 'pre-reject':
+        dr_topics = np.add(dr_topics, paper.transformed)
+        dr_count += 1
+      elif paper.raw_decision == 'pre-accept':
+        da_topics = np.add(da_topics, paper.transformed)
+        da_count += 1
+      elif paper.decision == 'reject':
+        r_topics = np.add(r_topics, paper.transformed)
+        r_count += 1
+      elif paper.decision == 'accept':
+        a_topics = np.add(a_topics, paper.transformed)
+        a_count += 1
+
+    if dr_count > 0: dr_topics = dr_topics / float(dr_count)
+    if da_count > 0: da_topics = da_topics / float(da_count)
+    if r_count > 0: r_topics = r_topics / float(r_count)
+    if a_count > 0: a_topics = a_topics / float(a_count)
+    col_labels = TOPICS
+    row_labels = ["Accept - Desk Rejects"]
+    heatmap_arr = np.array([[int(round(100 * (a - dr), 0)) for dr, a in zip(dr_topics, a_topics)]], np.int)
+    cmap = mpl.colors.ListedColormap(['red', 'lightsalmon', 'white', 'palegreen', 'lime'])
+    bounds = [-10, -8, -2, 2, 8, 10]
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+    cax = plt.matshow(heatmap_arr, interpolation='nearest', cmap=cmap, norm=norm)
+    for (i, j), z in np.ndenumerate(heatmap_arr):
+      plt.text(j, i, abs(z), ha='center', va='center', fontsize=11)
+    ticks = [-20, -10, 0, 10, 20]
+    plt.colorbar(cax, cmap=cmap, norm=norm, boundaries=bounds, ticks=ticks)
+    plt.xticks(np.arange(len(list(col_labels))), list(col_labels), rotation="vertical")
+    plt.yticks(np.arange(len(list(row_labels))), list(row_labels))
+    plt.savefig("classify/figs/desks-%s.png" % conf_id, bbox_inches='tight')
+
+
+
+
+
 
 if __name__ == "__main__":
   reputation()
