@@ -304,4 +304,4 @@ def classify(classifiers):
 
 if __name__ == "__main__":
   classify([decision_tree, tfidf_decision_tree])
-# acceptance_pattern()
+  # acceptance_pattern()

@@ -1,13 +1,13 @@
 # This Python file uses the following encoding: utf-8
-
+from __future__ import print_function
 import os
 import sys
 sys.path.append(os.path.abspath("."))
 sys.dont_write_bytecode = True
-from dictUtils import MyDict
-from unicodeMagic import UnicodeReader
+from names.dictUtils import MyDict
+from names.unicodeMagic import UnicodeReader
 from unidecode import unidecode
-from nameMap import nameMap
+from names.nameMap import nameMap
 import pickle as pkl
 
 
@@ -16,16 +16,16 @@ dataPath = os.path.abspath("names")
 
 def load_lookups():
   with open(os.path.join(dataPath, "direct-lookup.pkl"), "rb") as dl:
-    directLookup = pkl.load(dl)
+    d_l = pkl.load(dl)
   with open(os.path.join(dataPath, "reverse-lookup.pkl"), "rb") as rl:
-    reverseLookup = pkl.load(rl)
-  return directLookup, reverseLookup
+    r_l = pkl.load(rl)
+  return d_l, r_l
 
 
-reverseLookup, directLookup = load_lookups()
+direct_lookup, reverse_lookup = load_lookups()
 
 
-def normaliseName(name):
+def normalise_name(name):
   """
   # Normalizes a name using the different aliases
   # used by the same person on DBLP
@@ -42,8 +42,8 @@ def normaliseName(name):
 
   # If on DBLP, use consistent name
   try:
-    aid = reverseLookup[name]
-    name = directLookup[aid]
+    aid = reverse_lookup[name]
+    name = direct_lookup[aid]
   except:
     pass
 
@@ -68,24 +68,25 @@ def save_direct_and_reverse():
     #     = reverseLookup['Mark G. J. van den Brand']
     #     = reverseLookup['Mark van den Brand']
     #     = 335078
-    reverseLookup = MyDict()
+    r_l = MyDict()
     # Choose a unique spelling for each name
     # directLookup['M. G. J. van den Brand']
     #     = directLookup['Mark G. J. van den Brand']
     #     = directLookup['Mark van den Brand']
     #     = 'Mark van den Brand'
-    directLookup = MyDict()
+    d_l = MyDict()
     for row in reader1:
       aid = int(row[0])
       aliases = [name.strip() for name in row[1].split(',')]
       for name in aliases:
-        reverseLookup[name] = aid
-      directLookup[aid] = aliases[-1]
+        r_l[name] = aid
+      d_l[aid] = aliases[-1]
   with open(os.path.join(dataPath, "direct-lookup.pkl"), "wb") as dl:
-    pkl.dump(directLookup, dl)
+    pkl.dump(d_l, dl)
   with open(os.path.join(dataPath, "reverse-lookup.pkl"), "wb") as rl:
-    pkl.dump(reverseLookup, rl)
+    pkl.dump(r_l, rl)
 
 
 if __name__ == "__main__":
   save_direct_and_reverse()
+  # print(normalise_name('M. G. J. van den Brand'))

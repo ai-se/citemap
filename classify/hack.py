@@ -7,17 +7,19 @@ sys.dont_write_bytecode = True
 import requests
 from bs4 import BeautifulSoup
 from utils.lib import O
+from names.nameMagic import normalise_name
 
 
 SEPERATOR = "|"
 
-COOKIE = "g=U41vOGVXh7oEzH5D5jyN; cool1=foy8QAwZzGRNIQ59Fstm; cool2=FbirxZH0vcnJdh7aYI8x"
+COOKIE = "g=wTDIUQIdqWWIetU5BVoN; cool2=1zLbL1h1FFv2116IYDIT; cool1=YdfAxN11i2zQgLCZKoYu"
 BASE_URL = "https://easychair.org/conferences"
 FILE_NAME = "classify/data.csv"
 
 CONFERENCES = [("MSR", 2015, "https://easychair.org/conferences/submission_show_all.cgi?a=7612389"),
                ("FSE", 2015, "https://easychair.org/conferences/submission_show_all.cgi?a=8115951"),
-               ("ICSE", 2015, "https://easychair.org/conferences/submission_show_all.cgi?a=5178156")]
+               ("ICSE", 2015, "https://easychair.org/conferences/submission_show_all.cgi?a=5178156"),
+               ("ESEM", 2016, "https://easychair.org/conferences/submission_show_all.cgi?a=10310043")]
 
 HEADERS = {
     "host": "easychair.org",
@@ -55,7 +57,8 @@ class Submission(O):
   def add_author(self, f_name, l_name):
     if self.authors is None:
       self.authors = []
-    self.authors.append("%s %s" % (f_name, l_name))
+    name = normalise_name("%s %s" % (f_name, l_name)).lower()
+    self.authors.append(name)
 
   @staticmethod
   def make_header():
@@ -117,7 +120,7 @@ def parse_submission(submission_link):
       for div in cells[1].children:
         submission.add_keyword(div.get_text().strip())
     elif text == "Abstract":
-      submission.abstract = cells[1].get_text(strip=True).strip()
+      submission.abstract = cells[1].get_text(strip=True, separator=' ').strip()
     elif text == "Category":
       submission.category = cells[1].get_text().strip()
     elif text == "Decision":
@@ -128,8 +131,8 @@ def parse_submission(submission_link):
   author_table = soup.find(id="ec:table2")
   for row in author_table.tbody.find_all("tr")[2:]:
     cells = row.find_all("td")
-    f_name = cells[0].get_text().strip().lower()
-    l_name = cells[1].get_text().strip().lower()
+    f_name = cells[0].get_text().strip()
+    l_name = cells[1].get_text().strip()
     submission.add_author(f_name, l_name)
   return submission
 
