@@ -11,6 +11,7 @@ from classify.model import read_papers, make_heatmap, vectorize
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from classify.predict import Metrics
 
 GRAPH_CSV = "data/citemap_v4.csv"
 CLASSIFY_CSV = "classify/data.csv"
@@ -54,7 +55,7 @@ def top_authors(graph):
     author_cites.append((author_id, cite_count, graph.author_nodes[author_id].name))
   tops = sorted(author_cites, key=lambda x: x[1], reverse=True)
   author_dict = OrderedDict()
-  for a_id, cites, name in tops[:10]:
+  for a_id, cites, name in tops:
     author_dict[name] = (a_id, cites, name)
   return author_dict
 
@@ -62,7 +63,7 @@ def top_authors(graph):
 def format_conf_acceptance(papers):
   formatted = {}
   for paper in papers:
-    if paper.conference not in STUDIED_CONFERENCES: continue
+    # if paper.conference not in STUDIED_CONFERENCES: continue
     key = "%s-%s" % (paper.conference, paper.year)
     if key not in formatted:
       formatted[key] = []
@@ -113,9 +114,39 @@ def desk_rejects():
     plt.savefig("classify/figs/desks-%s.png" % conf_id, bbox_inches='tight')
 
 
-
-
+def reputation(only_first=False):
+  if only_first:
+    print("## First Authors Only")
+  papers = read_papers()
+  submissions = format_conf_acceptance(papers)
+  author_map = top_authors(cite_graph(GRAPH_CSV))
+  accepteds, rejecteds = [], []
+  for conf_id, papers in submissions.items():
+    accepted, rejected = [], []
+    for paper in papers:
+      for i, author in enumerate(paper.authors):
+        if only_first and i > 0: break
+        cites = 0
+        if author in author_map:
+          cites = author_map[author][1]
+        if paper.decision == 'accept':
+          accepted.append(cites)
+        else:
+          rejected.append(cites)
+    print("#### %s" % conf_id)
+    print("**Accepted** => Med: %0.2f, IQR: %0.2f, Min: %d, Max: %d" %
+          (Metrics.median(accepted), Metrics.iqr(accepted), min(accepted), max(accepted)))
+    print("**Rejected** => Med: %0.2f, IQR: %0.2f, Min: %d, Max: %d" %
+          (Metrics.median(rejected), Metrics.iqr(rejected), min(rejected), max(rejected)))
+    accepteds += accepted
+    rejecteds += rejected
+  print("#### All")
+  print("**Accepted** => Med: %0.2f, IQR: %0.2f, Min: %d, Max: %d" %
+        (Metrics.median(accepteds), Metrics.iqr(accepteds), min(accepteds), max(accepteds)))
+  print("**Rejected** => Med: %0.2f, IQR: %0.2f, Min: %d, Max: %d" %
+        (Metrics.median(rejecteds), Metrics.iqr(rejecteds), min(rejecteds), max(rejecteds)))
 
 
 if __name__ == "__main__":
-  reputation()
+  # desk_rejects()
+  reputation(True)
