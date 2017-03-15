@@ -268,8 +268,8 @@ def predict_conference(estimators, n_folds=10, n_topics=N_TOPICS, alpha=None, be
     measures = Metrics.avg_score(metrics_map[key])
     print (measures)
 
-
-predict_conference([(decision_tree, pre_process_tfidf), (decision_tree, pre_process_pruned_tfidf), (decision_tree, pre_process_ldade),
+if __name__ == "__main__":
+  predict_conference([(decision_tree, pre_process_tfidf), (decision_tree, pre_process_pruned_tfidf), (decision_tree, pre_process_ldade),
                     (logistic_regression, pre_process_tfidf), (logistic_regression, pre_process_pruned_tfidf), (logistic_regression, pre_process_ldade),
                     (svm, pre_process_tfidf), (svm, pre_process_pruned_tfidf), (svm, pre_process_ldade),
                     (random_forest, pre_process_tfidf), (random_forest, pre_process_pruned_tfidf), (random_forest, pre_process_ldade),
