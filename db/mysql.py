@@ -1,12 +1,13 @@
 from __future__ import print_function, division
-import sys, os
+import sys
+import os
 sys.path.append(os.path.abspath("."))
 import MySQLdb
 from utils.lib import O, Paper, PC, Node, Conference
-import csv
 
 # SCHEMA_NAME = "conferences"
-SCHEMA_NAME = "conferences_dummy"
+# SCHEMA_NAME = "conferences_dummy"
+SCHEMA_NAME = "se"
 
 
 class DB(O):
@@ -15,10 +16,10 @@ class DB(O):
   @staticmethod
   def get():
     if DB._db is None:
-      DB._db =  MySQLdb.connect(host="localhost",
-                         user="root",
-                         passwd="root",
-                         db=SCHEMA_NAME)
+      DB._db = MySQLdb.connect(host="localhost",
+                               user="root",
+                               passwd="root",
+                               db=SCHEMA_NAME)
     return DB._db
 
   @staticmethod
@@ -42,22 +43,40 @@ def update_papers(paper_map):
   cur = db.cursor()
   count = 0
   for title, details in paper_map.items():
-    cur.execute("UPDATE papers SET ref_id=%s, cites=%s, abstract=%s WHERE title=%s", (details["ref_id"], details["cites"], details["abstract"], title))
+    cur.execute("UPDATE papers SET ref_id=%s, cites=%s, abstract=%s WHERE title=%s",
+                (details["ref_id"], details["cites"], details["abstract"], title))
     count += 1
-    print("Statement : ", count)
+    # print("Statement : ", count)
   db.commit()
   DB.close()
 
 
-def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
+def get_venues():
   db = DB.get()
   cur = db.cursor()
+  cur.execute('SELECT * FROM venues')
+  venues = {}
+  for row in cur.fetchall():
+    venue = O()
+    venue.id = row[0]
+    venue.acronym = row[1]
+    venue.name = row[2]
+    venue.impact = row[3]
+    venue.is_conference = True if row[4] == 1 else False
+    venues[venue.id] = venue
+  DB.close()
+  return venues
+
+
+def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
+  cur = DB.get().cursor()
   cur.execute("SELECT * FROM papers")
   papers = []
+  venues = get_venues()
   for row in cur.fetchall():
     paper = Paper()
     paper.id = row[0]
-    paper.conference_id = row[1]
+    paper.venue_id = row[1]
     paper.year = row[2]
     paper.title = row[3]
     paper.h2 = row[6]
@@ -67,25 +86,26 @@ def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
     paper.authors = []
     paper.author_sql_ids = []
     paper.abstract = row[11]
-    cur_authors = db.cursor()
-    cur_authors.execute("SELECT persons.id, persons.name "
-                "FROM persons, authorship "
-                "WHERE persons.id = authorship.person_id AND authorship.paper_id = %d"%int(paper.id))
+    paper.is_conference = True if venues[paper.venue_id].is_conference == 1 else False
+    cur_authors = DB.get().cursor()
+    cur_authors.execute("SELECT persons.id, persons.name FROM persons, authorship "
+                        "WHERE persons.id = authorship.person_id AND authorship.paper_id = %d" % int(paper.id))
     for authors in cur_authors.fetchall():
       paper.author_sql_ids.append(str(int(authors[0])))
       paper.authors.append(authors[1])
     papers.append(paper)
   if not to_csv:
     return papers
-  header = ["ID", "Conference", "Year", "Title", "H2", "H3", "Ref_ID", "Cites", "Author_IDs", "Authors", "Abstract"]
+  header = ["ID", "Venue", "Is_Conference" "Year", "Title", "H2",
+            "H3", "Ref_ID", "Cites", "Author_IDs", "Authors", "Abstract"]
   with open(file_name, 'wb') as f:
     f.write(delimiter.join(header) + "\n")
     for i, paper in enumerate(papers):
       cites = ",".join(paper.cites) if paper.cites else ""
       authors = ",".join(paper.authors) if paper.authors else ""
       author_ids = ",".join(paper.author_sql_ids) if paper.author_sql_ids else ""
-      row = [paper.id, paper.conference_id, paper.year, paper.title, paper.h2, paper.h3, paper.ref_id, cites,
-             author_ids, authors, paper.abstract]
+      row = [paper.id, paper.venue_id, paper.is_conference, paper.year, paper.title, paper.h2,
+             paper.h3, paper.ref_id, cites, author_ids, authors, paper.abstract]
       f.write(delimiter.join(map(str, row)) + "\n")
   DB.close()
 
@@ -125,7 +145,7 @@ def get_authors():
 
 def get_conferences():
   db = DB.get()
-  cur =db.cursor()
+  cur = db.cursor()
   cur.execute("SELECT * FROM conferences")
   conferences = []
   for row in cur.fetchall():
@@ -141,4 +161,5 @@ def get_conferences():
 
 if __name__ == "__main__":
   # get_conferences()
-  dump(file_name='data/citemap_v5.csv')
+  dump(file_name='data/citemap_v6.csv')
+  # print(get_venues())

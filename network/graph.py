@@ -141,8 +141,6 @@ class Graph(O):
     return papers
 
 
-
-
 if __name__ == "__main__":
   g = Graph.from_file("citemap.csv")
   g.add_pc_membership(mysql.get_pc_membership())

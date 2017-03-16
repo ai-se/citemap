@@ -68,6 +68,6 @@ target/
 .idea
 
 # Large files
-acm/acm.txt
+data/aminer
 DBLP_Citation_2014_May
 #citemap*.csv

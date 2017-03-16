@@ -11,6 +11,7 @@ MONGO_URI = "mongodb://localhost:27017/"
 client = pymongo.MongoClient(MONGO_URI)
 db = client["citemap"]
 
+
 def index_paper_collection():
   """
   Index the Paper Collection
@@ -32,8 +33,9 @@ def get_paper(title):
     return papers[0]
   return None
 
+
 def get_papers_with_titles(titles):
-  tits = [title.decode('utf-8','ignore').encode("utf-8") for title in titles]
+  tits = [title.decode('utf-8', 'ignore').encode("utf-8") for title in titles]
   cursor = db.paper.find({"title": {"$in": tits}})
   paper_map = {}
   print("Fetched All")
