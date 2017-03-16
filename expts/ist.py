@@ -162,7 +162,7 @@ def get_graph_lda_data():
 
 def conference_diversity(fig_name, dend_settings, paper_range=None):
   miner, graph, lda_model, vocab = get_graph_lda_data()
-  conferences = graph.get_papers_by_conference()
+  conferences = graph.get_papers_by_venue()
   conference_topics = {}
   conference_heatmaps = {}
   valid_conferences = []
@@ -245,7 +245,7 @@ def pc_topics_heatmap(fig_name, dendo_settings, paper_range=None):
     return y_comm
 
   miner, graph, lda_model, vocab = get_graph_lda_data()
-  p_conferences = graph.get_papers_by_conference()
+  p_conferences = graph.get_papers_by_venue()
   p_committees = graph.get_committee_by_conference()
   conference_topics = {}
   for conference in mysql.get_conferences():
@@ -293,7 +293,7 @@ def pc_heatmap_delta(fig_name, title=None, paper_range=None):
     return y_comm
 
   miner, graph, lda_model, vocab = get_graph_lda_data()
-  p_conferences = graph.get_papers_by_conference()
+  p_conferences = graph.get_papers_by_venue()
   p_committees = graph.get_committee_by_conference()
   conference_topics = {}
   pc_conference_topics = {}
@@ -482,7 +482,7 @@ def pc_paper_count_table():
 
   graph = cite_graph(GRAPH_CSV)
   start = 2009
-  p_conferences = graph.get_papers_by_conference()
+  p_conferences = graph.get_papers_by_venue()
   p_committees = graph.get_committee_by_conference()
   header = ["conf", "# Accepted", "# from PC", "Percentage"]
   table = PrettyTable(header)
@@ -517,7 +517,7 @@ def pc_paper_count_table():
 
 def paper_bar():
   graph = cite_graph(GRAPH_CSV)
-  conferences = graph.get_papers_by_conference()
+  conferences = graph.get_papers_by_venue()
   start = 2001
   end = 2015
   year_count = {}

@@ -108,15 +108,19 @@ class Graph(O):
       conferences[conference_id] = sorted(conference, key=lambda tup: (int(tup[1]), tup[2], tup[0]))
     return conferences
 
-
-  def get_papers_by_conference(self):
+  def get_papers_by_venue(self, permitted='conferences'):
     """
+    :param permitted: ['conferences', 'journals', 'all']
     :return: {
       <conference_id>: [(<paper>, <year>), ...]
     }
     """
     papers = {}
+    venues = mysql.get_venues()
     for paper_id, paper in self.paper_nodes.items():
+      venue = venues[int(paper.venue)]
+      if venue.is_conference and permitted == 'journals': continue
+      if not venue.is_conference and permitted == 'conferences': continue
       c_papers = papers.get(paper.venue, [])
       c_papers.append((paper.id, paper.year))
       papers[paper.venue] = c_papers

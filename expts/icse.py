@@ -170,7 +170,7 @@ def conference_diversity():
   graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
-  conferences = graph.get_papers_by_conference()
+  conferences = graph.get_papers_by_venue()
   conference_topics = {}
   conference_heatmaps = {}
   for conference_id, papers in conferences.items():
@@ -245,7 +245,7 @@ def conference_evolution_2(paper_range, figname):
   graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
-  conferences = graph.get_papers_by_conference()
+  conferences = graph.get_papers_by_venue()
   conference_topics = {}
   conference_heatmaps = {}
   for conference_id, papers in conferences.items():
@@ -356,7 +356,7 @@ def conference_evolution():
   graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
-  conferences = graph.get_papers_by_conference()
+  conferences = graph.get_papers_by_venue()
   f, subplts = plt.subplots(3, 3)
   f.tight_layout()
   y_counter = -1
@@ -431,7 +431,7 @@ def pc_bias_table():
   start = 1993
   max_len = 5
   start = 2009
-  p_conferences = graph.get_papers_by_conference()
+  p_conferences = graph.get_papers_by_venue()
   p_committees = graph.get_committee_by_conference()
   conf_year_scores = {}
   for conference in mysql.get_conferences():
@@ -480,7 +480,7 @@ def pc_paper_count_table():
   graph = cite_graph(GRAPH_CSV)
   max_len = 5
   start = 2009
-  p_conferences = graph.get_papers_by_conference()
+  p_conferences = graph.get_papers_by_venue()
   p_committees = graph.get_committee_by_conference()
   header = ["conf", "# Accepted", "# from PC"]
   table = PrettyTable(header)
@@ -525,7 +525,7 @@ def pc_bias():
   graph = cite_graph(GRAPH_CSV)
   width = 0.5
   space = 0.3
-  p_conferences = graph.get_papers_by_conference()
+  p_conferences = graph.get_papers_by_venue()
   p_committees = graph.get_committee_by_conference()
   max_len = 21
   low = 1
@@ -644,7 +644,7 @@ def pc_topics_heatmap(year_range=None):
   lda_model, vocab = miner.lda(7, n_iter=100, alpha=0.847433736937, beta=0.763774618977)
   max_len = 21
   start = 1993
-  p_conferences = graph.get_papers_by_conference()
+  p_conferences = graph.get_papers_by_venue()
   p_committees = graph.get_committee_by_conference()
   conference_topics = {}
   for conference in mysql.get_conferences():
@@ -752,7 +752,7 @@ def print_top_authors(top_percent= None, min_year=None):
 
 def paper_bar():
   graph = cite_graph(GRAPH_CSV)
-  conferences = graph.get_papers_by_conference()
+  conferences = graph.get_papers_by_venue()
   start = 2001
   end = 2012
   year_count = {}

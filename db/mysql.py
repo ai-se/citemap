@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.abspath("."))
 import MySQLdb
 from utils.lib import O, Paper, PC, Node, Venue
+from collections import OrderedDict
 
 # SCHEMA_NAME = "conferences"
 # SCHEMA_NAME = "conferences_dummy"
@@ -55,7 +56,7 @@ def get_venues():
   db = DB.get()
   cur = db.cursor()
   cur.execute('SELECT * FROM venues')
-  venues = {}
+  venues = OrderedDict()
   for row in cur.fetchall():
     venue = O()
     venue.id = row[0]
