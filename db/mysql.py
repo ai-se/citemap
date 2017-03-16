@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.append(os.path.abspath("."))
 import MySQLdb
-from utils.lib import O, Paper, PC, Node, Conference
+from utils.lib import O, Paper, PC, Node, Venue
 
 # SCHEMA_NAME = "conferences"
 # SCHEMA_NAME = "conferences_dummy"
@@ -146,14 +146,15 @@ def get_authors():
 def get_conferences():
   db = DB.get()
   cur = db.cursor()
-  cur.execute("SELECT * FROM conferences")
+  cur.execute("SELECT * FROM venues WHERE is_conference=1")
   conferences = []
   for row in cur.fetchall():
-    conference = Conference()
+    conference = Venue()
     conference.id = str(row[0])
     conference.acronym = str(row[1])
     conference.name = str(row[2])
     conference.impact = int(row[3])
+    conference.is_conference = True
     conferences.append(conference)
   DB.close()
   return conferences

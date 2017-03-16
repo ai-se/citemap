@@ -71,7 +71,7 @@ class PC(O):
       raise RuntimeError("Invalid role  %s"%role)
 
 
-class Conference(O):
+class Venue(O):
   def __init__(self):
     """
     Initialize Conference
@@ -81,6 +81,7 @@ class Conference(O):
     self.acronym = None
     self.name = None
     self.impact = None
+    self.is_conference = True
 
 
 class Node(O):

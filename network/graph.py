@@ -117,9 +117,9 @@ class Graph(O):
     """
     papers = {}
     for paper_id, paper in self.paper_nodes.items():
-      c_papers = papers.get(paper.conference, [])
+      c_papers = papers.get(paper.venue, [])
       c_papers.append((paper.id, paper.year))
-      papers[paper.conference] = c_papers
+      papers[paper.venue] = c_papers
     for conference_id, c_papers in papers.items():
       papers[conference_id] = sorted(c_papers, key=lambda tup: tup[1])
     return papers
@@ -134,7 +134,7 @@ class Graph(O):
     for edge in self.author_edges.values():
       author_papers = papers.get(edge.source, [])
       paper = self.paper_nodes[edge.target]
-      author_papers.append((paper.id, paper.year, paper.conference))
+      author_papers.append((paper.id, paper.year, paper.venue))
       papers[edge.source] = author_papers
     for author_id, a_papers in papers.items():
       papers[author_id] = sorted(a_papers, key=lambda tup: (int(tup[2]), tup[1]))

@@ -1,4 +1,4 @@
-ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors$|$Abstract
+ID$|$Venue$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors$|$Abstract
 1$|$1$|$2016$|$PRADA prioritizing android devices for apps by mining largescale usage data$|$Android$|$$|$None$|$$|$1,2,3,4,5,6,7,8$|$xuan lu,xuanzhe liu,huoran li,tao xie,qiaozhu mei,dan hao,gang huang 0001,feng feng$|$None
 2$|$1$|$2016$|$Release planning of mobile apps based on user reviews$|$Android$|$$|$None$|$$|$9,10,11,12,13$|$lorenzo villarroel,gabriele bavota,barbara russo,rocco oliveto,massimiliano di penta$|$None
 3$|$1$|$2016$|$Toward a framework for detecting privacy policy violations in android application code$|$Android$|$$|$None$|$$|$14,15,16,17,18,19,20,21$|$rocky slavin,xiaoying wang,mitra bokaei hosseini,james hester,ram krishnan,jaspreet bhatia,travis d. breaux,jianwei niu$|$None
@@ -378,7 +378,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 377$|$1$|$2015$|$MastersLevel Software Engineering Education and the Enriched Student Context$|$SE Management and Processes, and Short Papers$|$$|$None$|$$|$1115,1116$|$jon g. hall,lucia rapanotti$|$None
 378$|$1$|$2015$|$Combining Mastery Learning with ProjectBased Learning in a First Programming Course An Experience Report$|$SE Management and Processes, and Short Papers$|$$|$None$|$$|$1120$|$mehdi jazayeri$|$None
 379$|$1$|$2015$|$Collaborative and CooperativeLearning in Software Engineering Courses$|$SE Management and Processes, and Short Papers$|$$|$None$|$$|$1121,1122,1123$|$neelam soundarajan,swaroop joshi,rajiv ramnath$|$None
-380$|$1$|$2015$|$Using GSwE2009 for the Evaluation of a Master Degree in Software Engineering in the Universidad de la República$|$Case Studies$|$$|$None$|$$|$1124,1125,1126$|$lucia camilloni,diego vallespir,mark a. ardis$|$None
+380$|$1$|$2015$|$Using GSwE2009 for the Evaluation of a Master Degree in Software Engineering in the Universidad de la Repï¿½blica$|$Case Studies$|$$|$None$|$$|$1124,1125,1126$|$lucia camilloni,diego vallespir,mark a. ardis$|$None
 381$|$1$|$2015$|$System Thinking Educating TShaped Software Engineers$|$Case Studies$|$$|$None$|$$|$775,1127$|$barry w. boehm,supannika koolmanojwong mobasser$|$None
 382$|$1$|$2015$|$Transparently Teaching in the Context of Gamebased Learning the Case of SimulESW$|$Case Studies$|$$|$None$|$$|$1128,566,1129$|$elizabeth suescun monsalve,julio cesar sampaio do prado leite,vera werneck$|$None
 383$|$1$|$2015$|$Educating Software Engineering Managers  Revisited What Software Project Managers Need to Know Today$|$Specialised Domains in SE Education$|$$|$None$|$$|$543,1130$|$lawrence peters,ana m. moreno$|$None
@@ -1624,7 +1624,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 1623$|$1$|$2009$|$Alitheia Core An extensible software quality monitoring platform$|$Program Comprehension$|$$|$None$|$$|$102,257$|$georgios gousios,diomidis spinellis$|$None
 1624$|$1$|$2009$|$VIDA Visual interactive debugging$|$Concurrency and Debugging$|$$|$None$|$$|$6,185,66,2935,906$|$dan hao,lingming zhang,lu zhang,jiasu sun,hong mei$|$None
 1625$|$1$|$2009$|$Feedbackdriven requirements engineering The Heuristic Requirements Assistant$|$From Requirements to Architecture$|$$|$None$|$$|$502,2953,2954$|$eric knauss,daniel lubke,sebastian meyer$|$None
-1626$|$1$|$2009$|$Ævol A tool for defining and planning architecture evolution$|$From Requirements to Architecture$|$$|$None$|$$|$2454,2453$|$david garlan,bradley r. schmerl$|$None
+1626$|$1$|$2009$|$ï¿½vol A tool for defining and planning architecture evolution$|$From Requirements to Architecture$|$$|$None$|$$|$2454,2453$|$david garlan,bradley r. schmerl$|$None
 1627$|$1$|$2009$|$Ldiff An enhanced line differencing tool$|$Differences and Similarities$|$$|$None$|$$|$661,2787,13$|$gerardo canfora,luigi cerulo,massimiliano di penta$|$None
 1628$|$1$|$2009$|$SemDiff Analysis and recommendation support for API evolution$|$Differences and Similarities$|$$|$None$|$$|$2007,141$|$barthelemy dagenais,martin p. robillard$|$None
 1629$|$1$|$2009$|$CloneDetective  A workbench for clone detection research$|$Differences and Similarities$|$$|$None$|$$|$1970,2587,2761$|$elmar jurgens,florian deissenboeck,benjamin hummel$|$None
@@ -2360,7 +2360,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 2359$|$1$|$2004$|$An Open Framework for Dynamic Reconfiguration$|$Dynamic Reconfiguration$|$$|$None$|$$|$4059,4060$|$jamie hillman,ian warren$|$None
 2360$|$1$|$2004$|$Dynamic Configuration of ResourceAware Services$|$Dynamic Reconfiguration$|$$|$None$|$$|$4061,4062,2454,3184$|$vahe poladian,joao p. sousa,david garlan,mary m. shaw$|$None
 2361$|$1$|$2004$|$Autonomous Adaptation to Dynamic Availability Using a ServiceOriented Component Model$|$Dynamic Reconfiguration$|$$|$None$|$$|$515,4063$|$humberto cervantes,richard s. hall$|$None
-2362$|$1$|$2004$|$DMS® Program Transformations for Practical Scalable Software Evolution$|$Static Analysis$|$$|$None$|$$|$4064,4065,4066$|$ira d. baxter,christopher w. pidgeon,michael mehlich$|$None
+2362$|$1$|$2004$|$DMSï¿½ Program Transformations for Practical Scalable Software Evolution$|$Static Analysis$|$$|$None$|$$|$4064,4065,4066$|$ira d. baxter,christopher w. pidgeon,michael mehlich$|$None
 2363$|$1$|$2004$|$HeuristicBased Model Refinement for FLAVERS$|$Static Analysis$|$$|$None$|$$|$3507,3264,2883$|$jianbin tan,george s. avrunin,lori a. clarke$|$None
 2364$|$1$|$2004$|$Static Checking of Dynamically Generated Queries in Database Applications$|$Static Analysis$|$$|$None$|$$|$4067,72,43$|$carl gould,zhendong su,premkumar t. devanbu$|$None
 2365$|$1$|$2004$|$Evaluating ObjectOriented Designs with Link Analysis$|$Object-Oriented Programming$|$$|$None$|$$|$2230,4068,4069$|$alexander chatzigeorgiou,spiros xanthos,george stephanides$|$None
@@ -2451,7 +2451,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 2450$|$1$|$2003$|$Hipikat Recommending Pertinent Software Development Artifacts$|$Software Understanding$|$$|$None$|$$|$3645,1770$|$davor cubranic,gail c. murphy$|$None
 2451$|$1$|$2003$|$Toward an Understanding of the Motivation of Open Source Software Developers$|$Software Understanding$|$$|$None$|$$|$2656,4154$|$yunwen ye,kouichi kishida$|$None
 2452$|$1$|$2003$|$Tools for Understanding the Behavior of Telecommunication Systems$|$Software Understanding$|$$|$None$|$$|$4155,4156$|$andre marburger,bernhard westfechtel$|$None
-2453$|$1$|$2003$|$Palantír Raising Awareness among Configuration Management Workspaces$|$Consistency Management and Quality Assurance$|$$|$None$|$$|$1393,4157,929$|$anita sarma,zahra noroozi,andre van der hoek$|$None
+2453$|$1$|$2003$|$Palantï¿½r Raising Awareness among Configuration Management Workspaces$|$Consistency Management and Quality Assurance$|$$|$None$|$$|$1393,4157,929$|$anita sarma,zahra noroozi,andre van der hoek$|$None
 2454$|$1$|$2003$|$Consistency Management with Repair Actions$|$Consistency Management and Quality Assurance$|$$|$None$|$$|$4158,3236,582$|$christian nentwich,wolfgang emmerich,anthony finkelstein$|$None
 2455$|$1$|$2003$|$Automated Support for Classifying Software Failure Reports$|$Consistency Management and Quality Assurance$|$$|$None$|$$|$2167,3844,1090,3845,4159,4160,4161$|$andy podgurski,david leon,patrick francis,wes masri,melinda minch,jiayang sun,bin wang$|$None
 2456$|$1$|$2003$|$Faulttolerance in a Distributed Management System a Case Study$|$Experience Reports$|$Case Studies$|$None$|$$|$4162,3390$|$robert smeikal,karl m. goschka$|$None
@@ -2626,7 +2626,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 2625$|$1$|$2002$|$Nonfunctional requirements from elicitation to modelling languages$|$Tutorials$|$$|$None$|$$|$4382,566$|$luiz marcio cysneiros filho,julio cesar sampaio do prado leite$|$None
 2626$|$1$|$2002$|$Refactoring$|$Tutorials$|$$|$None$|$$|$4363$|$martin fowler$|$None
 2627$|$1$|$2002$|$Information systems architecture$|$Tutorials$|$$|$None$|$$|$4363$|$martin fowler$|$None
-2628$|$1$|$2002$|$Tutorial introduction to the rational unified process®$|$Tutorials$|$$|$None$|$$|$1779$|$philippe kruchten$|$None
+2628$|$1$|$2002$|$Tutorial introduction to the rational unified processï¿½$|$Tutorials$|$$|$None$|$$|$1779$|$philippe kruchten$|$None
 2629$|$1$|$2002$|$Tutorial mastering design patterns$|$Tutorials$|$$|$None$|$$|$4374$|$craig larman$|$None
 2630$|$1$|$2002$|$Observing timed systems by means of message sequence chart graphs$|$Posters and Research Demonstrations$|$$|$None$|$$|$4383,4384,1569$|$sebastian blaustein,fernando oliveto,victor a. braberman$|$None
 2631$|$1$|$2002$|$Reasoning about the correctness of software development process$|$Posters and Research Demonstrations$|$$|$None$|$$|$4385,4386$|$claudia pons,gabriel baum$|$None
@@ -3496,7 +3496,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 3495$|$1$|$1991$|$HardwareSoftware Codesign A Perspective$|$$|$$|$None$|$$|$5388,5389$|$david w. franke,martin k. purvis$|$None
 3496$|$1$|$1991$|$Directions in Software Engineering Education$|$$|$$|$None$|$$|$5066,4490$|$john werth,laurie honour werth$|$None
 3497$|$1$|$1990$|$TRWs Ada Process Model for Incremental Development of Large Software Systems$|$Process Models 1$|$$|$None$|$$|$5027$|$walter royce$|$None
-3498$|$1$|$1990$|$Software Process à la Algebra OBJ for OBJ$|$Process Models 1$|$$|$None$|$$|$5390,4928$|$ataru t. nakagawa,kokichi futatsugi$|$None
+3498$|$1$|$1990$|$Software Process ï¿½ la Algebra OBJ for OBJ$|$Process Models 1$|$$|$None$|$$|$5390,4928$|$ataru t. nakagawa,kokichi futatsugi$|$None
 3499$|$1$|$1990$|$Evaluation Criteria for Functional Specifications$|$Formal Verification$|$$|$None$|$$|$5391,2451$|$sergio cardenas-garcia,marvin v. zelkowitz$|$None
 3500$|$1$|$1990$|$An Experiment in Formal Software Development Using the B Theorem Prover on a VDM Case Study$|$Formal Verification$|$$|$None$|$$|$5392,5100,227$|$christine lafontaine,yves ledru,pierre-yves schobbens$|$None
 3501$|$1$|$1990$|$Recent Advances in Software Measurement Abstract for Talk$|$Recent Advances in Metrics$|$$|$None$|$$|$2450$|$victor r. basili$|$None
@@ -6332,7 +6332,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 6331$|$3$|$1999$|$GraX  An Interchange Format for Reengineering Tools$|$The Meta Level$|$$|$None$|$$|$3164,8386,8354$|$jurgen ebert,bernt kullbach,andreas winter$|$None
 6332$|$3$|$1999$|$A Formal Approach for Reverse Engineering A Case Study$|$Techniques$|$$|$None$|$$|$1162,2341$|$gerald c. gannod,betty h. c. cheng$|$None
 6333$|$3$|$1999$|$Nomen Est Omen Analyzing the Language of Function Identifiers$|$Techniques$|$$|$None$|$$|$7627,1538$|$bruno caprile,paolo tonella$|$None
-6334$|$3$|$1999$|$Educating JACKAL Cliché Library Development and Use$|$Techniques$|$$|$None$|$$|$8442,8443$|$judith d. schlesinger,alyson a. reeves$|$None
+6334$|$3$|$1999$|$Educating JACKAL Clichï¿½ Library Development and Use$|$Techniques$|$$|$None$|$$|$8442,8443$|$judith d. schlesinger,alyson a. reeves$|$None
 6335$|$3$|$1999$|$Recovering Code to Documentation Links in OO Systems$|$Documentation$|$$|$None$|$$|$780,661,886,1848$|$giuliano antoniol,gerardo canfora,andrea de lucia,ettore merlo$|$None
 6336$|$3$|$1999$|$Task Orientation and Tailoring of Interactive Software Explanations$|$Documentation$|$$|$None$|$$|$8444,5436$|$ali erdem,w. lewis johnson$|$None
 6337$|$3$|$1999$|$TypeCheck Elimination Two ObjectOriented Reengineering Patterns$|$Documentation$|$$|$None$|$$|$3918,7443,8445$|$stephane ducasse,tamar richner,robb nebbe$|$None
@@ -6385,7 +6385,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 6384$|$3$|$1997$|$Comparison of Abstract Data Type and Abstract State Encapsulation Detection Techniques for Architectural Understanding$|$Architectural Understanding$|$$|$None$|$$|$3258,1969,8471$|$jean-francois girard,rainer koschke,georg schied$|$None
 6385$|$3$|$1997$|$The Orphan Adoption Problem in Architecture Maintenance$|$Architectural Understanding$|$$|$None$|$$|$6737,2574$|$vassilios tzerpos,richard c. holt$|$None
 6386$|$3$|$1997$|$JACKAL A Hierarchical Approach to Program Understanding$|$Program Understanding and Scalability$|$$|$None$|$$|$8443,8442$|$alyson a. reeves,judith d. schlesinger$|$None
-6387$|$3$|$1997$|$Cliché Recognition in Legacy Software A Scalable KnowledgeBased Approach$|$Program Understanding and Scalability$|$$|$None$|$$|$8472,8473,8474$|$srinivas palthepu,jim e. greer,gordon i. mccalla$|$None
+6387$|$3$|$1997$|$Clichï¿½ Recognition in Legacy Software A Scalable KnowledgeBased Approach$|$Program Understanding and Scalability$|$$|$None$|$$|$8472,8473,8474$|$srinivas palthepu,jim e. greer,gordon i. mccalla$|$None
 6388$|$3$|$1997$|$Reverse Engineering is Reverse Forward Engineering$|$Program Understanding and Scalability$|$$|$None$|$$|$4064,4066$|$ira d. baxter,michael mehlich$|$None
 6389$|$3$|$1997$|$New Experiments with a ConstraintBased Approach to Program Plan Matching$|$Program Understanding and Scalability$|$$|$None$|$$|$5189,4718,8475$|$alex quilici,steven g. woods,yongjun zhang$|$None
 6390$|$3$|$1997$|$Program Plan Recognition for Year 2000 Tools$|$Program Understanding and Scalability$|$$|$None$|$$|$875,4718,5189$|$arie van deursen,steven g. woods,alex quilici$|$None
@@ -6601,7 +6601,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 6600$|$4$|$2012$|$Welcome from the European Projects Chair$|$European Projects Track$|$$|$None$|$$|$6790$|$radu marinescu$|$None
 6601$|$4$|$2012$|$Digital Preservation Challenges on Software Life Cycle$|$European Projects Track$|$$|$None$|$$|$8670,8671,8672,8673$|$jose barateiro,daniel draws,martin alexander neuman,stephan strodl$|$None
 6602$|$4$|$2012$|$Towards the Better Software Metrics Tool$|$European Projects Track$|$$|$None$|$$|$8674,8675,8676,8677$|$zoran budimac,gordana rakic,marjan hericko,crt gerlec$|$None
-6603$|$4$|$2012$|$Development of a Unified Software Quality Platform in the Szeged InfoPólus Cluster$|$European Projects Track$|$$|$None$|$$|$6242,6600,6291$|$arpad beszedes,lajos schrettner,tibor gyimothy$|$None
+6603$|$4$|$2012$|$Development of a Unified Software Quality Platform in the Szeged InfoPï¿½lus Cluster$|$European Projects Track$|$$|$None$|$$|$6242,6600,6291$|$arpad beszedes,lajos schrettner,tibor gyimothy$|$None
 6604$|$4$|$2012$|$Welcome from the Doctoral Symposium Chair$|$Doctoral Symposium$|$$|$None$|$$|$6368$|$jurgen j. vinju$|$None
 6605$|$4$|$2012$|$Global and Geographically Distributed Work Teams Understanding the Bug Fixing Process and Potentially Bugprone Activity Patterns$|$Student Presentations$|$$|$None$|$$|$8678$|$daniel izquierdo-cortazar$|$None
 6606$|$4$|$2012$|$Visual Modeler for Data Intensive Tasks$|$Student Presentations$|$$|$None$|$$|$8679,8680$|$ferenc kovacs,zoltan david$|$None
@@ -8226,7 +8226,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 8225$|$7$|$2011$|$Modelling Nonlinear Crowd Dynamics in BioPEPA$|$Specification and Modelling$|$$|$None$|$$|$3871,3872,10368,10369$|$mieke massink,diego latella,andrea bracciali,jane hillston$|$None
 8226$|$7$|$2011$|$Smart Reduction$|$Reachability and Model Checking$|$$|$None$|$$|$10370,10371$|$pepijn crouzen,frederic lang$|$None
 8227$|$7$|$2011$|$Uniform MonteCarlo Model Checking$|$Reachability and Model Checking$|$$|$None$|$$|$10372,10373,5212,10374,10375$|$johan oudinet,alain denise,marie-claude gaudel,richard lassaigne,sylvain peyronnet$|$None
-8228$|$7$|$2011$|$Model Checking Büchi Pushdown Systems$|$Reachability and Model Checking$|$$|$None$|$$|$10376,10377,651,10378$|$juncao li,fei xie,thomas a. ball,vladimir levin$|$None
+8228$|$7$|$2011$|$Model Checking Bï¿½chi Pushdown Systems$|$Reachability and Model Checking$|$$|$None$|$$|$10376,10377,651,10378$|$juncao li,fei xie,thomas a. ball,vladimir levin$|$None
 8229$|$7$|$2011$|$Modeling with Plausibility Checking Inspecting Favorable and Critical Signs for Consistency between Control Flow and Functional Behavior$|$Model Driven Engineering$|$$|$None$|$$|$10333,10379,10380,650$|$claudia ermel,jurgen gall,leen lambers,gabriele taentzer$|$None
 8230$|$7$|$2011$|$Models within Models Taming Model Complexity Using the Submodel Lattice$|$Model Driven Engineering$|$$|$None$|$$|$10381,10382,10383$|$pierre kelsen,qin ma,christian glodt$|$None
 8231$|$7$|$2011$|$TypeSafe Evolution of Spreadsheets$|$Model Driven Engineering$|$$|$None$|$$|$2284,1053,6445,2287$|$jacome cunha,joost visser,tiago l. alves,joao saraiva$|$None
@@ -12898,7 +12898,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 12897$|$14$|$2014$|$Evaluating the business value of information technology Case study on game management system$|$Requirements Management Concerns$|$$|$None$|$$|$14288,14247,14289$|$harri tohonen,marjo kauppinen,tomi mannisto$|$None
 12898$|$14$|$2014$|$Nonfunctional requirements as qualities with a spice of ontology$|$Quality Goals$|$$|$None$|$$|$14290,3059,3078,14291,14292,4769,14293$|$feng-lin li,jennifer horkoff,john mylopoulos,renata s. s. guizzardi,giancarlo guizzardi,alexander borgida,lin liu 0001$|$None
 12899$|$14$|$2014$|$Quality requirements elicitation based on inquiry of qualityimpact relationships$|$Quality Goals$|$$|$None$|$$|$14294,14295,14296$|$farnaz fotrousi,samuel a. fricker,markus fiedler$|$None
-12900$|$14$|$2014$|$Nòmos 3 Reasoning about regulatory compliance of requirements$|$Quality Goals$|$$|$None$|$$|$14297,3076,3078$|$silvia ingolfo,alberto siena,john mylopoulos$|$None
+12900$|$14$|$2014$|$Nï¿½mos 3 Reasoning about regulatory compliance of requirements$|$Quality Goals$|$$|$None$|$$|$14297,3076,3078$|$silvia ingolfo,alberto siena,john mylopoulos$|$None
 12901$|$14$|$2014$|$GUITAR An ontologybased automated requirements analysis tool$|$Tool Demonstrations and Posters$|$$|$None$|$$|$11287,479,1748$|$tuong huan nguyen,john c. grundy,mohamed almorsy$|$None
 12902$|$14$|$2014$|$Simulationbased requirements discovery for smart driver assistive technologies$|$Tool Demonstrations and Posters$|$$|$None$|$$|$14298,14299,1185$|$andreas gregoriades,maria pampaka,alistair g. sutcliffe$|$None
 12903$|$14$|$2014$|$EAM Ecosystemability assessment method$|$Tool Demonstrations and Posters$|$$|$None$|$$|$502,504$|$eric knauss,imed hammouda$|$None
@@ -15129,7 +15129,7 @@ ID$|$Conference$|$Year$|$Title$|$H2$|$H3$|$Ref_ID$|$Cites$|$Author_IDs$|$Authors
 15128$|$17$|$2016$|$A Pilot Case Study on Innovative Behaviour Lessons Learned and Directions for Future Work$|$Behavioral studies$|$$|$None$|$$|$335,333,7353$|$cleviton v. f. monteiro,fabio q. b. da silva,luiz fernando capretz$|$None
 15129$|$17$|$2016$|$Preliminary Findings about the Nature of Work in Software Engineering An Exploratory Survey$|$Behavioral studies$|$$|$None$|$$|$333,16325,334,332$|$fabio q. b. da silva,cesar franca,cleyton v. c. de magalhaes,ronnie e. s. santos$|$None
 15130$|$17$|$2016$|$Monitoring Software Quality by Means of Simulation Methods$|$Repository mining$|$$|$None$|$$|$16326,1365,16327,16328,9227$|$daniel honsel,verena honsel,marlon welter,stephan waack,jens grabowski$|$None
-15131$|$17$|$2016$|$So You Need More Method Level Datasets for Your Software Defect Prediction Voilà$|$Repository mining$|$$|$None$|$$|$16329,7049,1455,15375$|$thomas shippey,tracy hall,steve counsell,david bowes$|$None
+15131$|$17$|$2016$|$So You Need More Method Level Datasets for Your Software Defect Prediction Voilï¿½$|$Repository mining$|$$|$None$|$$|$16329,7049,1455,15375$|$thomas shippey,tracy hall,steve counsell,david bowes$|$None
 15132$|$17$|$2016$|$Moving to Stack Overflow BestAnswer Prediction in Legacy Developer Forums$|$Repository mining$|$$|$None$|$$|$9331,3717,9333$|$fabio calefato,filippo lanubile,nicole novielli$|$None
 15133$|$17$|$2016$|$Mining Technology Landscape from Stack Overflow$|$Repository mining$|$$|$None$|$$|$12433,1254$|$chunyang chen,zhenchang xing$|$None
 15134$|$17$|$2016$|$Software Project Managers Perceptions of Productivity Factors Findings from a Qualitative Study$|$Project and team productivity$|$$|$None$|$$|$16330,16331,16332,2178$|$edson cesar cunha de oliveira,tayana conte,marco cristo,emilia mendes$|$None

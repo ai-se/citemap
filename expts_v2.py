@@ -249,6 +249,8 @@ def pc_topics_heatmap(fig_name, dendo_settings, paper_range=None):
   p_committees = graph.get_committee_by_conference()
   conference_topics = {}
   for conference in mysql.get_conferences():
+    if conference.id not in p_committees or conference.id not in p_conferences:
+      continue
     year_committees = index_by_year(p_committees[conference.id])
     year_papers = index_by_year(p_conferences[conference.id])
     year_scores = {}
@@ -546,8 +548,8 @@ if __name__ == "__main__":
   # conference_diversity("heatmap_01_08", dendo_14_settings, range(2001, 2009))
   # conference_diversity("heatmap_09_16", dendo_16_settings, range(2009, 2017))
   # conference_diversity("heatmap_all", dendo_16_settings)
-  # pc_topics_heatmap("pc_heatmap_09_16", dendo_16_settings, range(2009, 2017))
-  topic_evolution()
+  pc_topics_heatmap("pc_heatmap_09_16", dendo_16_settings, range(2009, 2017))
+  # topic_evolution()
   # pc_heatmap_delta("delta", "Topic Dist. Delta between papers by PC and all papers(2009-2016)", range(2009, 2016))
   # get_top_papers("figs/v2/stats/top_papers.txt")
   # get_top_papers("figs/v2/stats/top_papers_recent.txt", 2009)

@@ -126,10 +126,10 @@ def get_papers_and_groups(miner, is_independent=False):
       paper.raw = paper.abstract
     else:
       paper.raw = paper.title
-    paper.group = GROUP_CONFERENCE_MAP[int(paper.conference)]
+    paper.group = GROUP_CONFERENCE_MAP[int(paper.venue)]
     papers.append(paper)
     if is_independent:
-      groups.append(paper.conference)
+      groups.append(paper.venue)
     else:
       groups.append(paper.group)
   return np.array(papers), np.array(groups)
