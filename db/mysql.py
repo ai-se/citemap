@@ -59,7 +59,7 @@ def get_venues():
   venues = OrderedDict()
   for row in cur.fetchall():
     venue = O()
-    venue.id = row[0]
+    venue.id = str(row[0])
     venue.acronym = row[1]
     venue.name = row[2]
     venue.impact = row[3]
@@ -87,7 +87,7 @@ def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
     paper.authors = []
     paper.author_sql_ids = []
     paper.abstract = row[11]
-    paper.is_conference = True if venues[paper.venue_id].is_conference == 1 else False
+    paper.is_conference = True if venues[str(paper.venue_id)].is_conference == 1 else False
     cur_authors = DB.get().cursor()
     cur_authors.execute("SELECT persons.id, persons.name FROM persons, authorship "
                         "WHERE persons.id = authorship.person_id AND authorship.paper_id = %d" % int(paper.id))

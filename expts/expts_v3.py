@@ -4,31 +4,52 @@ import os
 sys.path.append(os.path.abspath("."))
 sys.dont_write_bytecode = True
 
+from utils.lib import O
 import numpy as np
 from collections import OrderedDict
 from network.mine import cite_graph, Miner
 import matplotlib.pyplot as plt
 from db import mysql
 import pandas as pd
+from sklearn.feature_extraction import text
 
 GRAPH_CSV = "data/citemap_v6.csv"
 
 # For 11 TOPICS
-N_TOPICS = 11
+N_TOPICS = 7
 ALPHA = 0.22359
 BETA = 0.53915
 ITERATIONS = 100
-# TOPICS = ["TPC %d" % d for d in range(11)]
-TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
-          "SourceCode", "WebApps", "Configuration", "Developer", "Mining"]
+# TOPICS = ["TPC %d" % d for d in range(N_TOPICS)]
+# TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
+#           "SourceCode", "WebApps", "Configuration", "Developer", "Mining"]
+TOPICS = ["Modelling", "Empirical", "Requirements", "Theory", "Web", "Testing", "Applications"]
 TOPIC_THRESHOLD = 3
+STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering', 'paper', 'study', 'based',
+                                            'results', 'approach', 'case', 'workshop', 'international', 'research',
+                                            'conference', 'introduction', 'editors', 'article', 'issue', 'month',
+                                            'copyright', 'special', 'used', 'using', 'use', 'studies'])
+
+# Config
+THE = O()
+THE.permitted = "journals"
 
 
 def get_graph_lda_data():
   graph = cite_graph(GRAPH_CSV)
-  miner = Miner(graph)
-  lda_model, vocab = miner.lda(N_TOPICS, n_iter=ITERATIONS, alpha=ALPHA, beta=BETA)
+  miner = Miner(graph, THE.permitted)
+  lda_model, vocab = miner.lda(N_TOPICS, n_iter=ITERATIONS, alpha=ALPHA, beta=BETA, stop_words=STOP_WORDS)
   return miner, graph, lda_model, vocab
+
+
+def shorter_names(name):
+  name_map = {
+    "SOFTWARE" : "S/W",
+    "SIGSOFT": "NOTES"
+  }
+  if name in name_map:
+    return name_map[name]
+  return name
 
 
 def yearize(paps):
@@ -66,10 +87,10 @@ def make_heatmap(arr, row_labels, column_labels, figname):
   plt.clf()
 
 
-def paper_bar(permitted):
-  print("PAPER BAR for %s" % permitted)
+def paper_bar():
+  print("PAPER BAR for %s" % THE.permitted)
   graph = cite_graph(GRAPH_CSV)
-  venues = graph.get_papers_by_venue(permitted=permitted)
+  venues = graph.get_papers_by_venue(permitted=THE.permitted)
   start = 2001
   end = 2016
   year_count = {}
@@ -90,18 +111,19 @@ def paper_bar(permitted):
   plt.xticks(bar_x, rotation=45)
   plt.xlabel('Year')
   plt.ylabel('# of Papers')
-  plt.savefig("figs/v3/%s/paper_count.png"%permitted, bbox_inches='tight')
+  plt.savefig("figs/v3/%s/paper_count.png" % THE.permitted, bbox_inches='tight')
   plt.clf()
 
 
-def diversity(fig_name, permitted, paper_range):
-  print("DIVERSITY for %s" % permitted)
+def diversity(fig_name, paper_range):
+  print("DIVERSITY for %s" % THE.permitted)
   miner, graph, lda_model, vocab = get_graph_lda_data()
-  venues = graph.get_papers_by_venue(permitted)
+  paper_map = graph.get_papers_by_venue(THE.permitted)
   venue_topics = {}
   venue_heatmaps = {}
   valid_conferences = []
-  for conference_id, papers in venues.items():
+  venues = mysql.get_venues()
+  for conference_id, papers in paper_map.items():
     topics = np.array([0] * lda_model.n_topics)
     for tup in yearize(papers).items():
       if paper_range and tup[0] not in paper_range: continue
@@ -113,8 +135,7 @@ def diversity(fig_name, permitted, paper_range):
       valid_conferences.append(conference_id)
   row_labels = [str(ind) + "-" + name for ind, name in zip(range(lda_model.n_topics), TOPICS)]
   # row_labels = ["%2d" % ind for ind in range(lda_model.n_topics)]
-  column_labels = [c.acronym for c, venue in mysql.get_venues().items() if venue.id in valid_conferences]
-  print(column_labels)
+  column_labels = [shorter_names(venue.acronym) for c, venue in venues.items() if venue.id in valid_conferences]
   # Heatmap
   heatmap_arr = []
   for conference_id in sorted(venue_heatmaps.keys(), key=lambda x: int(x)):
@@ -125,14 +146,14 @@ def diversity(fig_name, permitted, paper_range):
   # make_dendo_heatmap(np.transpose(heatmap_arr), row_labels, column_labels,
   #                    "figs/v2/diversity/%s_dend.png" % fig_name, dend_settings)
   make_heatmap(np.transpose(heatmap_arr), row_labels, column_labels,
-               "figs/v3/%s/diversity/%s.png" % (permitted, fig_name))
+               "figs/v3/%s/diversity/%s.png" % (THE.permitted, fig_name))
 
 
 def _main():
-  # paper_bar("journals")
-  # paper_bar("all")
-  diversity("heatmap_09_16", "journals", range(2009, 2017))
-  diversity("heatmap_09_16", "all", range(2009, 2017))
+  paper_bar()
+  diversity("heatmap_09_16", range(2009, 2017))
+  diversity("heatmap_01_08", range(2001, 2009))
+  diversity("heatmap_93_00", range(1993, 2000))
 
 
 if __name__ == "__main__":

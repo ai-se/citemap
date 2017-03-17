@@ -118,7 +118,7 @@ class Graph(O):
     papers = {}
     venues = mysql.get_venues()
     for paper_id, paper in self.paper_nodes.items():
-      venue = venues[int(paper.venue)]
+      venue = venues[paper.venue]
       if venue.is_conference and permitted == 'journals': continue
       if not venue.is_conference and permitted == 'conferences': continue
       c_papers = papers.get(paper.venue, [])

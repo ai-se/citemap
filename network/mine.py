@@ -2,14 +2,13 @@ from __future__ import print_function, division
 import os, sys
 sys.path.append(os.path.abspath("."))
 from utils.lib import O
-import numpy as np
 import lda
 from network.graph import Graph
 from sklearn.feature_extraction.text import CountVectorizer
-import warnings
 from nltk import word_tokenize
 from nltk.stem.porter import PorterStemmer
 from sklearn.feature_extraction import text
+from db import mysql
 
 __author__ = "panzer"
 
@@ -49,17 +48,22 @@ class Document(O):
 
 
 class Miner(O):
-  def __init__(self, graph):
+  def __init__(self, graph, permitted="conferences"):
     O.__init__(self, graph=graph)
     self.vectorizer = None
     self.doc_2_vec = None
     self.documents = None
+    self.permitted = permitted
 
   def get_documents(self):
     if self.documents: return self.documents
     paper_nodes = self.graph.paper_nodes
     documents = {}
+    venues = mysql.get_venues()
     for paper_id, paper in paper_nodes.items():
+      venue = venues[paper.venue]
+      if venue.is_conference and self.permitted == 'journals': continue
+      if not venue.is_conference and self.permitted == 'conferences': continue
       if paper.abstract is not None and paper.abstract != 'None':
         raw = paper.abstract
       else:
@@ -79,8 +83,8 @@ class Miner(O):
         document.vector = vector
         self.documents[paper_id] = document
 
-  def lda(self, n_topics, n_iter=1000, random_state=1, alpha=ALPHA, beta=BETA):
-    self.vectorize(stop_words=STOP_WORDS, token_pattern=TOKEN_PATTERN)
+  def lda(self, n_topics, n_iter=1000, random_state=1, alpha=ALPHA, beta=BETA, stop_words=STOP_WORDS):
+    self.vectorize(stop_words=stop_words, token_pattern=TOKEN_PATTERN)
     alpha = alpha if alpha else 50/n_topics
     beta = beta if beta else 0.01
     model = lda.LDA(n_topics=n_topics, alpha=alpha, eta=beta, n_iter=n_iter, random_state=random_state)
