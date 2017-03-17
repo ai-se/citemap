@@ -7,6 +7,7 @@ from utils.unicoder import UnicodeReader
 
 __author__ = "panzer"
 
+
 class Graph(O):
   def __init__(self):
     O.__init__(self)
@@ -128,16 +129,30 @@ class Graph(O):
       papers[conference_id] = sorted(c_papers, key=lambda tup: tup[1])
     return papers
 
-  def get_papers_by_authors(self):
+  def get_paper_nodes(self, permitted='conferences'):
+    paper_nodes = {}
+    venues = mysql.get_venues()
+    for p_id, paper in self.paper_nodes.items():
+      venue = venues[paper.venue]
+      if venue.is_conference and permitted == 'journals': continue
+      if not venue.is_conference and permitted == 'conferences': continue
+      paper_nodes[p_id] = paper
+    return paper_nodes
+
+  def get_papers_by_authors(self, permitted='conferences'):
     """
     :return:{
       <author_id> : [(<paper>, <year>, <conference>) , ...]
     }
     """
     papers = {}
+    venues = mysql.get_venues()
     for edge in self.author_edges.values():
       author_papers = papers.get(edge.source, [])
       paper = self.paper_nodes[edge.target]
+      venue = venues[paper.venue]
+      if venue.is_conference and permitted == 'journals': continue
+      if not venue.is_conference and permitted == 'conferences': continue
       author_papers.append((paper.id, paper.year, paper.venue))
       papers[edge.source] = author_papers
     for author_id, a_papers in papers.items():
