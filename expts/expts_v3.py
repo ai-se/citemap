@@ -16,27 +16,52 @@ from sklearn.feature_extraction import text
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, dendrogram
 from expts.settings import dend as dend_settings
+from matplotlib.colors import ColorConverter
 
 GRAPH_CSV = "data/citemap_v6.csv"
 
 # For 11 TOPICS
-N_TOPICS = 7
 ALPHA = 0.22359
 BETA = 0.53915
 ITERATIONS = 100
 # TOPICS = ["TPC %d" % d for d in range(N_TOPICS)]
 # TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
 #           "SourceCode", "WebApps", "Configuration", "Developer", "Mining"]
-TOPICS = ["Modelling", "Empirical", "Requirements", "Theory", "Web", "Testing", "Applications"]
+TOPICS_JOURNALS = ["Modelling", "Empirical", "Requirements", "Security", "Web", "Testing", "Applications"]
+TOPICS_ALL = ["Testing", "Requirements", "Web", "Security", "Applications", "Modelling", "Source Code", "Mining", "Web",
+              "Tools", "Empirical"]
 TOPIC_THRESHOLD = 3
 
-COLORS_7 = ["grey", "red", "blue", "green",
+COLORS_JOURNAL = ["grey", "red", "blue", "green",
             "yellow", "magenta", "cyan", "black"]
+
+COLORS_ALL = ["lightgray", "red", "blue", "darkslategray",
+            "yellow", "darkmagenta", "cyan", "saddlebrown",
+            "orange", "lime", "hotpink"]
+
+COLOR_CONVERTER = ColorConverter()
 
 
 def get_color(index):
   if THE.permitted == "journals":
-    return COLORS_7[index]
+    return COLORS_JOURNAL[index]
+  if THE.permitted == "all":
+    return COLOR_CONVERTER.to_rgb(COLORS_ALL[index])
+
+
+def get_topics():
+  if THE.permitted == "journals":
+    return TOPICS_JOURNALS
+  if THE.permitted == "all":
+    return TOPICS_ALL
+
+
+def get_n_topics():
+  if THE.permitted == "journals":
+    return 7
+  if THE.permitted == "all":
+    return 11
+
 
 STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering', 'paper', 'study', 'based',
                                             'results', 'approach', 'case', 'workshop', 'international', 'research',
@@ -45,13 +70,13 @@ STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering', 'paper', 
 
 # Config
 THE = O()
-THE.permitted = "journals"
+THE.permitted = "all"
 
 
 def get_graph_lda_data():
   graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph, THE.permitted)
-  lda_model, vocab = miner.lda(N_TOPICS, n_iter=ITERATIONS, alpha=ALPHA, beta=BETA, stop_words=STOP_WORDS)
+  lda_model, vocab = miner.lda(get_n_topics(), n_iter=ITERATIONS, alpha=ALPHA, beta=BETA, stop_words=STOP_WORDS)
   return miner, graph, lda_model, vocab
 
 
@@ -88,19 +113,22 @@ def report(lda_model, vocab, n_top_words=10):
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))
 
 
-def make_heatmap(arr, row_labels, column_labels, figname):
+def make_heatmap(arr, row_labels, column_labels, figname, paper_range):
   plt.figure(figsize=(4, 3))
   df = pd.DataFrame(arr, columns=column_labels, index=row_labels)
   cax = plt.matshow(df, interpolation='nearest', cmap='hot_r')
   plt.colorbar(cax)
   plt.xticks(np.arange(len(list(df.columns))), list(df.columns), rotation="vertical")
   plt.yticks(np.arange(len(list(df.index))), list(df.index))
-  plt.title("Topics to Conference Distribution", y=1.2)
+  if paper_range:
+    plt.title("Topics to Conference Distribution(%d - %d)" % (paper_range[0], paper_range[-1]), y=1.2)
+  else:
+    plt.title("Topics to Conference Distribution", y=1.2)
   plt.savefig(figname, bbox_inches='tight')
   plt.clf()
 
 
-def make_dendo_heatmap(arr, row_labels, column_labels, figname):
+def make_dendo_heatmap(arr, row_labels, column_labels, figname, paper_range):
   settings = dend_settings.get("dend_%d_%d" % (len(row_labels), len(column_labels)), None)
   if settings is None:
     print("ERROR: Configure Dendogram settings for %d rows and %d columns" % (len(row_labels), len(column_labels)))
@@ -133,11 +161,18 @@ def make_dendo_heatmap(arr, row_labels, column_labels, figname):
   # plot heatmap
   axm = fig.add_axes(settings.plot_axes)
   cax = axm.matshow(df_rowclust, interpolation='nearest', cmap='hot_r')
-  fig.colorbar(cax)
+  if THE.permitted == "all":
+    fig.colorbar(cax, location='bottom')
+  else:
+    fig.colorbar(cax)
   axm.set_xticks(np.arange(len(list(df_rowclust.columns))))
   axm.set_xticklabels(list(df_rowclust.columns), rotation="vertical")
   axm.set_yticks(np.arange(len(list(df_rowclust.index))))
   axm.set_yticklabels(list(df_rowclust.index))
+  if paper_range:
+    plt.title("Clustered topics to Conference Distribution(%d - %d)" % (paper_range[0], paper_range[-1]), y=-0.2)
+  else:
+    plt.title("Clustered topics to Conference Distribution", y=-0.2)
   plt.savefig(figname, bbox_inches='tight')
   plt.clf()
 
@@ -188,7 +223,7 @@ def diversity(fig_name, paper_range):
       venue_topics[conference_id] = percent_sort(topics)
       venue_heatmaps[conference_id] = topics
       valid_conferences.append(conference_id)
-  row_labels = [str(ind) + "-" + name for ind, name in zip(range(lda_model.n_topics), TOPICS)]
+  row_labels = [str(ind) + "-" + name for ind, name in zip(range(lda_model.n_topics), get_topics())]
   # row_labels = ["%2d" % ind for ind in range(lda_model.n_topics)]
   column_labels = [shorter_names(venue.acronym) for c, venue in venues.items() if venue.id in valid_conferences]
   # Heatmap
@@ -199,9 +234,9 @@ def diversity(fig_name, paper_range):
     heatmap_arr.append(dist)
   report(lda_model, vocab, 15)
   make_dendo_heatmap(np.transpose(heatmap_arr), row_labels, column_labels,
-                     "figs/v3/%s/diversity/%s_dend.png" % (THE.permitted, fig_name))
+                     "figs/v3/%s/diversity/%s_dend.png" % (THE.permitted, fig_name), paper_range)
   make_heatmap(np.transpose(heatmap_arr), row_labels, column_labels,
-               "figs/v3/%s/diversity/%s.png" % (THE.permitted, fig_name))
+               "figs/v3/%s/diversity/%s.png" % (THE.permitted, fig_name), paper_range)
 
 
 def topic_evolution():
@@ -241,7 +276,7 @@ def topic_evolution():
   patches = []
   for index, (topic, color) in enumerate(colors_dict.items()):
     patches.append(mpatches.Patch(color=color, label='Topic %s' % str(topic)))
-  plt.legend(tuple(patches), tuple(TOPICS), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=6, fontsize=10,
+  plt.legend(tuple(patches), tuple(get_topics()), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=6, fontsize=10,
              handlelength=0.7)
   plt.savefig("figs/v3/%s/topic_evolution/topic_evolution_7.png" % THE.permitted)
   plt.clf()
@@ -325,6 +360,7 @@ def _main():
   # diversity("heatmap_93_00", range(1993, 2000))
   # topic_evolution()
   super_author([0.01, 0.1, 0.2, 1.0])
+  # make_dendo_heatmap(np.random.rand(11, 18), get_topics(), ["ICSE"] * 18, "temp.png", None)
 
 
 if __name__ == "__main__":
