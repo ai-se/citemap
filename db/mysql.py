@@ -39,15 +39,32 @@ def get_paper_names():
   return rows
 
 
+def get_paper_names_and_years():
+  db = DB.get()
+  cur = db.cursor()
+  cur.execute("SELECT title, year from papers")
+  names = []
+  years = []
+  for row in cur.fetchall():
+    names.append(row[0])
+    years.append(row[1])
+  DB.close()
+  return names, years
+
+
 def update_papers(paper_map):
   db = DB.get()
   cur = db.cursor()
   count = 0
-  for title, details in paper_map.items():
-    cur.execute("UPDATE papers SET ref_id=%s, cites=%s, abstract=%s WHERE title=%s",
-                (details["ref_id"], details["cites"], details["abstract"], title))
+  stmt = "UPDATE papers SET ref_id=%s, cites=%s, abstract=%s WHERE title=%s AND year=%s"
+  values = []
+  for (title, year), details in paper_map.items():
+    # cur.execute(stmt,
+    #             (details["ref_id"], details["cites"], details["abstract"], title, year))
+    values.append((details["ref_id"], details["cites"], details["abstract"], title, year))
     count += 1
     # print("Statement : ", count)
+  cur.executemany(stmt, values)
   db.commit()
   DB.close()
 

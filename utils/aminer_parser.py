@@ -25,7 +25,7 @@ def parse_acm_generate(file_name):
       for item in group:
         item = item.strip(' \r\n')
         if item.startswith('#*'):
-          paper.title = de_punctuate(item[2:])
+          paper.title = de_punctuate(item[2:]).lower()
         elif item.startswith('#@'):
           paper.authors = remove_accents(item[2:]).split(',')
         elif item.startswith('#t'):

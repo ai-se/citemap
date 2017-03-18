@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.abspath("."))
 sys.dont_write_bytecode = True
 
-from utils.lib import O
+from utils.lib import O, Memoized
 import numpy as np
 from collections import OrderedDict, Counter
 from network.mine import cite_graph, Miner
@@ -17,8 +17,9 @@ from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, dendrogram
 from expts.settings import dend as dend_settings
 from matplotlib.colors import ColorConverter
+import pickle as pkl
 
-GRAPH_CSV = "data/citemap_v6.csv"
+GRAPH_CSV = "data/citemap_v7.csv"
 
 # For 11 TOPICS
 ALPHA = 0.22359
@@ -27,9 +28,9 @@ ITERATIONS = 100
 # TOPICS = ["TPC %d" % d for d in range(N_TOPICS)]
 # TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
 #           "SourceCode", "WebApps", "Configuration", "Developer", "Mining"]
-TOPICS_JOURNALS = ["Modelling", "Empirical", "Requirements", "Security", "Web", "Testing", "Applications"]
-TOPICS_ALL = ["Testing", "Requirements", "Web", "Security", "Applications", "Modelling", "Source Code", "Mining", "Web",
-              "Tools", "Empirical"]
+TOPICS_JOURNALS = ["Requirements", "Applications", "Source Code", "Empirical", "Testing", "Security", "Modelling"]
+TOPICS_ALL = ["Empirical", "Requirements", "Tools", "PL?", "Misc", "Modelling", "Developer", "Architecture", "Testing",
+              "Source Code", "Maintenance"]
 TOPIC_THRESHOLD = 3
 
 COLORS_JOURNAL = ["grey", "red", "blue", "green",
@@ -66,13 +67,17 @@ def get_n_topics():
 STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering', 'paper', 'study', 'based',
                                             'results', 'approach', 'case', 'workshop', 'international', 'research',
                                             'conference', 'introduction', 'editors', 'article', 'issue', 'month',
-                                            'copyright', 'special', 'used', 'using', 'use', 'studies'])
+                                            'copyright', 'special', 'used', 'using', 'use', 'studies', 'review',
+                                            'editorial', 'report', 'book', 'ieee', 'published', 'science', 'column',
+                                            'author', 'proposed', 'icse', 'article', 'year', 'articles', 'page', '2000',
+                                            '2004', 'papers', 'computer', 'held', 'editor'])
 
 # Config
 THE = O()
 THE.permitted = "all"
 
 
+@Memoized
 def get_graph_lda_data():
   graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph, THE.permitted)
@@ -157,7 +162,8 @@ def make_dendo_heatmap(arr, row_labels, column_labels, figname, paper_range):
     j.set_visible(False)
   # reorder columns and rows with respect to the clustering
   df_rowclust = df.ix[row_dendr['leaves'][::-1]]
-  df_rowclust.columns = [df_rowclust.columns[col_dendr['leaves']]]
+  # df_rowclust.columns = [df_rowclust.columns[col_dendr['leaves']]]
+  df_rowclust = df_rowclust[col_dendr['leaves']]
   # plot heatmap
   axm = fig.add_axes(settings.plot_axes)
   cax = axm.matshow(df_rowclust, interpolation='nearest', cmap='hot_r')
@@ -353,6 +359,31 @@ def super_author(top_percents):
   plt.clf()
 
 
+def get_top_papers(top_count=5):
+  top_papers = {}
+  for index in range(get_n_topics()):
+    top_papers[index] = []
+  graph = cite_graph(GRAPH_CSV)
+  miner = Miner(graph, permitted=THE.permitted)
+  miner.lda(get_n_topics(), n_iter=100, alpha=0.847433736937, beta=0.763774618977)
+  for paper_id, paper in graph.get_paper_nodes(THE.permitted).items():
+    topics = miner.documents[paper_id].topics_count
+    # if int(paper.year) < 2009: continue
+    if max(topics) == 0:
+      continue
+    topic = topics.argmax()
+    cites = paper.cited_counts
+    top_papers[topic].append([(cites, paper.title, paper.authors, int(paper.year))])
+  with open("figs/v3/%s/top_papers.csv" % THE.permitted, "wb") as f:
+    f.write("Index, Cites, Year, Title, Authors\n")
+    for index in range(get_n_topics()):
+      top_papers[index] = sorted(top_papers[index], reverse=True)[:top_count]
+      print("***", index, "***")
+      for paper in top_papers[index]:
+        paper = paper[0]
+        f.write("%d, %d, %d, \"%s\", \"%s\"\n" % (index, paper[0], paper[-1], paper[1], paper[2]))
+
+
 def _main():
   # paper_bar()
   # diversity("heatmap_09_16", range(2009, 2017))
@@ -360,7 +391,8 @@ def _main():
   # diversity("heatmap_93_00", range(1993, 2000))
   # topic_evolution()
   super_author([0.01, 0.1, 0.2, 1.0])
-  # make_dendo_heatmap(np.random.rand(11, 18), get_topics(), ["ICSE"] * 18, "temp.png", None)
+  # get_top_papers()
+  # make_dendo_heatmap(np.random.rand(11, 23), get_topics(), ["ICSE"] * 23, "temp.png", None)
 
 
 if __name__ == "__main__":

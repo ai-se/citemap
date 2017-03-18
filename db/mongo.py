@@ -12,6 +12,8 @@ client = pymongo.MongoClient(MONGO_URI)
 db = client["citemap"]
 
 
+KEY_SEPERATOR = '$|$'
+
 def index_paper_collection():
   """
   Index the Paper Collection
@@ -35,15 +37,18 @@ def get_paper(title):
 
 
 def get_papers_with_titles(titles):
-  tits = [title.decode('utf-8', 'ignore').encode("utf-8") for title in titles]
+  tits = [title.decode('utf-8', 'ignore').encode("utf-8").lower() for title in titles]
   cursor = db.paper.find({"title": {"$in": tits}})
   paper_map = {}
   print("Fetched All")
   count = 0
   for paper in cursor:
-    if 'abstract' in paper:
-      paper_map[paper["title"]] = paper
-      count += 1
+    # if 'abstract' in paper:
+    key = paper["title"]
+    if 'year' in paper:
+      key = KEY_SEPERATOR.join([paper["title"], str(paper['year'])])
+    paper_map[key] = paper
+    count += 1
   print(count)
   return paper_map
 

@@ -698,8 +698,6 @@ def super_authors_top():
   plt.clf()
 
 
-
-
 def get_top_papers():
   n_topics = 7
   top_papers = {}
