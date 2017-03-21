@@ -363,29 +363,29 @@ def super_author(top_percents):
   plt.clf()
 
 
-def get_top_papers(top_count=5):
+def get_top_papers(top_count=5, year_from = None):
   top_papers = {}
   for index in range(get_n_topics()):
     top_papers[index] = []
-  graph = cite_graph(GRAPH_CSV)
-  miner = Miner(graph, permitted=THE.permitted)
-  miner.lda(get_n_topics(), n_iter=100, alpha=0.847433736937, beta=0.763774618977)
+  miner, graph, lda_model, vocab = get_graph_lda_data()
   for paper_id, paper in graph.get_paper_nodes(THE.permitted).items():
     topics = miner.documents[paper_id].topics_count
-    # if int(paper.year) < 2009: continue
+    if year_from and int(paper.year) < year_from: continue
     if max(topics) == 0:
       continue
     topic = topics.argmax()
     cites = paper.cited_counts
     top_papers[topic].append([(cites, paper.title, paper.authors, int(paper.year))])
-  with open("figs/v3/%s/top_papers.csv" % THE.permitted, "wb") as f:
+  suffix = str(year_from) if year_from else 'all'
+  topic_names = get_topics()
+  with open("figs/v3/%s/top_papers_%s.csv" % (THE.permitted, suffix), "wb") as f:
     f.write("Index, Cites, Year, Title, Authors\n")
     for index in range(get_n_topics()):
       top_papers[index] = sorted(top_papers[index], reverse=True)[:top_count]
       print("***", index, "***")
       for paper in top_papers[index]:
         paper = paper[0]
-        f.write("%d, %d, %d, \"%s\", \"%s\"\n" % (index, paper[0], paper[-1], paper[1], paper[2]))
+        f.write("%s, %d, %d, \"%s\", \"%s\"\n" % (topic_names[index], paper[0], paper[-1], paper[1], paper[2]))
 
 
 def _main():
@@ -397,8 +397,8 @@ def _main():
   topic_evolution(venue="conferences")
   topic_evolution(venue="journals")
   # super_author([0.01, 0.1, 0.2, 1.0])
+  # get_top_papers(year_from=2009)
   # get_top_papers()
-  # make_dendo_heatmap(np.random.rand(11, 23), get_topics(), ["ICSE"] * 23, "temp.png", None)
 
 
 if __name__ == "__main__":
