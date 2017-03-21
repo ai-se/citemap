@@ -47,7 +47,7 @@ def get_color(index):
   if THE.permitted == "journals":
     return COLORS_JOURNAL[index]
   if THE.permitted == "all":
-    return COLOR_CONVERTER.to_rgb(COLORS_ALL[index])
+    return COLORS_ALL[index]
 
 
 def get_topics():
@@ -245,13 +245,13 @@ def diversity(fig_name, paper_range):
                "figs/v3/%s/diversity/%s.png" % (THE.permitted, fig_name), paper_range)
 
 
-def topic_evolution():
+def topic_evolution(venue=THE.permitted):
   miner, graph, lda_model, vocab = get_graph_lda_data()
-  paper_nodes = graph.get_paper_nodes(THE.permitted)
+  paper_nodes = graph.get_paper_nodes(venue)
   topics_map = {}
   n_topics = lda_model.n_topics
   for paper_id, paper in paper_nodes.items():
-    if int(paper.year) < 1993: continue
+    if int(paper.year) < 1993 or int(paper.year) > 2016: continue
     document = miner.documents[paper_id]
     year_topics = topics_map.get(paper.year, np.array([0] * n_topics))
     topics_map[paper.year] = np.add(year_topics, document.topics_count)
@@ -268,7 +268,8 @@ def topic_evolution():
     bar_val, color = [], []
     for year in sorted(yt_map.keys(), key=lambda x: int(x)):
       topic = yt_map[year][index]
-      colors_dict[topic[0]] = get_color(topic[0])
+      if topic[0] not in colors_dict:
+        colors_dict[topic[0]] = get_color(topic[0])
       color.append(colors_dict[topic[0]])
       bar_val.append(topic[1])
     plts.append(plt.bar(x_axis, bar_val, width, color=color, bottom=y_offset))
@@ -280,13 +281,16 @@ def topic_evolution():
   plt.ylim([0, 101])
   # Legends
   patches = []
+  topics = []
   for index, (topic, color) in enumerate(colors_dict.items()):
     patches.append(mpatches.Patch(color=color, label='Topic %s' % str(topic)))
-  plt.legend(tuple(patches), tuple(get_topics()), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=6, fontsize=10,
+    topics.append(get_topics()[topic])
+    print(get_topics()[topic], color)
+  plt.legend(tuple(patches), tuple(topics), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=6, fontsize=10,
              handlelength=0.7)
-  plt.savefig("figs/v3/%s/topic_evolution/topic_evolution_7.png" % THE.permitted)
+  plt.savefig("figs/v3/%s/topic_evolution/topic_evolution_%s.png" % (THE.permitted, venue))
   plt.clf()
-  report(lda_model, vocab)
+  # report(lda_model, vocab)
 
 
 def top_authors(graph, top_percent=0.01, min_year=None):
@@ -389,8 +393,10 @@ def _main():
   # diversity("heatmap_09_16", range(2009, 2017))
   # diversity("heatmap_01_08", range(2001, 2009))
   # diversity("heatmap_93_00", range(1993, 2000))
-  # topic_evolution()
-  super_author([0.01, 0.1, 0.2, 1.0])
+  topic_evolution(venue="all")
+  topic_evolution(venue="conferences")
+  topic_evolution(venue="journals")
+  # super_author([0.01, 0.1, 0.2, 1.0])
   # get_top_papers()
   # make_dendo_heatmap(np.random.rand(11, 23), get_topics(), ["ICSE"] * 23, "temp.png", None)
 
