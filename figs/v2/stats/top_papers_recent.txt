@@ -1,55 +1,121 @@
 *** 0 ***
-12 2009 - Model evolution by runtime parameter adaptation, ilenia epifani,carlo ghezzi,raffaela mirandola,giordano tamburrelli
-10 2013 - Estimating mobile application energy consumption using program analysis, shuai hao,ding li,william g. j. halfond,ramesh govindan
-9 2009 - RELAX Incorporating Uncertainty into the Specification of SelfAdaptive Systems, jonathan p. whittle,peter sawyer,nelly bencomo,betty h. c. cheng,jean-michel bruel
-9 2009 - Automatic synthesis of behavior protocols for composable webservices, antonia bertolino,paola inverardi,patrizio pelliccione,massimo tivoli
-*** 1 ***
 32 2009 - Automatically finding patches using genetic programming, westley weimer,thanhvu h. nguyen,claire le goues,stephanie forrest
-26 2011 - Are automated debugging techniques actually helping programmers, chris parnin,alessandro orso
+20 2010 - Generating test cases for specification mining, valentin dallmeier,nikolai knopp,christoph mallon,sebastian hack,andreas zeller
+18 2009 - HOLMES Effective statistical debugging via efficient path profiling, trishul m. chilimbi,ben liblit,krishna k. mehra,aditya v. nori,kapil vaswani
+15 2010 - Symbolic PathFinder symbolic execution of Java bytecode, corina s. pasareanu,neha rungta
+15 2011 - Leveraging existing instrumentation to automatically infer invariantconstrained models, ivan beschastnikh,yuriy brun,sigurd schneider,michael sloan,michael d. ernst
+14 2009 - Refactoring sequential Java code for concurrency via concurrent libraries, danny dig,john marrero,michael d. ernst
+14 2011 - Combined static and dynamic automated test generation, sai zhang,david saff,yingyi bu,michael d. ernst
+13 2009 - Darwin an approach for debugging evolving programs, dawei qi,abhik roychoudhury,zhenkai liang,kapil vaswani
+12 2010 - PENELOPE weaving threads to expose atomicity violations, francesco sorrentino 0002,azadeh farzan,p. madhusudan
+12 2012 - Automated repair of HTML generation errors in PHP applications using string constraint solving, hesam samimi,max schafer,shay artzi,todd d. millstein,frank tip,laurie j. hendren
+*** 1 ***
 24 2010 - Automated fixing of programs with contracts, yi wei,yu pei 0001,carlo a. furia,lucas serpa silva,stefan buchholz,bertrand meyer,andreas zeller
 21 2011 - A practical guide for using statistical tests to assess randomized algorithms in software engineering, andrea arcuri,lionel c. briand
+19 2010 - Directed test generation for effective fault localization, shay artzi,julian dolby,frank tip,marco pistoia
+18 2009 - Lightweight faultlocalization using multiple coverage types, raul a. santelices,james a. jones,yanbing yu,mary jean harrold
+18 2009 - Generating Fixes from Object Behavior Anomalies, valentin dallmeier,andreas zeller,bertrand meyer
+17 2009 - MSeqGen objectoriented unittest generation via mining source code, suresh thummalapenta,tao xie,nikolai tillmann,jonathan de halleux,wolfram schulte
+16 2011 - EvoSuite automatic test suite generation for objectoriented software, gordon fraser,andrea arcuri
+14 2009 - Efficient mutation testing by checking invariant violations, david schuler,valentin dallmeier,andreas zeller
+13 2009 - The influence of size and coverage on test suite effectiveness, akbar siami namin,jamie andrews
+13 2010 - Practical fault localization for dynamic web applications, shay artzi,julian dolby,frank tip,marco pistoia
 *** 2 ***
-18 2010 - Model checking lots of systems efficient verification of temporal properties in software product lines, andreas classen,patrick heymans,pierre-yves schobbens,axel legay,jean-francois raskin
-17 2009 - Mining exceptionhandling rules as sequence association rules, suresh thummalapenta,tao xie
-13 2009 - Learning operational requirements from goal models, dalal alrajeh,jeffrey kramer,alessandra russo,sebastian uchitel
-13 2009 - FEATUREHOUSE Languageindependent automated software composition, sven apel,christian kastner,christian lengauer
+12 2009 - Model evolution by runtime parameter adaptation, ilenia epifani,carlo ghezzi,raffaela mirandola,giordano tamburrelli
+9 2009 - RELAX Incorporating Uncertainty into the Specification of SelfAdaptive Systems, jonathan p. whittle,peter sawyer,nelly bencomo,betty h. c. cheng,jean-michel bruel
+9 2009 - Automatic synthesis of behavior protocols for composable webservices, antonia bertolino,paola inverardi,patrizio pelliccione,massimo tivoli
+8 2009 - A model of refactoring physically and virtually separated features, christian kastner,sven apel,martin kuhlemann
+6 2011 - Taming uncertainty in selfadaptive software, naeem esfahani,ehsan kouroshfar,sam malek
+6 2009 - Taming Dynamically Adaptive Systems using models and aspects, brice morin,olivier barais,gregory nain,jean-marc jezequel
+6 2010 - FUSION a framework for engineering selftuning selfadaptive software systems, ahmed m. elkhodary,naeem esfahani,sam malek
+5 2013 - Managing nonfunctional uncertainty via modeldriven adaptivity, carlo ghezzi,leandro sales pinto,paola spoletini,giordano tamburrelli
+5 2010 - Fuzzy Goals for RequirementsDriven Adaptation, luciano baresi,liliana pasquale,paola spoletini
+5 2010 - Developing next generation ADLs through MDE techniques, davide di ruscio,ivano malavolta,henry muccini,patrizio pelliccione,alfonso pierantonio
 *** 3 ***
-4 2009 - Identification of Extract Method Refactoring Opportunities, nikolaos tsantalis,alexander chatzigeorgiou
-2 2009 - Identifying Architectural Bad Smells, joshua garcia,daniel popescu,george edwards,nenad medvidovic
-2 2013 - Asking for and about permissions used by Android apps, ryan stevens,jonathan ganz,vladimir filkov,premkumar t. devanbu,hao chen 0003
-1 2009 - Software Metrics Suites for Project Landscapes, georgios lajios
+22 2011 - How do fixes become bugs, zuoning yin,ding yuan,yuanyuan zhou,shankar pasupathy,lakshmi n. bairavasundaram
+14 2010 - Has the bug really been fixed, zhongxian gu,earl t. barr,david j. hamilton,zhendong su
+13 2009 - The promises and perils of mining git, christian bird,peter c. rigby,earl t. barr,david j. hamilton,daniel m. german,premkumar t. devanbu
+8 2010 - Finegrained incremental learning and multifeature tossing graphs to improve bug triaging, pamela bhattacharya,iulian neamtiu
+7 2010 - The Google FindBugs fixit, nathaniel ayewah,william w. pugh
+6 2010 - Predicting Reopened Bugs A Case Study on the Eclipse Project, emad shihab,akinori ihara,yasutaka kamei,walid m. ibrahim,masao ohira,bram adams,ahmed e. hassan,ken-ichi matsumoto
+4 2013 - API change and fault proneness a threat to the success of Android apps, mario linares vasquez,gabriele bavota,carlos bernal-cardenas,massimiliano di penta,rocco oliveto,denys poshyvanyk
+4 2013 - A contextual approach towards more accurate duplicate bug report detection, anahita alipour,abram hindle,eleni stroulia
+3 2012 - Improved Duplicate Bug Report Identification, yuan tian,chengnian sun,david lo
+3 2011 - Classifying field crash reports for fixing bugs A case study of Mozilla Firefox, tejinder dhaliwal,foutse khomh,ying zou
 *** 4 ***
-0 2015 - Witness validation and stepwise testification across software verifiers, dirk beyer 0001,matthias dangl,daniel dietsch,matthias heizmann,andreas stahlbauer
+2 2011 - Crystal precise and unobtrusive conflict warnings, yuriy brun,reid holmes,michael d. ernst,david notkin
+1 2013 - Cassandra proactive conflict minimization through optimized task scheduling, bakhtiar khan kasi,anita sarma
+0 2015 - Whats hot in software engineering Twitter space, abhishek sharma,yuan tian,david lo
 0 2009 - Whats hot and whats not Windowed developer topic analysis, abram hindle,michael w. godfrey,richard c. holt
-0 2015 - Using GSwE2009 for the Evaluation of a Master Degree in Software Engineering in the Universidad de la Repblica, lucia camilloni,diego vallespir,mark a. ardis
-0 2015 - Users beware preference inconsistencies ahead, farnaz behrang,myra b. cohen,alessandro orso
+0 2009 - What motivate software engineers to refactor source code evidences from professional developers, yi wang
+0 2013 - User feedback in the appstore An empirical study, dennis pagano,walid maalej
+0 2015 - Understanding Conflicts Arising from Collaborative Development, paola r. g. accioly
+0 2014 - Traceabilityenabled refactoring for managing justintime requirements, nan niu,tanmay bhowmik,hui liu,zhendong niu
+0 2016 - Towards quality gates in continuous delivery and deployment, gerald schermann,jurgen cito,philipp leitner,harald c. gall
+0 2015 - Towards purityguided refactoring in Java, jiachen yang,keisuke hotta,yoshiki higo,shinji kusumoto
 *** 5 ***
 41 2009 - Fair and balanced bias in bugfix datasets, christian bird,adrian bachmann,eirik aune,john duffy,abraham bernstein,vladimir filkov,premkumar t. devanbu
-22 2011 - How do fixes become bugs, zuoning yin,ding yuan,yuanyuan zhou,shankar pasupathy,lakshmi n. bairavasundaram
-18 2009 - Improving bug triage with bug tossing graphs, gaeul jeong,sunghun kim,thomas zimmermann
-18 2010 - Characterizing and predicting which bugs get fixed an empirical study of Microsoft Windows, philip j. guo,thomas zimmermann,nachiappan nagappan,brendan murphy
-*** 6 ***
-14 2012 - On the naturalness of software, abram hindle,earl t. barr,zhendong su,mark gabel,premkumar t. devanbu
-12 2009 - Automatic creation of SQL Injection and crosssite scripting attacks, adam kiezun,philip j. guo,karthick jayaraman,michael d. ernst
-7 2010 - Lightweight modular staging a pragmatic approach to runtime code generation and compiled DSLs, tiark rompf,martin odersky
-6 2012 - How do developers use parallel libraries, semih okur,danny dig
-*** 7 ***
-8 2011 - Autolocating and fixpropagating for HTML validation errors to PHP serverside code, hung viet nguyen,hoan anh nguyen,tung thanh nguyen,tien n. nguyen
-5 2012 - Using GUI ripping for automated testing of Android applications, domenico amalfitano,anna rita fasolino,porfirio tramontana,salvatore de carmine,atif m. memon
-5 2009 - Locating needtotranslate constant strings for software internationalization, xiaoying wang,lu zhang,tao xie,hong mei,jiasu sun
-4 2010 - Eliminating navigation errors in web applications via model checking and runtime enforcement of navigation state machines, sylvain halle,taylor ettema,chris bunch,tevfik bultan
-*** 8 ***
-2 2010 - Highly Configurable and Extensible Code Clone Detection, benjamin biegel,stephan diehl
-1 2011 - Decomposing feature models language environment and applications, mathieu acher,philippe collet,philippe lahire,robert b. france
-0 2015 - WuKong a scalable and accurate twophase approach to Android app clone detection, haoyu wang,yao guo,ziang ma,xiangqun chen
-0 2015 - When code smells twice as much Metricbased detection of variabilityaware code smells, wolfram fenske,sandro schulze,daniel meyer,gunter saake
-*** 9 ***
 28 2009 - Predicting faults using the complexity of code changes, ahmed e. hassan
-21 2009 - Semanticsbased code search, steven p. reiss
+26 2011 - Are automated debugging techniques actually helping programmers, chris parnin,alessandro orso
 20 2011 - Portfolio finding relevant functions and their usage, collin mcmillan,mark grechanik,denys poshyvanyk,qing xie,chen fu
 19 2010 - The missing links bugs and bugfix commits, adrian bachmann,christian bird,foyzur rahman,premkumar t. devanbu,abraham bernstein
-*** 10 ***
+19 2009 - Graphbased mining of multiple object usage patterns, tung thanh nguyen,hoan anh nguyen,nam h. pham,jafar m. al-kofahi,tien n. nguyen
+19 2009 - Discovering and representing systematic code changes, miryung kim,david notkin
+18 2009 - Learning from examples to improve code completion systems, marcel bruch,martin monperrus,mira mezini
+18 2009 - Improving bug triage with bug tossing graphs, gaeul jeong,sunghun kim,thomas zimmermann
+17 2009 - Mining exceptionhandling rules as sequence association rules, suresh thummalapenta,tao xie
+*** 6 ***
+21 2009 - Semanticsbased code search, steven p. reiss
+18 2010 - Model checking lots of systems efficient verification of temporal properties in software product lines, andreas classen,patrick heymans,pierre-yves schobbens,axel legay,jean-francois raskin
+13 2009 - Learning operational requirements from goal models, dalal alrajeh,jeffrey kramer,alessandra russo,sebastian uchitel
+13 2009 - FEATUREHOUSE Languageindependent automated software composition, sven apel,christian kastner,christian lengauer
+12 2009 - Model Checking of Domain Artifacts in Product Line Engineering, kim lauenroth,klaus pohl,simon toehning
+10 2011 - Detection of feature interactions using featureaware verification, sven apel,hendrik speidel,philipp wendler,alexander von rhein,dirk beyer
+9 2009 - Synthesizing intensional behavior models by graph transformation, carlo ghezzi,andrea mocci,mattia monga
+9 2011 - Symbolic model checking of software product lines, andreas classen,patrick heymans,pierre-yves schobbens,axel legay
+9 2011 - Runtime efficient probabilistic model checking, antonio filieri,carlo ghezzi,giordano tamburrelli
+9 2009 - Automatic steering of behavioral model inference, david lo,leonardo mariani,mauro pezze
+*** 7 ***
+14 2012 - On the naturalness of software, abram hindle,earl t. barr,zhendong su,mark gabel,premkumar t. devanbu
+12 2009 - Automatic creation of SQL Injection and crosssite scripting attacks, adam kiezun,philip j. guo,karthick jayaraman,michael d. ernst
+8 2011 - Automated crossbrowser compatibility testing, ali mesbah,mukul r. prasad
+8 2011 - Autolocating and fixpropagating for HTML validation errors to PHP serverside code, hung viet nguyen,hoan anh nguyen,tung thanh nguyen,tien n. nguyen
+7 2011 - Saving the world wide web from vulnerable JavaScript, salvatore guarnieri,marco pistoia,omer tripp,julian dolby,stephen teilhet,ryan berg
+6 2012 - What makes a good code example A study of programming QA in StackOverflow, seyed mehdi nasehi,jonathan sillito,frank maurer,chris burns
+5 2013 - XPERT accurate identification of crossbrowser issues in web applications, shauvik roy choudhary,mukul r. prasad,alessandro orso
+5 2009 - Locating needtotranslate constant strings for software internationalization, xiaoying wang,lu zhang,tao xie,hong mei,jiasu sun
+3 2012 - ViewPoints differential string analysis for discovering client and serverside input validation inconsistencies, muath alkhalaf,shauvik roy choudhary,mattia fazzini,tevfik bultan,alessandro orso,christopher krugel
+3 2010 - Locating needtotranslate constant strings in web applications, xiaoying wang,lu zhang,tao xie,hong mei,jiasu sun
+*** 8 ***
 22 2009 - The secret life of bugs Going past the errors and omissions in software repositories, jorge aranda,gina danielle venolia
 20 2010 - Codebook discovering and exploiting relationships in software repositories, andrew begel,yit phang khoo,thomas zimmermann
+18 2010 - Characterizing and predicting which bugs get fixed an empirical study of Microsoft Windows, philip j. guo,thomas zimmermann,nachiappan nagappan,brendan murphy
 17 2009 - Predicting build failures using social network analysis on developer communication, timo wolf,adrian schroter,daniela e. herlea,thanh h. d. nguyen
 16 2009 - Does distributed development affect software quality An empirical case study of Windows Vista, christian bird,nachiappan nagappan,premkumar t. devanbu,harald c. gall,brendan murphy
+15 2013 - The GHTorent dataset and tool suite, georgios gousios
+14 2009 - Crossproject defect prediction a large scale experiment on data vs domain vs process, thomas zimmermann,nachiappan nagappan,harald c. gall,emanuel giger,brendan murphy
+12 2009 - How tagging helps bridge the gap between social and technical aspects in software development, christoph treude,margaret-anne d. storey
+10 2013 - Creating a shared understanding of testing culture on a social coding site, raphael pham,leif singer,olga liskin,fernando marques figueira filho,kurt schneider
+9 2010 - Moving into a new software project landscape, barthelemy dagenais,harold ossher,rachel k. e. bellamy,martin p. robillard,jacqueline de vries
+*** 9 ***
+1 2010 - Understanding Feature Evolution in a Family of Product Variants, yinxing xue,zhenchang xing,stanislaw jarzabek
+0 2016 - Visualizing DataFlows in Functional Programs, tobias weck,matthias tichy
+0 2016 - Towards Transparent Introspection, kevin leach,chad spensky,westley weimer,fengwei zhang
+0 2009 - To camelcase or underscore, david m. binkley,marcia davis,dawn lawrie,christopher morrell
+0 2016 - Theories of everything, pamela zave
+0 2016 - Symbolic Characterisation of Commonalities in Testing Software Product Lines, sebastian kunze
+0 2016 - SuperMod tool support for collaborative filtered modeldriven software product line engineering, felix schwagerl,bernhard westfechtel
+0 2015 - Stuck and Frustrated or in Flow and Happy Sensing Developers Emotions and Progress, sebastian muller,thomas fritz
+0 2015 - Static ControlFlow Analysis of UserDriven Callbacks in Android Applications, shengqian yang,dacong yan,haowei wu,yan wang,atanas rountev
+0 2016 - Skyfire ModelBased Testing with Cucumber, nan li,anthony escalona,tariq kamal
+*** 10 ***
+4 2013 - Teaching and learning programming and software engineering via interactive gaming, nikolai tillmann,jonathan de halleux,tao xie,sumit gulwani,judy m. bishop
+4 2009 - SUITE 2009 First international workshop on searchdriven development  users infrastructure tools and evaluation, sushil krishna bajracharya,adrian kuhn,yunwen ye
+4 2009 - Identification of Extract Method Refactoring Opportunities, nikolaos tsantalis,alexander chatzigeorgiou
+2 2010 - SUITE 2010 2nd International Workshop on SearchDriven Development  Users Infrastructure Tools  Evaluation, sushil krishna bajracharya,adrian kuhn,yunwen ye
+2 2009 - Identifying Architectural Bad Smells, joshua garcia,daniel popescu,george edwards,nenad medvidovic
+1 2011 - Third international workshop on searchdriven development users infrastructure tools and evaluation SUITE 2011, sushil krishna bajracharya,adrian kuhn,yunwen ye
+1 2009 - Software Metrics Suites for Project Landscapes, georgios lajios
+1 2009 - Incremental Clone Detection, nils gode,rainer koschke
+1 2010 - Fifth Workshop on Software Engineering for Adaptive and SelfManaging Systems SEAMS 2010, betty h. c. cheng,rogerio de lemos,david garlan,holger giese,marin litoiu,jeffrey n. magee,hausi a. muller,mauro pezze,richard n. taylor
+1 2009 - Establishing Traceability Links between Unit Test Cases and Units under Test, bart van rompaey,serge demeyer

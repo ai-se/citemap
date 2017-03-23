@@ -1,55 +1,121 @@
 *** 0 ***
-20 2005 - CatchUp capturing and replaying refactorings to support API evolution, johannes henkel,amer diwan
-19 1995 - A Component and MessageBased Architectural Style for GUI Software, richard n. taylor,nenad medvidovic,kenneth m. anderson,jim whitehead,jason e. robbins
-18 2005 - The Top Ten List Dynamic Fault Prediction, ahmed e. hassan,richard c. holt
-18 2002 - Supporting reuse by delivering taskrelevant and personalized information, yunwen ye,gerhard g. fischer
-*** 1 ***
 122 2005 - CUTE a concolic unit testing engine for C, koushik sen,darko marinov,gul a. agha
 86 1999 - Dynamically Discovering Likely Program Invariants to Support Program Evolution, michael d. ernst,jake cockrell,william g. griswold,david notkin
-79 2002 - Visualization of test information to assist fault localization, james a. jones,mary jean harrold,john t. stasko
-71 2002 - Korat automated testing based on Java predicates, chandrasekhar boyapati,sarfraz khurshid,darko marinov
-*** 2 ***
 80 2000 - Model Checking Programs, willem visser,klaus havelund,guillaume p. brat,seungjoon park
+71 2002 - Korat automated testing based on Java predicates, chandrasekhar boyapati,sarfraz khurshid,darko marinov
+71 2000 - Bandera extracting finitestate models from Java source code, james c. corbett,matthew b. dwyer,john hatcliff,shawn laubach,corina s. pasareanu,robby,hongjun zheng
+63 2005 - Locating causes of program failures, holger cleve,andreas zeller
+48 2006 - Perracotta mining temporal API rules from imperfect traces, jinlin yang,david evans,deepali bhardwaj,thirumalesh bhat,manuvir das
+47 2002 - Isolating causeeffect chains from computer programs, andreas zeller
+46 2002 - Tracking down software bugs using automatic anomaly detection, sudheendra hangal,monica s. lam
 42 2002 - Automatic extraction of objectoriented component interfaces, john whaley,michael c. martin,monica s. lam
-41 2003 - Scaling StepWise Refinement, don s. batory,jacob neal sarvela,axel rauschmayer
-38 2008 - Automatic generation of software behavioral models, davide lorenzoli,leonardo mariani,mauro pezze
+*** 1 ***
+79 2002 - Visualization of test information to assist fault localization, james a. jones,mary jean harrold,john t. stasko
+63 2005 - Empirical evaluation of the tarantula automatic faultlocalization technique, james a. jones,mary jean harrold
+59 2007 - FeedbackDirected Random Test Generation, carlos pacheco,shuvendu k. lahiri,michael d. ernst,thomas a. ball
+50 2004 - Test input generation with java PathFinder, willem visser,corina s. pasareanu,sarfraz khurshid
+45 2000 - Prioritizing test cases for regression testing, sebastian g. elbaum,alexey g. malishevsky,gregg rothermel
+38 2005 - Is mutation an appropriate tool for testing experiments, jamie andrews,lionel c. briand,yvan labiche
+31 2002 - Effectively prioritizing tests in development environment, amitabh srivastava,jay thiagarajan
+29 2004 - Evolutionary testing of classes, paolo tonella
+24 2010 - Automated fixing of programs with contracts, yi wei,yu pei 0001,carlo a. furia,lucas serpa silva,stefan buchholz,bertrand meyer,andreas zeller
+23 2006 - Test input generation for java containers using state matching, willem visser,corina s. pasareanu,radek pelanek
+*** 2 ***
+19 2002 - ArchJava connecting software architecture to implementation, jonathan aldrich,craig chambers,david notkin
+19 1995 - A Component and MessageBased Architectural Style for GUI Software, richard n. taylor,nenad medvidovic,kenneth m. anderson,jim whitehead,jason e. robbins
+15 2002 - Gamma system continuous evolution of software after deployment, alessandro orso,donglin liang,mary jean harrold,richard j. lipton
+12 2009 - Model evolution by runtime parameter adaptation, ilenia epifani,carlo ghezzi,raffaela mirandola,giordano tamburrelli
+10 2006 - Modelbased development of dynamically adaptive software, ji zhang,betty h. c. cheng
+9 2006 - Whats in a Name A Study of Identifiers, dawn lawrie,christopher morrell,henry feild,david m. binkley
+9 2000 - Towards a taxonomy of software connectors, nikunj r. mehta,nenad medvidovic,sandeep phadke
+9 2009 - RELAX Incorporating Uncertainty into the Specification of SelfAdaptive Systems, jonathan p. whittle,peter sawyer,nelly bencomo,betty h. c. cheng,jean-michel bruel
+9 2005 - Information hiding interfaces for aspectoriented design, kevin j. sullivan,william g. griswold,yuanyuan song,yuanfang cai,macneil shonle,nishit tewari,hridesh rajan
+9 2009 - Automatic synthesis of behavior protocols for composable webservices, antonia bertolino,paola inverardi,patrizio pelliccione,massimo tivoli
 *** 3 ***
-4 2009 - Identification of Extract Method Refactoring Opportunities, nikolaos tsantalis,alexander chatzigeorgiou
-2 2009 - Identifying Architectural Bad Smells, joshua garcia,daniel popescu,george edwards,nenad medvidovic
-2 2013 - Asking for and about permissions used by Android apps, ryan stevens,jonathan ganz,vladimir filkov,premkumar t. devanbu,hao chen 0003
-1 2004 - Workshop on Directions in Software Engineering Environments WoDiSEE, john c. grundy,ray welland,hermann stoeckle
-*** 4 ***
+39 2008 - An approach to detecting duplicate bug reports using natural language and execution information, xiaoying wang,lu zhang,tao xie,john anvik,jiasu sun
+30 2008 - What makes a good bug report, nicolas bettenburg,sascha just,adrian schroter,cathrin weiss,rahul premraj,thomas zimmermann
+22 2011 - How do fixes become bugs, zuoning yin,ding yuan,yuanyuan zhou,shankar pasupathy,lakshmi n. bairavasundaram
+15 2006 - Memories of bug fixes, sunghun kim,kai pan,jim whitehead
+14 2010 - Has the bug really been fixed, zhongxian gu,earl t. barr,david j. hamilton,zhendong su
+13 2009 - The promises and perils of mining git, christian bird,peter c. rigby,earl t. barr,david j. hamilton,daniel m. german,premkumar t. devanbu
+12 2007 - Which warnings should I fix first, sunghun kim,michael d. ernst
+8 2010 - Finegrained incremental learning and multifeature tossing graphs to improve bug triaging, pamela bhattacharya,iulian neamtiu
 7 2004 - Validating the Unit Correctness of Spreadsheet Programs, tudor antoniu,paul a. steckler,shriram krishnamurthi,erich neuwirth,matthias felleisen
-0 1994 - Workshop on the Intersection Between Databases and Software Engineering, roger king
-0 2015 - Witness validation and stepwise testification across software verifiers, dirk beyer 0001,matthias dangl,daniel dietsch,matthias heizmann,andreas stahlbauer
-0 2001 - Where Are We on the Fend off the Alligators  Drain the Swamp Continuum, donald c. gause,savile row
+7 2010 - The Google FindBugs fixit, nathaniel ayewah,william w. pugh
+*** 4 ***
+13 2007 - RefactoringAware Configuration Management for ObjectOriented Programs, danny dig,kashif manzoor,ralph e. johnson,tien n. nguyen
+4 2006 - Poirot A Distributed Tool Supporting EnterpriseWide Automated Traceability, jun lin,chan chou lin,jane cleland-huang,raffaella settimi,joseph amaya,grace bedford,brian berenbach,oussama ben khadra,chuan duan,xuchang zou
+3 2003 - Refactoring Browser with Preprocessor, marian vittek
+2 2006 - Tailoring Traceability Information to Business Needs, paul arkley,steve riddle,tom brookes
+2 2006 - Identifying Nocuous Ambiguities in Natural Language Requirements, francis chantree,bashar nuseibeh,anne n. de roeck,alistair willis
+2 2006 - Generating Hierarchical State Machines from Use Case Charts, jonathan p. whittle,praveen k. jayaraman
+2 2011 - Crystal precise and unobtrusive conflict warnings, yuriy brun,reid holmes,michael d. ernst,david notkin
+1 2006 - Interaction Analysis in AspectOriented Models, katharina mehner,mattia monga,gabriele taentzer
+1 2013 - Cassandra proactive conflict minimization through optimized task scheduling, bakhtiar khan kasi,anita sarma
+1 2003 - Automated Support for FrameworkBased Software Evolution, tom tourwe,tom mens
 *** 5 ***
 67 2006 - Who should fix this bug, john anvik,lyndon hiew,gail c. murphy
-50 2005 - Use of relative code churn measures to predict system defect density, nachiappan nagappan,thomas a. ball
-45 2006 - Mining metrics to predict component failures, nachiappan nagappan,thomas a. ball,andreas zeller
-41 2009 - Fair and balanced bias in bugfix datasets, christian bird,adrian bachmann,eirik aune,john duffy,abraham bernstein,vladimir filkov,premkumar t. devanbu
-*** 6 ***
-25 2001 - Identifying Similar Code with Program Dependence Graphs, jens krinke
-21 2004 - Static Checking of Dynamically Generated Queries in Database Applications, carl gould,zhendong su,premkumar t. devanbu
-14 2012 - On the naturalness of software, abram hindle,earl t. barr,zhendong su,mark gabel,premkumar t. devanbu
-12 2004 - Testing static analysis tools using exploitable buffer overflows from open source code, misha zitser,richard p. lippmann,timothy r. leek
-*** 7 ***
-21 2008 - Static detection of crosssite scripting vulnerabilities, gary wassermann,zhendong su
-8 2011 - Autolocating and fixpropagating for HTML validation errors to PHP serverside code, hung viet nguyen,hoan anh nguyen,tung thanh nguyen,tien n. nguyen
-5 2012 - Using GUI ripping for automated testing of Android applications, domenico amalfitano,anna rita fasolino,porfirio tramontana,salvatore de carmine,atif m. memon
-5 2008 - ReBA refactoringaware binary adaptation of evolving libraries, danny dig,stas negara,vibhu mohindra,ralph e. johnson
-*** 8 ***
-9 2006 - Whats in a Name A Study of Identifiers, dawn lawrie,christopher morrell,henry feild,david m. binkley
-8 2008 - Configuration Lifting Verification meets Software Configuration, hendrik post,carsten sinz
-7 2006 - Classifying Change Types for Qualifying Change Couplings, beat fluri,harald c. gall
-6 2006 - Dynamic Analysis of Software Systems using Execution Pattern Mining, hossein safyallah,kamran sartipi
-*** 9 ***
 66 2005 - When do changes induce fixes, jacek sliwerski,thomas zimmermann,andreas zeller
+50 2005 - Use of relative code churn measures to predict system defect density, nachiappan nagappan,thomas a. ball
 50 2004 - Mining Version Histories to Guide Software Changes, thomas zimmermann,peter weissgerber,stephan diehl,andreas zeller
 49 2003 - Populating a Release History Database from Version Control and Bug Tracking Systems, michael fischer,martin pinzger,harald c. gall
+45 2006 - Mining metrics to predict component failures, nachiappan nagappan,thomas a. ball,andreas zeller
 44 2005 - PRMiner automatically extracting implicit programming rules and detecting violations in large software code, zhenmin li,yuanyuan zhou
-*** 10 ***
+43 1998 - Clone Detection Using Abstract Syntax Trees, ira d. baxter,andrew yahin,leonardo mendonca de moura,marcelo sant'anna,lorraine bier
+41 2009 - Fair and balanced bias in bugfix datasets, christian bird,adrian bachmann,eirik aune,john duffy,abraham bernstein,vladimir filkov,premkumar t. devanbu
+37 2005 - Using structural context to recommend source code examples, reid holmes,gail c. murphy
+*** 6 ***
+41 2003 - Scaling StepWise Refinement, don s. batory,jacob neal sarvela,axel rauschmayer
+38 2008 - Automatic generation of software behavioral models, davide lorenzoli,leonardo mariani,mauro pezze
+22 2001 - Interface automata, luca de alfaro,thomas a. henzinger
+21 2009 - Semanticsbased code search, steven p. reiss
+20 2006 - Verifying featurebased model templates against wellformedness OCL constraints, krzysztof czarnecki,krzysztof pietroszek
+20 2003 - Fluent model checking for eventbased systems, dimitra giannakopoulou,jeffrey n. magee
+19 2000 - Generating statechart designs from scenarios, jonathan p. whittle,johann schumann
+18 2010 - Model checking lots of systems efficient verification of temporal properties in software product lines, andreas classen,patrick heymans,pierre-yves schobbens,axel legay,jean-francois raskin
+18 2000 - Automating firstorder relational logic, daniel b. jackson
+17 2008 - Javert fully automatic mining of general temporal properties from dynamic traces, mark gabel,zhendong su
+*** 7 ***
+14 2012 - On the naturalness of software, abram hindle,earl t. barr,zhendong su,mark gabel,premkumar t. devanbu
+12 2009 - Automatic creation of SQL Injection and crosssite scripting attacks, adam kiezun,philip j. guo,karthick jayaraman,michael d. ernst
+8 2011 - Automated crossbrowser compatibility testing, ali mesbah,mukul r. prasad
+8 2011 - Autolocating and fixpropagating for HTML validation errors to PHP serverside code, hung viet nguyen,hoan anh nguyen,tung thanh nguyen,tien n. nguyen
+7 2011 - Saving the world wide web from vulnerable JavaScript, salvatore guarnieri,marco pistoia,omer tripp,julian dolby,stephen teilhet,ryan berg
+6 2012 - What makes a good code example A study of programming QA in StackOverflow, seyed mehdi nasehi,jonathan sillito,frank maurer,chris burns
+5 2013 - XPERT accurate identification of crossbrowser issues in web applications, shauvik roy choudhary,mukul r. prasad,alessandro orso
+5 2008 - ReBA refactoringaware binary adaptation of evolving libraries, danny dig,stas negara,vibhu mohindra,ralph e. johnson
+5 2009 - Locating needtotranslate constant strings for software internationalization, xiaoying wang,lu zhang,tao xie,hong mei,jiasu sun
+4 2007 - Using Server Pages to Unify Clones in Web Applications A TradeOff Analysis, damith c. rajapakse,stanislaw jarzabek
+*** 8 ***
+41 2006 - Maintaining mental models a study of developer work habits, thomas d. latoza,gina danielle venolia,robert deline
 33 2006 - Mining email social networks, christian bird,alex gourley,premkumar t. devanbu,michael gertz,anand swaminathan
+29 2002 - Expertise browser a quantitative approach to identifying expertise, audris mockus,james d. herbsleb
+23 2007 - How Long Will It Take to Fix This Bug, cathrin weiss,rahul premraj,thomas zimmermann,andreas zeller
 22 2009 - The secret life of bugs Going past the errors and omissions in software repositories, jorge aranda,gina danielle venolia
 20 2010 - Codebook discovering and exploiting relationships in software repositories, andrew begel,yit phang khoo,thomas zimmermann
+18 2005 - The Top Ten List Dynamic Fault Prediction, ahmed e. hassan,richard c. holt
+18 2002 - Supporting reuse by delivering taskrelevant and personalized information, yunwen ye,gerhard g. fischer
 18 2008 - Latent social structure in open source projects, christian bird,david s. pattison,raissa m. d'souza,vladimir filkov,premkumar t. devanbu
+18 2006 - From daikon to agitator lessons and challenges in building a commercial tool for developer testing, marat boshernitsan,roong-ko doong,alberto savoia
+*** 9 ***
+25 2006 - Feature oriented refactoring of legacy applications, jia liu,don s. batory,christian lengauer
+19 2007 - Safe composition of product lines, sahil thaker,don s. batory,david kitchin,william r. cook
+7 2008 - On the modularity of feature interactions, chang hwan peter kim,christian kastner,don s. batory
+7 2002 - Extensible LanguageAware Merging, james j. hunt,walter f. tichy
+4 2002 - Testing Web Applications, giuseppe a. di lucca,anna rita fasolino,francesco faralli,ugo de carlini
+3 2006 - Refactoring product lines, vander alves,rohit gheyi,tiago massoni,uira kulesza,paulo borba,carlos jose pereira de lucena
+3 2002 - Finding HighLevel Structures in Spreadsheet Programs, roland t. mittermeir,markus clermont
+3 2005 - Equipping the Reflexion Method with Automated Clustering, andreas christl,rainer koschke,margaret-anne d. storey
+2 2002 - Using Dynamic Information for the Iterative Recovery of Collaborations and Roles, tamar richner,stephane ducasse
+2 2002 - Union Slices for Program Maintenance, arpad beszedes,csaba farago,zsolt mihaly szabo,janos csirik,tibor gyimothy
+*** 10 ***
+4 2013 - Teaching and learning programming and software engineering via interactive gaming, nikolai tillmann,jonathan de halleux,tao xie,sumit gulwani,judy m. bishop
+4 2009 - SUITE 2009 First international workshop on searchdriven development  users infrastructure tools and evaluation, sushil krishna bajracharya,adrian kuhn,yunwen ye
+4 2009 - Identification of Extract Method Refactoring Opportunities, nikolaos tsantalis,alexander chatzigeorgiou
+3 2004 - Exploring Software Evolution Using Spectrographs, jingwei wu,richard c. holt,ahmed e. hassan
+2 2005 - Towards increasing the compatibility of student pair programmers, neha katira,laurie a. williams,jason a. osborne
+2 2004 - The Small World of Software Reverse Engineering, ahmed e. hassan,richard c. holt
+2 2004 - ScriptEase Generative Design Patterns for Computer RolePlaying Games, matthew mcnaughton,maria cutumisu,duane szafron,jonathan schaeffer,james redford,dominique parker
+2 2010 - SUITE 2010 2nd International Workshop on SearchDriven Development  Users Infrastructure Tools  Evaluation, sushil krishna bajracharya,adrian kuhn,yunwen ye
+2 2004 - ModelDriven Business Process Recovery, ying zou,terence c. lau,kostas kontogiannis,tack tong,ross mckegney
+2 2009 - Identifying Architectural Bad Smells, joshua garcia,daniel popescu,george edwards,nenad medvidovic

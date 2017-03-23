@@ -370,7 +370,7 @@ def get_top_papers(file_name, min_year=None):
     top_papers[topic].append([(cites, paper.title, paper.authors, paper.year)])
   with open(file_name, 'wb') as f:
     for index in range(N_TOPICS):
-      top_papers[index] = sorted(top_papers[index], reverse=True)[:4]
+      top_papers[index] = sorted(top_papers[index], reverse=True)[:10]
       f.write("*** %d ***\n" % index)
       for paper in top_papers[index]:
         paper = paper[0]
@@ -548,11 +548,11 @@ if __name__ == "__main__":
   # conference_diversity("heatmap_01_08", dendo_14_settings, range(2001, 2009))
   # conference_diversity("heatmap_09_16", dendo_16_settings, range(2009, 2017))
   # conference_diversity("heatmap_all", dendo_16_settings)
-  pc_topics_heatmap("pc_heatmap_09_16", dendo_16_settings, range(2009, 2017))
+  # pc_topics_heatmap("pc_heatmap_09_16", dendo_16_settings, range(2009, 2017))
   # topic_evolution()
   # pc_heatmap_delta("delta", "Topic Dist. Delta between papers by PC and all papers(2009-2016)", range(2009, 2016))
-  # get_top_papers("figs/v2/stats/top_papers.txt")
-  # get_top_papers("figs/v2/stats/top_papers_recent.txt", 2009)
+  get_top_papers("figs/v2/stats/top_papers.txt")
+  get_top_papers("figs/v2/stats/top_papers_recent.txt", 2009)
   # print_top_authors("figs/v2/stats/top_authors.txt", 0.01)
   # print_top_authors("figs/v2/stats/top_authors_recent.txt", 0.01, 2009)
   # plot_super_authors("figs/v2/super_author/all_authors.png")
