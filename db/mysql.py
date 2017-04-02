@@ -178,6 +178,15 @@ def get_conferences():
   return conferences
 
 
+def get_papers():
+  db = DB.get()
+  cur = db.cursor()
+  cur.execute("SELECT * from papers")
+  rows = [row[:] for row in cur.fetchall()]
+  DB.close()
+  return rows
+
+
 if __name__ == "__main__":
   # get_conferences()
   dump(file_name='data/citemap_v7.csv')
