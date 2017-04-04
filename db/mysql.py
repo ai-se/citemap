@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath("."))
 import MySQLdb
 from utils.lib import O, Paper, PC, Node, Venue
 from collections import OrderedDict
+import cPickle as pkl
 
 # SCHEMA_NAME = "conferences"
 # SCHEMA_NAME = "conferences_dummy"
@@ -105,6 +106,7 @@ def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
     paper.author_sql_ids = []
     paper.abstract = row[11]
     paper.doi_url = row[12]
+    paper.cited_count = row[13]
     paper.is_conference = True if venues[str(paper.venue_id)].is_conference == 1 else False
     cur_authors = DB.get().cursor()
     cur_authors.execute("SELECT persons.id, persons.name FROM persons, authorship "
@@ -116,7 +118,7 @@ def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
   if not to_csv:
     return papers
   header = ["ID", "Venue", "Is_Conference", "Year", "Title", "H2",
-            "H3", "Ref_ID", "Cites", "Author_IDs", "Authors", "Abstract", "DOI_URL"]
+            "H3", "Ref_ID", "Cites", "Author_IDs", "Authors", "Abstract", "DOI_URL", "Cited_Count"]
   with open(file_name, 'wb') as f:
     f.write(delimiter.join(header) + "\n")
     for i, paper in enumerate(papers):
@@ -124,7 +126,7 @@ def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
       authors = ",".join(paper.authors) if paper.authors else ""
       author_ids = ",".join(paper.author_sql_ids) if paper.author_sql_ids else ""
       row = [paper.id, paper.venue_id, paper.is_conference, paper.year, paper.title, paper.h2,
-             paper.h3, paper.ref_id, cites, author_ids, authors, paper.abstract, paper.doi_url]
+             paper.h3, paper.ref_id, cites, author_ids, authors, paper.abstract, paper.doi_url, paper.cited_count]
       f.write(delimiter.join(map(str, row)) + "\n")
   DB.close()
 
@@ -188,7 +190,26 @@ def get_papers():
   return rows
 
 
+def update_citation_count():
+  db = DB.get()
+  cur = db.cursor()
+  count = 0
+  stmt = "UPDATE papers SET citation_count=%s WHERE id=%s"
+  with open("data/cross_ref.pkl") as f:
+    data = pkl.load(f)
+    values = []
+    for key, value in data.items():
+      values.append((value['cited_count'], key))
+      count += 1
+      print("Statement : ", count)
+    cur.executemany(stmt, values)
+    db.commit()
+  DB.close()
+
+
+
 if __name__ == "__main__":
   # get_conferences()
   dump(file_name='data/citemap_v8.csv')
   # print(get_venues())
+  # update_citation_count()
