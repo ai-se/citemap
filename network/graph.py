@@ -7,6 +7,8 @@ from utils.unicoder import UnicodeReader
 
 __author__ = "panzer"
 
+AUTHOR_ID_INDEX = 9
+AUTHOR_NAME_INDEX = 10
 
 class Graph(O):
   def __init__(self):
@@ -54,7 +56,7 @@ class Graph(O):
           ref_nodes[paper_node.ref_id] = paper_node
         paper_nodes[paper_node.id] = paper_node
         paper_authors = []
-        for author_id, author in zip(columns[-3].split(","), columns[-2].split(",")):
+        for author_id, author in zip(columns[AUTHOR_ID_INDEX].split(","), columns[AUTHOR_NAME_INDEX].split(",")):
           author_node = author_nodes[author_id]
           paper_authors.append(author_node)
           edge = Edge(source=author_node.id, target=paper_node.id, edge_type="author")

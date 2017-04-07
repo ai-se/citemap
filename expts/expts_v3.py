@@ -19,7 +19,7 @@ from expts.settings import dend as dend_settings
 from matplotlib.colors import ColorConverter
 import pickle as pkl
 
-GRAPH_CSV = "data/citemap_v7.csv"
+GRAPH_CSV = "data/citemap_v8.csv"
 
 # For 11 TOPICS
 ALPHA = 0.22359
@@ -29,8 +29,9 @@ ITERATIONS = 100
 # TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
 #           "SourceCode", "WebApps", "Configuration", "Developer", "Mining"]
 TOPICS_JOURNALS = ["Requirements", "Applications", "Source Code", "Empirical", "Testing", "Security", "Modelling"]
-TOPICS_ALL = ["Empirical", "Requirements", "Tools", "PL?", "Misc", "Modelling", "Developer", "Architecture", "Testing",
-              "Source Code", "Maintenance"]
+TOPICS_ALL = ["Algorithm", "Management", "Metrics", "Requirements", "Empirical",
+              "Security", "Applications", "Modelling", "Source Code", "Program Analysis",
+              "Testing"]
 TOPIC_THRESHOLD = 3
 
 COLORS_JOURNAL = ["grey", "red", "blue", "green",
@@ -112,10 +113,25 @@ def percent_sort(arr):
   return sorted(tmp, key=lambda yp: yp[1], reverse=True)
 
 
-def report(lda_model, vocab, n_top_words=10):
+def report(lda_model, vocab, fig_name="topic_dist", n_top_words=10, plot_terms=50):
+  fig = plt.figure()
+  x_axis = range(1, plot_terms + 1)
+  legends = []
   for index, topic_dist in enumerate(lda_model.topic_word_):
+    sorted_dist = np.sort(topic_dist)
+    # scores = sorted_dist[:-(n_top_words + 1):-1]
+    plot_scores = sorted_dist[:-(plot_terms + 1):-1]
+    plot_scores = np.log(plot_scores)
+    plt.plot(x_axis, plot_scores)
     topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
+    legends.append("Topic %d" % index)
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))
+  plt.legend(legends, loc='upper right')
+  plt.title(fig_name)
+  plt.xlabel("Term Index")
+  plt.ylabel("Log. Word Score")
+  plt.savefig("figs/v3/%s/%s.png" % (THE.permitted, fig_name))
+  fig.clf()
 
 
 def make_heatmap(arr, row_labels, column_labels, figname, paper_range):
@@ -229,7 +245,8 @@ def diversity(fig_name, paper_range):
       venue_topics[conference_id] = percent_sort(topics)
       venue_heatmaps[conference_id] = topics
       valid_conferences.append(conference_id)
-  row_labels = [str(ind) + "-" + name for ind, name in zip(range(lda_model.n_topics), get_topics())]
+  # row_labels = [str(ind) + "-" + name for ind, name in zip(range(lda_model.n_topics), get_topics())]
+  row_labels = [name for ind, name in zip(range(lda_model.n_topics), get_topics())]
   # row_labels = ["%2d" % ind for ind in range(lda_model.n_topics)]
   column_labels = [shorter_names(venue.acronym) for c, venue in venues.items() if venue.id in valid_conferences]
   # Heatmap
@@ -238,7 +255,7 @@ def diversity(fig_name, paper_range):
     tot = sum(venue_heatmaps[conference_id])
     dist = [top / tot for top in venue_heatmaps[conference_id]]
     heatmap_arr.append(dist)
-  report(lda_model, vocab, 15)
+  # report(lda_model, vocab, n_top_words=15)
   make_dendo_heatmap(np.transpose(heatmap_arr), row_labels, column_labels,
                      "figs/v3/%s/diversity/%s_dend.png" % (THE.permitted, fig_name), paper_range)
   make_heatmap(np.transpose(heatmap_arr), row_labels, column_labels,
@@ -388,17 +405,23 @@ def get_top_papers(top_count=5, year_from = None):
         f.write("%s, %d, %d, \"%s\", \"%s\"\n" % (topic_names[index], paper[0], paper[-1], paper[1], paper[2]))
 
 
+def reporter():
+  miner, graph, lda_model, vocab = get_graph_lda_data()
+  report(lda_model, vocab)
+
+
 def _main():
-  # paper_bar()
-  # diversity("heatmap_09_16", range(2009, 2017))
-  # diversity("heatmap_01_08", range(2001, 2009))
-  # diversity("heatmap_93_00", range(1993, 2000))
+  reporter()
+  paper_bar()
+  diversity("heatmap_09_16", range(2009, 2017))
+  diversity("heatmap_01_08", range(2001, 2009))
+  diversity("heatmap_93_00", range(1993, 2000))
   topic_evolution(venue="all")
   topic_evolution(venue="conferences")
   topic_evolution(venue="journals")
-  # super_author([0.01, 0.1, 0.2, 1.0])
-  # get_top_papers(year_from=2009)
-  # get_top_papers()
+  super_author([0.01, 0.1, 0.2, 1.0])
+  get_top_papers(year_from=2009)
+  get_top_papers()
 
 
 if __name__ == "__main__":
