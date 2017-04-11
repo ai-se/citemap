@@ -74,6 +74,8 @@ STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering', 'paper', 
                                             'author', 'proposed', 'icse', 'article', 'year', 'articles', 'page', '2000',
                                             '2004', 'papers', 'computer', 'held', 'editor'])
 
+CONFERENCES = [venue.acronym for venue in mysql.get_conferences()]
+
 # Config
 THE = O()
 THE.permitted = "all"
@@ -188,6 +190,7 @@ def make_heatmap(arr, row_labels, column_labels, figname, paper_range):
   plt.colorbar(cax)
   plt.xticks(np.arange(len(list(df.columns))), list(df.columns), rotation="vertical")
   plt.yticks(np.arange(len(list(df.index))), list(df.index))
+  [tick.set_color("red") if tick.get_text() in CONFERENCES else tick.set_color("green") for tick in plt.gca().get_xticklabels()]
   if paper_range:
     plt.title("Topics to Conference Distribution(%d - %d)" % (paper_range[0], paper_range[-1]), y=1.2)
   else:
@@ -208,7 +211,7 @@ def make_dendo_heatmap(arr, row_labels, column_labels, figname, paper_range):
   fig = plt.figure(figsize=settings.fig_size)
   axd2 = fig.add_axes(settings.col_axes)
   col_dendr = dendrogram(col_clusters, orientation='top',
-                         color_threshold=np.inf)  # makes dendrogram black)
+                         color_threshold=np.inf, link_color_func=lambda _: '#999999')  # makes dendrogram black
   axd2.set_xticks([])
   axd2.set_yticks([])
   # plot row dendrogram
@@ -216,7 +219,7 @@ def make_dendo_heatmap(arr, row_labels, column_labels, figname, paper_range):
   row_clusters = linkage(pdist(df, metric='euclidean'), method='complete')
   row_dendr = dendrogram(row_clusters, orientation='left',
                          count_sort='ascending',
-                         color_threshold=np.inf)  # makes dendrogram black
+                         color_threshold=np.inf, link_color_func=lambda _: '#999999')  # makes dendrogram black
   axd1.set_xticks([])
   axd1.set_yticks([])
   # remove axes spines from dendrogram
@@ -236,6 +239,7 @@ def make_dendo_heatmap(arr, row_labels, column_labels, figname, paper_range):
     fig.colorbar(cax)
   axm.set_xticks(np.arange(len(list(df_rowclust.columns))))
   axm.set_xticklabels(list(df_rowclust.columns), rotation="vertical")
+  [tick.set_color("red") if tick.get_text() in CONFERENCES else tick.set_color("green") for tick in axm.get_xticklabels()]
   axm.set_yticks(np.arange(len(list(df_rowclust.index))))
   axm.set_yticklabels(list(df_rowclust.index))
   if paper_range:
