@@ -17,7 +17,8 @@ from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, dendrogram
 from expts.settings import dend as dend_settings
 from matplotlib.colors import ColorConverter
-import pickle as pkl
+import cPickle as pkl
+from sklearn.externals import joblib
 
 GRAPH_CSV = "data/citemap_v8.csv"
 
@@ -29,7 +30,7 @@ ITERATIONS = 100
 # TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
 #           "SourceCode", "WebApps", "Configuration", "Developer", "Mining"]
 TOPICS_JOURNALS = ["Requirements", "Applications", "Source Code", "Empirical", "Testing", "Security", "Modelling"]
-TOPICS_ALL = ["Algorithm", "Management", "Metrics", "Requirements", "Empirical",
+TOPICS_ALL = ["Performance", "Management", "Metrics", "Requirements", "Empirical",
               "Security", "Applications", "Modelling", "Source Code", "Program Analysis",
               "Testing"]
 TOPIC_THRESHOLD = 3
@@ -83,6 +84,52 @@ def get_graph_lda_data():
   graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph, THE.permitted)
   lda_model, vocab = miner.lda(get_n_topics(), n_iter=ITERATIONS, alpha=ALPHA, beta=BETA, stop_words=STOP_WORDS)
+  return miner, graph, lda_model, vocab
+
+
+def store_graph_lda_data():
+  miner, graph, lda_model, vocab = get_graph_lda_data()
+  with open('cache/%s/graph.pkl' % THE.permitted, 'wb') as f:
+    pkl.dump(graph, f, pkl.HIGHEST_PROTOCOL)
+  with open('cache/%s/vectorizer.pkl' % THE.permitted, 'wb') as f:
+    pkl.dump(miner.vectorizer, f, pkl.HIGHEST_PROTOCOL)
+  with open('cache/%s/doc_2_vec.pkl' % THE.permitted, 'wb') as f:
+    joblib.dump(miner.doc_2_vec, f)
+  with open('cache/%s/documents.pkl' % THE.permitted, 'wb') as f:
+    pkl.dump(miner.documents, f, pkl.HIGHEST_PROTOCOL)
+  with open('cache/%s/lda_model.pkl' % THE.permitted, 'wb') as f:
+    pkl.dump(lda_model, f, pkl.HIGHEST_PROTOCOL)
+  with open('cache/%s/vocabulary.pkl' % THE.permitted, 'wb') as f:
+    pkl.dump(vocab, f, pkl.HIGHEST_PROTOCOL)
+  return miner, graph, lda_model, vocab
+
+
+@Memoized
+def retrieve_graph_lda_data():
+  graph_file = 'cache/%s/graph.pkl' % THE.permitted
+  vectorizer_file = 'cache/%s/vectorizer.pkl' % THE.permitted
+  doc_2_vec_file = 'cache/%s/doc_2_vec.pkl' % THE.permitted
+  documents_file = 'cache/%s/documents.pkl' % THE.permitted
+  lda_model_file = 'cache/%s/lda_model.pkl' % THE.permitted
+  vocabulary_file = 'cache/%s/vocabulary.pkl' % THE.permitted
+  if os.path.isfile(graph_file) and os.path.isfile(vectorizer_file) \
+          and os.path.isfile(doc_2_vec_file) and os.path.isfile(documents_file) \
+          and os.path.isfile(lda_model_file) and os.path.isfile(vocabulary_file):
+    with open(graph_file) as f:
+      graph = pkl.load(f)
+    miner = Miner(graph)
+    with open(vectorizer_file) as f:
+      miner.vectorizer = pkl.load(f)
+    with open(doc_2_vec_file) as f:
+      miner.doc_2_vec = joblib.load(f)
+    with open(documents_file) as f:
+      miner.documents = pkl.load(f)
+    with open(lda_model_file) as f:
+      lda_model = pkl.load(f)
+    with open(vocabulary_file) as f:
+      vocab = pkl.load(f)
+  else:
+    miner, graph, lda_model, vocab = store_graph_lda_data()
   return miner, graph, lda_model, vocab
 
 
@@ -228,8 +275,11 @@ def paper_bar():
 
 
 def diversity(fig_name, paper_range):
-  print("DIVERSITY for %s" % THE.permitted)
-  miner, graph, lda_model, vocab = get_graph_lda_data()
+  if paper_range:
+    print("DIVERSITY for %s between %d - %d" % (THE.permitted, paper_range[0], paper_range[-1]))
+  else:
+    print("DIVERSITY for %s" % THE.permitted)
+  miner, graph, lda_model, vocab = retrieve_graph_lda_data()
   paper_map = graph.get_papers_by_venue(THE.permitted)
   venue_topics = {}
   venue_heatmaps = {}
@@ -263,7 +313,8 @@ def diversity(fig_name, paper_range):
 
 
 def topic_evolution(venue=THE.permitted):
-  miner, graph, lda_model, vocab = get_graph_lda_data()
+  print("TOPIC EVOLUTION for %s" % venue)
+  miner, graph, lda_model, vocab = retrieve_graph_lda_data()
   paper_nodes = graph.get_paper_nodes(venue)
   topics_map = {}
   n_topics = lda_model.n_topics
@@ -302,7 +353,6 @@ def topic_evolution(venue=THE.permitted):
   for index, (topic, color) in enumerate(colors_dict.items()):
     patches.append(mpatches.Patch(color=color, label='Topic %s' % str(topic)))
     topics.append(get_topics()[topic])
-    print(get_topics()[topic], color)
   plt.legend(tuple(patches), tuple(topics), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=6, fontsize=10,
              handlelength=0.7)
   plt.savefig("figs/v3/%s/topic_evolution/topic_evolution_%s.png" % (THE.permitted, venue))
@@ -329,7 +379,8 @@ def top_authors(graph, top_percent=0.01, min_year=None):
 
 
 def super_author(top_percents):
-  miner, graph, lda_model, vocab = get_graph_lda_data()
+  print("SUPER AUTHOR for %s; TOP PERCENTS : %s" % (THE.permitted, top_percents))
+  miner, graph, lda_model, vocab = retrieve_graph_lda_data()
   authors = graph.get_papers_by_authors(THE.permitted)
   author_publications = OrderedDict()
   for top_percent in top_percents:
@@ -357,7 +408,6 @@ def super_author(top_percents):
       bar_y.append(counter[key])
     bar_y = [0] * (lda_model.n_topics + 1 - len(bar_y)) + bar_y
     author_publications[p_key] = bar_y
-  print(author_publications)
   ind = np.arange(1, lda_model.n_topics + 2)  # the x locations for the groups
   fig = plt.figure(figsize=(8, 2))
   width = 0.2  # the width of the bars
@@ -380,11 +430,15 @@ def super_author(top_percents):
   plt.clf()
 
 
-def get_top_papers(top_count=5, year_from = None):
+def get_top_papers(top_count=5, year_from=None):
+  if year_from:
+    print("TOP %d PAPERS for %s from %d" % (top_count, THE.permitted, year_from))
+  else:
+    print("TOP %d ALL TIME PAPERS for %s" % (top_count, THE.permitted))
   top_papers = {}
   for index in range(get_n_topics()):
     top_papers[index] = []
-  miner, graph, lda_model, vocab = get_graph_lda_data()
+  miner, graph, lda_model, vocab = retrieve_graph_lda_data()
   for paper_id, paper in graph.get_paper_nodes(THE.permitted).items():
     topics = miner.documents[paper_id].topics_count
     if year_from and int(paper.year) < year_from: continue
@@ -399,14 +453,14 @@ def get_top_papers(top_count=5, year_from = None):
     f.write("Index, Cites, Year, Title, Authors\n")
     for index in range(get_n_topics()):
       top_papers[index] = sorted(top_papers[index], reverse=True)[:top_count]
-      print("***", index, "***")
       for paper in top_papers[index]:
         paper = paper[0]
         f.write("%s, %d, %d, \"%s\", \"%s\"\n" % (topic_names[index], paper[0], paper[-1], paper[1], paper[2]))
 
 
 def reporter():
-  miner, graph, lda_model, vocab = get_graph_lda_data()
+  print("TOPIC REPORTS for %s" % THE.permitted)
+  miner, graph, lda_model, vocab = retrieve_graph_lda_data()
   report(lda_model, vocab)
 
 
@@ -424,5 +478,9 @@ def _main():
   get_top_papers()
 
 
+def _store():
+  store_graph_lda_data()
+
 if __name__ == "__main__":
   _main()
+  # _store()

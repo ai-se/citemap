@@ -70,4 +70,5 @@ target/
 # Large files
 data/aminer
 DBLP_Citation_2014_May
+cache/
 #citemap*.csv

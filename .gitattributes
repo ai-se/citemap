@@ -1,1 +1,2 @@
 citemap.csv filter=lfs diff=lfs merge=lfs -text
+cache/** filter=lfs diff=lfs merge=lfs -text
