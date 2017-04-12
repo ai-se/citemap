@@ -135,6 +135,18 @@ def retrieve_graph_lda_data():
   return miner, graph, lda_model, vocab
 
 
+def retrieve_graph():
+  graph_file = 'cache/%s/graph.pkl' % THE.permitted
+  if os.path.isfile(graph_file):
+    with open(graph_file) as f:
+      graph = pkl.load(f)
+  else:
+    graph = cite_graph(GRAPH_CSV)
+    with open(graph_file, 'wb') as f:
+      pkl.dump(graph, f, pkl.HIGHEST_PROTOCOL)
+  return graph
+
+
 def shorter_names(name):
   name_map = {
     "SOFTWARE" : "S/W",
@@ -250,12 +262,10 @@ def make_dendo_heatmap(arr, row_labels, column_labels, figname, paper_range):
   plt.clf()
 
 
-def paper_bar():
+def paper_bar(start=1992, end=2016):
   print("PAPER BAR for %s" % THE.permitted)
   graph = cite_graph(GRAPH_CSV)
   venues = graph.get_papers_by_venue(permitted=THE.permitted)
-  start = 2001
-  end = 2016
   year_count = {}
   for year in range(start, end + 1):
     year_count[year] = 0
@@ -468,6 +478,70 @@ def reporter():
   report(lda_model, vocab)
 
 
+def authors_percent_in_papers_year(min_year=1992):
+  print("#AUTHOR PERCENT vs YEAR for %s" % THE.permitted)
+  graph = retrieve_graph()
+  year_authors_map = OrderedDict()
+  for _, paper in graph.get_paper_nodes().items():
+    year = paper.year
+    if int(year) < min_year: continue
+    num_authors = len(paper.authors.split(","))
+    year_authors_count = year_authors_map.get(year, {})
+    key = str(num_authors) if num_authors < 7 else "7+"
+    year_authors_count[key] = year_authors_count.get(key, 0) + 1
+    year_authors_map[year] = year_authors_count
+  year_author_percent_map = OrderedDict()
+  keys = ["1", "2", "3", "4", "5", "6", "7+"]
+  authors_count_year_map = OrderedDict()
+  for year in sorted(year_authors_map.keys()):
+    authors_count = year_authors_map[year]
+    total = sum(authors_count.values())
+    percent_map = []
+    for key in keys:
+      percent = round(authors_count.get(key, 0) * 100.0 / total, 2)
+      percent_map.append(percent)
+      authors_count_year_map[key] = authors_count_year_map.get(key, []) + [percent]
+    year_author_percent_map[year] = percent_map
+  colors = ["red", "blue", "darkslategray", "yellow", "darkmagenta", "cyan", "saddlebrown"]
+  x_axis = sorted(year_authors_map.keys())
+  x_indices = np.arange(1, len(x_axis) + 1)
+  legends = []
+  for i, key in enumerate(authors_count_year_map.keys()):
+    plt.plot(x_indices, authors_count_year_map[key], color=colors[i])
+    legends.append(key)
+  plt.legend(legends, loc='upper right', ncol=2, fontsize=10)
+  fig_name = "figs/v3/%s/authors_vs_year.png" % THE.permitted
+  plt.title("Percentage of number of authors per year")
+  plt.xticks(x_indices, x_axis, rotation=60)
+  plt.xlabel("Year")
+  plt.ylabel("Percentage(%)")
+  plt.savefig(fig_name, bbox_inches='tight')
+  plt.clf()
+
+
+def author_bar(min_year=1992):
+  print("AUTHOR BAR for %s" % THE.permitted)
+  graph = retrieve_graph()
+  year_authors_map = OrderedDict()
+  for _, paper in graph.get_paper_nodes().items():
+    year = paper.year
+    if int(year) < min_year: continue
+    authors = paper.authors.split(",")
+    year_authors_map[year] = year_authors_map.get(year, set([])).union(authors)
+  bar_x, bar_index, bar_y = [], [], []
+  for index, year in enumerate(sorted(year_authors_map.keys())):
+    bar_x.append(year)
+    bar_index.append(index + 1)
+    bar_y.append(len(year_authors_map[year]))
+  plt.figure(figsize=(8, 3))
+  plt.bar(bar_index, bar_y, color='blue', align='center')
+  plt.xticks(bar_index, bar_x, rotation=45)
+  plt.xlabel('Year')
+  plt.ylabel('# of Authors')
+  plt.savefig("figs/v3/%s/author_count.png" % THE.permitted, bbox_inches='tight')
+  plt.clf()
+
+
 def _main():
   reporter()
   paper_bar()
@@ -480,6 +554,8 @@ def _main():
   super_author([0.01, 0.1, 0.2, 1.0])
   get_top_papers(year_from=2009)
   get_top_papers()
+  authors_percent_in_papers_year()
+  author_bar()
 
 
 def _store():
