@@ -81,6 +81,15 @@ THE = O()
 THE.permitted = "all"
 
 
+def is_not_none(s):
+  return s and s != 'None'
+
+
+def harmonic_dist(n):
+  dist = [1 / i for i in range(1, n + 1)]
+  total = sum(dist)
+  return [d / total for d in dist]
+
 @Memoized
 def get_graph_lda_data():
   graph = cite_graph(GRAPH_CSV)
@@ -371,10 +380,9 @@ def topic_evolution(venue=THE.permitted):
              handlelength=0.7)
   plt.savefig("figs/v3/%s/topic_evolution/topic_evolution_%s.png" % (THE.permitted, venue))
   plt.clf()
-  # report(lda_model, vocab)
 
 
-def top_authors(graph, top_percent=0.01, min_year=None):
+def top_cited_authors(graph, top_percent=0.01, min_year=None):
   authors = graph.get_papers_by_authors(THE.permitted)
   author_cites = []
   if top_percent is None:
@@ -383,13 +391,53 @@ def top_authors(graph, top_percent=0.01, min_year=None):
     cite_count = 0
     for paper_id, year, __ in papers:
       if min_year is not None and int(year) < min_year: continue
-      cited = graph.paper_nodes[paper_id].cited_counts
-      if cited:
-        # cite_count += len(cited.split(","))
-        cite_count += cited
+      cited = graph.paper_nodes[paper_id].cited_count
+      if is_not_none(cited):
+        cite_count += int(cited)
     author_cites.append((author_id, cite_count))
-  tops = sorted(author_cites, key=lambda x: x[1], reverse=True)[:int(top_percent*len(author_cites))]
+  tops = sorted(author_cites, key=lambda x: x[1], reverse=True)[:int(top_percent * len(author_cites))]
   return set([t[0] for t in tops])
+
+
+def top_contributed_authors(graph=None, top_percent=0.01, min_year=None, with_scores=True):
+  if graph is None:
+    graph = retrieve_graph()
+  author_contributions = OrderedDict()
+  for paper_id, paper in graph.get_paper_nodes(THE.permitted).items():
+    if min_year is not None and int(paper.year) < min_year: continue
+    if not paper.authors: continue
+    authors = paper.authors.split(",")
+    dist = harmonic_dist(len(authors))
+    for d, author in zip(dist, authors):
+      author_contributions[author] = author_contributions.get(author, []) + [d]
+  author_list = []
+  for author, contribution in author_contributions.items():
+    author_list.append((author, sum(contribution)))
+  tops = sorted(author_list, key=lambda x: x[1], reverse=True)[:int(top_percent * len(author_list))]
+  if with_scores:
+    return tops
+  return [t[0] for t in tops]
+
+
+def top_cited_contributed_authors(graph=None, top_percent=0.01, min_year=None, with_scores=True):
+  if graph is None:
+    graph = retrieve_graph()
+  author_contributions = OrderedDict()
+  for paper_id, paper in graph.get_paper_nodes(THE.permitted).items():
+    if min_year is not None and int(paper.year) < min_year: continue
+    cites = int(paper.cited_count) + 1 if is_not_none(paper.cited_count) else 1
+    if not paper.authors: continue
+    authors = paper.authors.split(",")
+    dist = harmonic_dist(len(authors))
+    for d, author in zip(dist, authors):
+      author_contributions[author] = author_contributions.get(author, []) + [d * cites]
+  author_list = []
+  for author, contribution in author_contributions.items():
+    author_list.append((author, sum(contribution)))
+  tops = sorted(author_list, key=lambda x: x[1], reverse=True)[:int(top_percent * len(author_list))]
+  if with_scores:
+    return tops
+  return [t[0] for t in tops]
 
 
 def super_author(top_percents):
@@ -400,7 +448,7 @@ def super_author(top_percents):
   for top_percent in top_percents:
     p_key = "%d" % (int(top_percent * 100)) + ' %'
     author_topics = {}
-    tops = top_authors(graph, top_percent)
+    tops = top_cited_authors(graph, top_percent)
     for author_id, papers in authors.items():
       if author_id not in tops:
         continue
@@ -459,7 +507,7 @@ def get_top_papers(top_count=5, year_from=None):
     if max(topics) == 0:
       continue
     topic = topics.argmax()
-    cites = paper.cited_counts
+    cites = int(paper.cited_count) if is_not_none(paper.cited_count) else 0
     top_papers[topic].append([(cites, paper.title, paper.authors, int(paper.year))])
   suffix = str(year_from) if year_from else 'all'
   topic_names = get_topics()
@@ -542,12 +590,55 @@ def author_bar(min_year=1992):
   plt.clf()
 
 
+def print_top_cited_authors(top_percent=None, min_year=None):
+  graph = retrieve_graph()
+  tops = top_cited_authors(graph, top_percent=top_percent, min_year=min_year)
+  author_papers = graph.get_papers_by_authors()
+  top_tups = []
+  for author_id, author in graph.author_nodes.items():
+    if author_id in tops:
+      papers = author_papers.get(author_id, None)
+      if papers is None: continue
+      total_cites = 0
+      counts = 0
+      for paper_tup in papers:
+        if min_year is not None and int(paper_tup[1]) < min_year: continue
+        paper_id = paper_tup[0]
+        if is_not_none(graph.paper_nodes[paper_id].cited_count):
+          total_cites += int(graph.paper_nodes[paper_id].cited_count)
+        counts += 1
+      top_tups.append((author.name, counts, total_cites))
+  top_tups = sorted(top_tups, key=lambda x: x[-1], reverse=True)
+  if min_year:
+    file_name = "figs/v3/%s/top_cited_authors_%s.txt" % (THE.permitted, min_year)
+  else:
+    file_name = "figs/v3/%s/top_cited_authors_all.txt" % THE.permitted
+  with open(file_name, "wb") as f:
+    for top_tup in top_tups:
+      f.write(str(top_tup))
+      f.write("\n")
+
+
+def print_top_cited_contributed_authors(top_percent=0.01, min_year=None):
+  graph = retrieve_graph()
+  top_tups = top_contributed_authors(graph, top_percent, min_year)
+  if min_year:
+    file_name = "figs/v3/%s/top_cited_contributed_authors_%s.txt" % (THE.permitted, min_year)
+  else:
+    file_name = "figs/v3/%s/top_cited_contributed_authors_all.txt" % THE.permitted
+  with open(file_name, "wb") as f:
+    for top_tup in top_tups:
+      f.write(str(top_tup))
+      f.write("\n")
+
+
 def _main():
   reporter()
   paper_bar()
   diversity("heatmap_09_16", range(2009, 2017))
   diversity("heatmap_01_08", range(2001, 2009))
   diversity("heatmap_93_00", range(1993, 2000))
+  diversity("heatmap_93_00", range(2013, 2007))
   topic_evolution(venue="all")
   topic_evolution(venue="conferences")
   topic_evolution(venue="journals")
@@ -556,6 +647,10 @@ def _main():
   get_top_papers()
   authors_percent_in_papers_year()
   author_bar()
+  print_top_cited_authors(0.01)
+  print_top_cited_authors(0.01, 2009)
+  print_top_cited_contributed_authors(0.01)
+  print_top_cited_contributed_authors(0.01, 2009)
 
 
 def _store():

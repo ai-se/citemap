@@ -366,7 +366,7 @@ def get_top_papers(file_name, min_year=None):
       continue
     topic = topics.argmax()
     # cites = len(paper.cites.split(",")) if paper.cites else 0
-    cites = paper.cited_counts
+    cites = paper.local_cites
     top_papers[topic].append([(cites, paper.title, paper.authors, paper.year)])
   with open(file_name, 'wb') as f:
     for index in range(N_TOPICS):
@@ -386,7 +386,7 @@ def top_authors(graph, top_percent=0.01, min_year=None):
     cite_count = 0
     for paper_id, year, __ in papers:
       if min_year is not None and int(year) < min_year: continue
-      cited = graph.paper_nodes[paper_id].cited_counts
+      cited = graph.paper_nodes[paper_id].local_cites
       if cited:
         # cite_count += len(cited.split(","))
         cite_count += cited
@@ -409,7 +409,7 @@ def print_top_authors(file_name, top_percent=None, min_year=None):
       for paper_tup in papers:
         if min_year is not None and int(paper_tup[1]) < min_year: continue
         paper_id = paper_tup[0]
-        total_cites += graph.paper_nodes[paper_id].cited_counts
+        total_cites += graph.paper_nodes[paper_id].local_cites
         counts += 1
       top_tups.append((author.name, counts, total_cites))
   top_tups = sorted(top_tups, key=lambda x: x[-1], reverse=True)

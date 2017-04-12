@@ -49,7 +49,7 @@ def top_authors(graph):
   for author_id, papers in authors.items():
     cite_count = 0
     for paper_id, year, __ in papers:
-      cited = graph.paper_nodes[paper_id].cited_counts
+      cited = graph.paper_nodes[paper_id].cited_count
       if cited:
         cite_count += cited
     author_cites.append((author_id, cite_count, graph.author_nodes[author_id].name))

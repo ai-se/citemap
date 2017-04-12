@@ -77,7 +77,7 @@ class Graph(O):
           edge = Edge(source=source.id, target=target.id, edge_type="cite")
           cite_edges[edge.id] = edge
       for paper_id, paper in paper_nodes.items():
-        paper["cited_counts"] =cited_counts.get(paper_id, 0)
+        paper["local_cites"] = cited_counts.get(paper_id, 0)
     graph = Graph()
     graph.paper_nodes = paper_nodes
     graph.author_nodes = author_nodes
