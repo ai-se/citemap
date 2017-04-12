@@ -621,7 +621,7 @@ def print_top_cited_authors(top_percent=None, min_year=None):
 
 def print_top_cited_contributed_authors(top_percent=0.01, min_year=None):
   graph = retrieve_graph()
-  top_tups = top_contributed_authors(graph, top_percent, min_year)
+  top_tups = top_cited_contributed_authors(graph, top_percent, min_year)
   if min_year:
     file_name = "figs/v3/%s/top_cited_contributed_authors_%s.txt" % (THE.permitted, min_year)
   else:
