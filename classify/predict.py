@@ -112,13 +112,13 @@ class Metrics(O):
               self.recall.median, self.recall.iqr)
 
 
-def get_papers_and_groups(miner, is_independent=False):
+def get_papers_and_groups(graph, is_independent=False):
   """
-  :param miner: Miner object
+  :param graph: Graph object
   :param is_independent: boolean - If true returns conference ID else returns group ID
   :return:
   """
-  paper_nodes = miner.graph.paper_nodes
+  paper_nodes = graph.paper_nodes
   papers = []
   groups = []
   for paper_id, paper in paper_nodes.items():
@@ -126,12 +126,12 @@ def get_papers_and_groups(miner, is_independent=False):
       paper.raw = paper.abstract
     else:
       paper.raw = paper.title
-    paper.group = GROUP_CONFERENCE_MAP[int(paper.venue)]
     papers.append(paper)
     if is_independent:
       groups.append(paper.venue)
     else:
       groups.append(paper.group)
+      paper.group = GROUP_CONFERENCE_MAP[int(paper.venue)]
   return np.array(papers), np.array(groups)
 
 
@@ -211,7 +211,7 @@ def predict_conference(estimators, n_folds=10, n_topics=N_TOPICS, alpha=None, be
 
   graph = cite_graph(GRAPH_CSV)
   miner = Miner(graph)
-  papers, groups = get_papers_and_groups(miner, is_independent=IS_INDEPENDENT_CONFERENCE)
+  papers, groups = get_papers_and_groups(graph, is_independent=IS_INDEPENDENT_CONFERENCE)
   skf = StratifiedKFold(n_splits=n_folds)
   metrics_map = {make_key(predictor, preprocessor): [] for predictor, preprocessor in estimators}
   index = 0

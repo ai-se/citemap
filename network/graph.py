@@ -68,13 +68,14 @@ class Graph(O):
         if not paper.ref_id: continue
         references = paper.cites
         if not references: continue
-        target = ref_nodes[paper.ref_id]
+        source = ref_nodes[paper.ref_id]
         for ref_id in references.split(","):
           if not ref_nodes.get(ref_id, None): continue
-          source = ref_nodes[ref_id]
-          source_cited = cited_counts.get(source.id, 0)
-          cited_counts[source.id] = source_cited + 1
-          edge = Edge(source=source.id, target=target.id, edge_type="cite")
+          target = ref_nodes[ref_id]
+          target_cited = cited_counts.get(target.id, 0)
+          cited_counts[target.id] = target_cited + 1
+          edge = Edge(source=source.id, target=target.id, edge_type="cites")
+          # edge = Edge(source=target.id, target=source.id, edge_type="cite")
           cite_edges[edge.id] = edge
       for paper_id, paper in paper_nodes.items():
         paper["local_cites"] = cited_counts.get(paper_id, 0)
