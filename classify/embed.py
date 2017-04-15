@@ -43,6 +43,34 @@ def retrieve_graph(graph_file=GRAPH_CSV, from_cache=True):
   return graph
 
 
+
+@Memoized
+def retrieve_vocabulary(min_tfidf_score=0.1, from_cache=True):
+  cached = 'cache/vocabulary.pkl'
+  if os.path.isfile(cached) and from_cache:
+    with open(cached) as f:
+      vocabulary = cPkl.load(f)[:VOCAB_SIZE - 1].tolist()
+  else:
+    graph = retrieve_graph()
+    vectorizer = TfidfVectorizer(analyzer=analyzer())
+    papers, groups = predict.get_papers_and_groups(graph, is_independent=True)
+    documents = [paper.raw for paper in papers]
+    tfidf_matrix = vectorizer.fit_transform(documents).toarray()
+    tfidf_matrix[tfidf_matrix < min_tfidf_score] = 0
+    tfidf_means = np.mean(tfidf_matrix, axis=0)
+    sorted_indices = np.argsort(tfidf_means)[::-1][:]
+    vocabulary = np.array(vectorizer.get_feature_names())[sorted_indices]
+    with open(cached, "wb") as f:
+      cPkl.dump(vocabulary, f, cPkl.HIGHEST_PROTOCOL)
+    vocabulary = vocabulary[:VOCAB_SIZE - 1].tolist()
+  vocab_map = {v: i + 1 for i, v in enumerate(vocabulary)}
+  vocab_map["UNK"] = 0
+  return vocab_map
+
+VOCABULARY = retrieve_vocabulary()
+VOCABULARY_WORDS = VOCABULARY.keys()
+
+
 def split(dependent, independent, n_folds):
   skf = StratifiedKFold(n_splits=n_folds, random_state=RANDOM_STATE)
   for train_indices, test_indices in skf.split(dependent, independent):
@@ -119,25 +147,30 @@ def add_edge(source, target, edge_map):
   #   edge_map[key].increment()
   # else:
   #   edge_map[key] = Link(source, target)
-  edge_map.update({(source, target): 1})
+  # edge_map.update({(source, target): 1})
+  edge_map[source][target] += 1
 
 
 def make_self_edges(tokens, edge_map):
   for i in range(len(tokens) - 1):
-    t_i = tokens[i]
+    # t_i = tokens[i]
+    t_i = VOCABULARY[tokens[i]]
     for j in range(i + 1, len(tokens)):
-      add_edge(t_i, tokens[j], edge_map)
-      add_edge(tokens[j], t_i, edge_map)
+      # t_j = tokens[j]
+      t_j = VOCABULARY[tokens[j]]
+      add_edge(t_i, t_j, edge_map)
+      add_edge(t_j, t_i, edge_map)
 
 
 def make_edges(source_tokens, target_tokens, edge_map):
   for s in source_tokens:
+    t_i = VOCABULARY[s]
     for t in target_tokens:
-      add_edge(s, t, edge_map)
+      t_j = VOCABULARY[t]
+      add_edge(t_i, t_j, edge_map)
 
 
 def build_graph(index, train_x, train_y, cite_map, use_references=True, from_cache=True):
-  vocabulary = retrieve_vocabulary()
   if use_references:
     cached = "cache/graphs/%d_ref.pkl" % index
   else:
@@ -147,13 +180,12 @@ def build_graph(index, train_x, train_y, cite_map, use_references=True, from_cac
       return cPkl.load(f)
   analyze = analyzer()
   doc_map = {}
-  nodes = set(["UNK"])
-  edges = Counter()
   for x, y in zip(train_x, train_y):
-    tokens = set(analyze(x.raw)).intersection(vocabulary)
-    nodes = nodes.union(tokens)
+    tokens = set(analyze(x.raw)).intersection(VOCABULARY_WORDS)
+    # add_tokens(tokens, nodes)
     doc = Doc(x.id, tokens, y)
     doc_map[x.id] = doc
+  edges = np.zeros((VOCAB_SIZE, VOCAB_SIZE), dtype=np.int16)
   for i, x in enumerate(train_x):
     if i % 1000 == 0:
       print(i)
@@ -165,32 +197,10 @@ def build_graph(index, train_x, train_y, cite_map, use_references=True, from_cac
         if reference not in doc_map:  # belongs to test set
           continue
         make_edges(tokens, list(doc_map[reference].tokens), edges)
-  word_network = O(doc_map=doc_map, nodes=nodes, edges=edges)
+  word_network = O(doc_map=doc_map, edges=edges)
   with open(cached, "wb") as f:
     cPkl.dump(word_network, f, cPkl.HIGHEST_PROTOCOL)
   return word_network
-
-
-@Memoized
-def retrieve_vocabulary(min_tfidf_score=0.1, from_cache=True):
-  cached = 'cache/vocabulary.pkl'
-  if os.path.isfile(cached) and from_cache:
-    with open(cached) as f:
-      vocabulary = set(cPkl.load(f)[:VOCAB_SIZE].tolist())
-  else:
-    graph = retrieve_graph()
-    vectorizer = TfidfVectorizer(analyzer=analyzer())
-    papers, groups = predict.get_papers_and_groups(graph, is_independent=True)
-    documents = [paper.raw for paper in papers]
-    tfidf_matrix = vectorizer.fit_transform(documents).toarray()
-    tfidf_matrix[tfidf_matrix < min_tfidf_score] = 0
-    tfidf_means = np.mean(tfidf_matrix, axis=0)
-    sorted_indices = np.argsort(tfidf_means)[::-1][:]
-    vocabulary = np.array(vectorizer.get_feature_names())[sorted_indices]
-    with open(cached, "wb") as f:
-      cPkl.dump(vocabulary, f, cPkl.HIGHEST_PROTOCOL)
-    vocabulary = set(vocabulary[:VOCAB_SIZE].tolist())
-  return vocabulary
 
 
 def runner(use_references):
@@ -200,9 +210,8 @@ def runner(use_references):
   for index, (train_x, train_y, test_x, test_y) in enumerate(split(papers, groups, 5)):
     word_network = build_graph(index, train_x, train_y, cite_map, use_references)
     print(len(word_network.doc_map))
-    print(len(word_network.nodes))
-    print(len(word_network.edges))
+    print(word_network.edges.shape)
 
 
 if __name__ == "__main__":
-  runner(True)
+  runner(False)

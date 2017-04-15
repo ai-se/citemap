@@ -90,6 +90,11 @@ def harmonic_dist(n):
   total = sum(dist)
   return [d / total for d in dist]
 
+
+def uniform_dist(n):
+  return [1 / n] * n
+
+
 @Memoized
 def get_graph_lda_data():
   graph = cite_graph(GRAPH_CSV)
@@ -428,7 +433,8 @@ def top_cited_contributed_authors(graph=None, top_percent=0.01, min_year=None, w
     cites = int(paper.cited_count) + 1 if is_not_none(paper.cited_count) else 1
     if not paper.authors: continue
     authors = paper.authors.split(",")
-    dist = harmonic_dist(len(authors))
+    # dist = harmonic_dist(len(authors))
+    dist = uniform_dist(len(authors))
     for d, author in zip(dist, authors):
       author_contributions[author] = author_contributions.get(author, []) + [d * cites]
   author_list = []
