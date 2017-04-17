@@ -258,17 +258,17 @@ def line(total_batches, initial_learn_rate=0.025):
     divs = tf.div(num, den)
     logs = tf.log(divs)
     objective = -1 * tf.reduce_sum(tf.multiply(weights, logs))
-    loss = 0.01 * (tf.nn.l2_loss(all_projections) + tf.nn.l2_loss(all_contexts))
-    objective = objective + loss
+    # loss = 0.01 * (tf.nn.l2_loss(all_projections) + tf.nn.l2_loss(all_contexts))
+    # objective = objective + loss
     optimizer = tf.train.GradientDescentOptimizer(learn_rate).minimize(objective)
 
-  return graph, train_dataset, counter, optimizer, all_projections, all_contexts
+  return graph, train_dataset, counter, optimizer, all_projections, all_contexts, objective
 
 
 def train_words(word_network, log_factor=10000):
   total_edges = np.prod(word_network.edges.shape)
   total_batches = total_edges // BATCH_SIZE
-  graph, train_dataset, counter, optimizer, all_projections, all_contexts = line(total_batches)
+  graph, train_dataset, counter, optimizer, all_projections, all_contexts, objective = line(total_batches)
   global data_index
   data_index = 0
   projections, contexts = None, None
@@ -277,10 +277,10 @@ def train_words(word_network, log_factor=10000):
   tf.global_variables_initializer().run()
   for gen in range(total_batches)[:10]:
     batch = generate_edge_batch(word_network.edges)
-    if gen % log_factor == 0:
-      print("Batch : %d" % gen)
     feed_dict = {train_dataset: batch, counter: [gen]}
-    _, projections, contexts = session.run([optimizer, all_projections, all_contexts], feed_dict=feed_dict)
+    _, projections, contexts, obj = session.run([optimizer, all_projections, all_contexts, objective], feed_dict=feed_dict)
+    if gen % log_factor == 0:
+      print("Batch : %d, Loss: %f" % (gen, obj))
   session.close()
   return projections, contexts
 
@@ -299,7 +299,6 @@ def runner(use_references):
       file_name = "cache/graphs/results/%d.pkl" % index
     with open(file_name, 'wb') as f:
       cPkl.dump(dump, f, cPkl.HIGHEST_PROTOCOL)
-    exit()
 
 
 if __name__ == "__main__":
