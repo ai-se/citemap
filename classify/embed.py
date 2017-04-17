@@ -15,7 +15,7 @@ from sklearn.model_selection import StratifiedKFold
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
-from collections import Counter
+import tensorflow as tf
 
 RANDOM_STATE = 1
 GRAPH_CSV = "data/citemap_v8.csv"
@@ -29,6 +29,8 @@ STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering', 'paper', 
                                             '2004', 'papers', 'computer', 'held', 'editor'])
 TOKEN_PATTERN = r"(?u)\b\w\w\w+\b"
 VOCAB_SIZE = 30000
+BATCH_SIZE = 1
+EMBEDDING_SIZE = 128
 
 
 def retrieve_graph(graph_file=GRAPH_CSV, from_cache=True):
@@ -63,13 +65,17 @@ def retrieve_vocabulary(min_tfidf_score=0.1, from_cache=True):
     with open(cached, "wb") as f:
       cPkl.dump(vocabulary, f, cPkl.HIGHEST_PROTOCOL)
     vocabulary = vocabulary[:VOCAB_SIZE - 1].tolist()
-  vocab_map = {v: i + 1 for i, v in enumerate(vocabulary)}
-  vocab_map["UNK"] = 0
-  return vocab_map
+  vocab_map, reverse_vocab_map = {}, {}
+  for i, v in enumerate(vocabulary):
+    vocab_map[v] = i
+    reverse_vocab_map[i] = v
+  vocab_map["UNK"] = VOCAB_SIZE - 1
+  reverse_vocab_map[VOCAB_SIZE - 1] = "UNK"
+  return vocab_map, reverse_vocab_map
 
-VOCABULARY = retrieve_vocabulary()
+VOCABULARY, REVERSE_VOCABULARY = retrieve_vocabulary()
 VOCABULARY_WORDS = VOCABULARY.keys()
-
+VOCABULARY_INDICES = REVERSE_VOCABULARY.keys()
 
 def split(dependent, independent, n_folds):
   skf = StratifiedKFold(n_splits=n_folds, random_state=RANDOM_STATE)
@@ -113,10 +119,10 @@ class Doc(O):
 class Link(O):
   SEPARATOR = "$|$"
 
-  def __init__(self, source, target):
+  def __init__(self, source, target, weight=None):
     O.__init__(self, source=source, target=target)
-    self.weight = 1
-    self.id = Link.make_key(source, target)
+    self.weight = 1 if weight is None else weight
+    # self.id = Link.make_key(source, target)
 
   def increment(self):
     self.weight += 1
@@ -203,15 +209,103 @@ def build_graph(index, train_x, train_y, cite_map, use_references=True, from_cac
   return word_network
 
 
+data_index = 0
+
+def generate_edge_batch(edges):
+  """
+  :param edges: np.ndarray(shape=[VOCAB_SIZE, VOCAB_SIZE])
+  :return:
+  """
+  global data_index
+  batch = np.ndarray(shape=[BATCH_SIZE, 3], dtype=np.int32)
+  length = edges.shape[0]
+  total_edges = length * length
+  for index in range(BATCH_SIZE):
+    row = data_index // length
+    col = data_index % length
+    weight = edges[row][col]
+    batch[index][0] = row
+    batch[index][1] = col
+    batch[index][2] = weight
+    data_index = (data_index + 1) % total_edges
+  return batch
+
+
+def line(total_batches, initial_learn_rate=0.025):
+  graph = tf.Graph()
+  with graph.as_default(), tf.device("/cpu:0"):
+
+
+    # Input data
+    train_dataset = tf.placeholder(tf.int32, shape=[BATCH_SIZE, 3])
+    counter = tf.placeholder(tf.int32, shape=[1])
+
+    # Variables
+    all_projections = tf.Variable(tf.random_uniform([VOCAB_SIZE, EMBEDDING_SIZE], -1.0, 1.0))
+    all_contexts = tf.Variable(tf.random_uniform([VOCAB_SIZE, EMBEDDING_SIZE], -1.0, 1.0))
+    all_projections = tf.nn.l2_normalize(all_projections, dim=1)
+    all_contexts = tf.nn.l2_normalize(all_contexts, dim=1)
+
+    source_projections = tf.nn.embedding_lookup(all_projections, train_dataset[:, 0])
+    source_contexts = tf.nn.embedding_lookup(all_contexts, train_dataset[:, 1])
+    target_contexts = tf.nn.embedding_lookup(all_projections, train_dataset[:, 1])
+
+    weights = tf.to_float(tf.convert_to_tensor(train_dataset[:, 2], dtype=tf.int32))
+    den = tf.reduce_sum(tf.exp(tf.matmul(source_projections, all_contexts, transpose_b=True)), axis=1)
+    num = tf.exp(tf.reduce_sum(tf.multiply(source_projections, target_contexts), axis=1))
+
+    learn_rate = initial_learn_rate * (1 - counter[0] / total_batches)
+    divs = tf.div(num, den)
+    logs = tf.log(divs)
+    objective = -1 * tf.reduce_sum(tf.multiply(weights, logs))
+    loss = 0.01 * (tf.nn.l2_loss(all_projections) + tf.nn.l2_loss(all_contexts))
+    objective = objective + loss
+    optimizer = tf.train.GradientDescentOptimizer(learn_rate).minimize(objective)
+
+  return graph, train_dataset, counter, optimizer, all_projections, all_contexts
+
+
+def train_words(word_network, log_factor=10000):
+  total_edges = np.prod(word_network.edges.shape)
+  total_batches = total_edges // BATCH_SIZE
+  graph, train_dataset, counter, optimizer, all_projections, all_contexts = line(total_batches)
+  global data_index
+  data_index = 0
+  projections, contexts = None, None
+  session = tf.InteractiveSession(graph=graph)
+  # with tf.InteractiveSession(graph=graph) as session:
+  tf.global_variables_initializer().run()
+  for gen in range(total_batches)[:10]:
+    batch = generate_edge_batch(word_network.edges)
+    if gen % log_factor == 0:
+      print("Batch : %d" % gen)
+    feed_dict = {train_dataset: batch, counter: [gen]}
+    _, projections, contexts = session.run([optimizer, all_projections, all_contexts], feed_dict=feed_dict)
+  session.close()
+  return projections, contexts
+
+
 def runner(use_references):
   graph = retrieve_graph()
   cite_map = citation_map(graph)
   papers, groups = predict.get_papers_and_groups(graph, is_independent=True)
   for index, (train_x, train_y, test_x, test_y) in enumerate(split(papers, groups, 5)):
     word_network = build_graph(index, train_x, train_y, cite_map, use_references)
-    print(len(word_network.doc_map))
-    print(word_network.edges.shape)
+    projections, contexts = train_words(word_network)
+    dump = {"projections": projections, "contexts": contexts}
+    if use_references:
+      file_name = "cache/graphs/results/%d_ref.pkl" % index
+    else:
+      file_name = "cache/graphs/results/%d.pkl" % index
+    with open(file_name, 'wb') as f:
+      cPkl.dump(dump, f, cPkl.HIGHEST_PROTOCOL)
+    exit()
 
 
 if __name__ == "__main__":
-  runner(False)
+  # runner(False)
+  # with open("cache/graphs/results/0_ref.pkl") as f:
+  #   dump = cPkl.load(f)
+  #   # print(dump["projections"])
+  #   print(np.argwhere(np.isnan(dump["projections"])))
+  runner(True)
