@@ -199,7 +199,8 @@ def report(lda_model, vocab, fig_name="topic_dist", n_top_words=10, plot_terms=5
     plot_scores = np.log(plot_scores)
     plt.plot(x_axis, plot_scores)
     topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
-    legends.append("Topic %d" % index)
+    # legends.append("Topic %d" % index)
+    legends.append(TOPICS_ALL[index])
     print('Topic {}: {}'.format(index, ', '.join(topic_words)))
   plt.legend(legends, loc='upper right')
   plt.title(fig_name)
@@ -218,9 +219,9 @@ def make_heatmap(arr, row_labels, column_labels, figname, paper_range):
   plt.yticks(np.arange(len(list(df.index))), list(df.index))
   [tick.set_color("red") if tick.get_text() in CONFERENCES else tick.set_color("green") for tick in plt.gca().get_xticklabels()]
   if paper_range:
-    plt.title("Topics to Conference Distribution(%d - %d)" % (paper_range[0], paper_range[-1]), y=1.2)
+    plt.title("Topics to Venue Distribution(%d - %d)" % (paper_range[0], paper_range[-1]), y=1.2)
   else:
-    plt.title("Topics to Conference Distribution", y=1.2)
+    plt.title("Topics to Venue Distribution", y=1.2)
   plt.savefig(figname, bbox_inches='tight')
   plt.clf()
 
@@ -269,9 +270,9 @@ def make_dendo_heatmap(arr, row_labels, column_labels, figname, paper_range):
   axm.set_yticks(np.arange(len(list(df_rowclust.index))))
   axm.set_yticklabels(list(df_rowclust.index))
   if paper_range:
-    plt.title("Clustered topics to Conference Distribution(%d - %d)" % (paper_range[0], paper_range[-1]), y=-0.2)
+    plt.title("Clustered topics to Venue Distribution(%d - %d)" % (paper_range[0], paper_range[-1]), y=-0.2)
   else:
-    plt.title("Clustered topics to Conference Distribution", y=-0.2)
+    plt.title("Clustered topics to Venue Distribution", y=-0.2)
   plt.savefig(figname, bbox_inches='tight')
   plt.clf()
 
@@ -302,7 +303,7 @@ def paper_bar(start=1992, end=2016):
   plt.clf()
 
 
-def diversity(fig_name, paper_range):
+def diversity(fig_name, paper_range=None):
   if paper_range:
     print("DIVERSITY for %s between %d - %d" % (THE.permitted, paper_range[0], paper_range[-1]))
   else:
@@ -573,6 +574,53 @@ def authors_percent_in_papers_year(min_year=1992):
   plt.clf()
 
 
+def author_counts_vs_cites_per_year(min_year=1992):
+  print("#AUTHOR PERCENT vs CITES for %s" % THE.permitted)
+  graph = retrieve_graph()
+  year_authors_map = OrderedDict()
+  for _, paper in graph.get_paper_nodes().items():
+    year = paper.year
+    if int(year) < min_year or int(year) > 2015: continue
+    num_authors = len(paper.authors.split(","))
+    year_authors_count = year_authors_map.get(year, {})
+    key = str(num_authors) if num_authors < 7 else "7+"
+    cites = int(paper.cited_count) if is_not_none(paper.cited_count) else 0
+    years_since = 2017 - int(year)
+    avg_cites = cites / years_since
+    year_authors_count[key] = year_authors_count.get(key, []) + [avg_cites]
+    year_authors_map[year] = year_authors_count
+  year_author_percent_map = OrderedDict()
+  keys = ["1", "2", "3", "4", "5", "6", "7+"]
+  authors_count_year_map = OrderedDict()
+  print(year_authors_map.keys())
+  for year in sorted(year_authors_map.keys()):
+    authors_count = year_authors_map[year]
+    # total = sum(authors_count.values())
+    percent_map = []
+    for key in keys:
+      avg_cites = authors_count.get(key, [0])
+      percent = round(sum(avg_cites) / len(avg_cites), 2)
+      percent_map.append(percent)
+      authors_count_year_map[key] = authors_count_year_map.get(key, []) + [percent]
+    year_author_percent_map[year] = percent_map
+  colors = ["red", "blue", "darkslategray", "yellow", "darkmagenta", "cyan", "saddlebrown"]
+  x_axis = sorted(year_authors_map.keys())
+
+  x_indices = np.arange(1, len(x_axis) + 1)
+  legends = []
+  for i, key in enumerate(authors_count_year_map.keys()):
+    plt.plot(x_indices, authors_count_year_map[key], color=colors[i])
+    legends.append(key)
+  plt.legend(legends, loc='upper left', ncol=2, fontsize=10)
+  fig_name = "figs/v3/%s/authors_vs_cites_per_year.png" % THE.permitted
+  plt.title("Average cites per year for different number of coauthors")
+  plt.xticks(x_indices, x_axis, rotation=60)
+  plt.xlabel("Year")
+  plt.ylabel("Average Cites Per Year")
+  plt.savefig(fig_name, bbox_inches='tight')
+  plt.clf()
+
+
 def author_bar(min_year=1992):
   print("AUTHOR BAR for %s" % THE.permitted)
   graph = retrieve_graph()
@@ -639,24 +687,26 @@ def print_top_cited_contributed_authors(top_percent=0.01, min_year=None):
 
 
 def _main():
-  reporter()
-  paper_bar()
-  diversity("heatmap_09_16", range(2009, 2017))
-  diversity("heatmap_01_08", range(2001, 2009))
-  diversity("heatmap_93_00", range(1993, 2000))
-  diversity("heatmap_93_00", range(2013, 2007))
-  topic_evolution(venue="all")
-  topic_evolution(venue="conferences")
-  topic_evolution(venue="journals")
-  super_author([0.01, 0.1, 0.2, 1.0])
-  get_top_papers(year_from=2009)
-  get_top_papers()
-  authors_percent_in_papers_year()
-  author_bar()
-  print_top_cited_authors(0.01)
-  print_top_cited_authors(0.01, 2009)
-  print_top_cited_contributed_authors(0.01)
-  print_top_cited_contributed_authors(0.01, 2009)
+  # reporter()
+  # paper_bar()
+  # diversity("heatmap_09_16", range(2009, 2017))
+  # diversity("heatmap_01_08", range(2001, 2009))
+  # diversity("heatmap_93_00", range(1993, 2000))
+  # diversity("heatmap_93_00", range(2013, 2007))
+  # topic_evolution(venue="all")
+  # topic_evolution(venue="conferences")
+  # topic_evolution(venue="journals")
+  # super_author([0.01, 0.1, 0.2, 1.0])
+  # get_top_papers(year_from=2009)
+  # get_top_papers()
+  # authors_percent_in_papers_year()
+  # author_bar()
+  # print_top_cited_authors(0.01)
+  # print_top_cited_authors(0.01, 2009)
+  # print_top_cited_contributed_authors(0.01)
+  # print_top_cited_contributed_authors(0.01, 2009)
+  # diversity("heatmap_all")
+  author_counts_vs_cites_per_year()
 
 
 def _store():

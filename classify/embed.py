@@ -29,8 +29,8 @@ STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering', 'paper', 
                                             '2004', 'papers', 'computer', 'held', 'editor'])
 TOKEN_PATTERN = r"(?u)\b\w\w\w+\b"
 VOCAB_SIZE = 30000
-BATCH_SIZE = 1
-EMBEDDING_SIZE = 128
+BATCH_SIZE = 128
+EMBEDDING_SIZE = 64
 
 
 def retrieve_graph(graph_file=GRAPH_CSV, from_cache=True):
@@ -243,45 +243,52 @@ def line(total_batches, initial_learn_rate=0.025):
     # Variables
     all_projections = tf.Variable(tf.random_uniform([VOCAB_SIZE, EMBEDDING_SIZE], -1.0, 1.0))
     all_contexts = tf.Variable(tf.random_uniform([VOCAB_SIZE, EMBEDDING_SIZE], -1.0, 1.0))
-    all_projections = tf.nn.l2_normalize(all_projections, dim=1)
-    all_contexts = tf.nn.l2_normalize(all_contexts, dim=1)
+    # all_projections = tf.nn.l2_normalize(all_projections, dim=1)
+    # all_contexts = tf.nn.l2_normalize(all_contexts, dim=1)
 
     source_projections = tf.nn.embedding_lookup(all_projections, train_dataset[:, 0])
-    source_contexts = tf.nn.embedding_lookup(all_contexts, train_dataset[:, 1])
+    source_projections = tf.nn.l2_normalize(source_projections, dim=1)
+    # source_contexts = tf.nn.embedding_lookup(all_contexts, train_dataset[:, 1])
     target_contexts = tf.nn.embedding_lookup(all_projections, train_dataset[:, 1])
+    # source_projections = tf.Print(source_projections, [source_projections], message="Source Projections")
+    # target_contexts = tf.Print(target_contexts, [target_contexts], message="Target Contexts")
 
     weights = tf.to_float(tf.convert_to_tensor(train_dataset[:, 2], dtype=tf.int32))
     den = tf.reduce_sum(tf.exp(tf.matmul(source_projections, all_contexts, transpose_b=True)), axis=1)
     num = tf.exp(tf.reduce_sum(tf.multiply(source_projections, target_contexts), axis=1))
+    # num = tf.Print(num, [num], message="Num")
+    # den = tf.Print(den, [den], message="Den")
 
     learn_rate = initial_learn_rate * (1 - counter[0] / total_batches)
     divs = tf.div(num, den)
+    # divs = tf.Print(divs, [divs], message="Divs")
     logs = tf.log(divs)
+    # logs = tf.Print(logs, [logs], message="Logs")
     objective = -1 * tf.reduce_sum(tf.multiply(weights, logs))
-    # loss = 0.01 * (tf.nn.l2_loss(all_projections) + tf.nn.l2_loss(all_contexts))
-    # objective = objective + loss
+    loss = 0.01 * (tf.nn.l2_loss(all_projections) + tf.nn.l2_loss(all_contexts))
+    objective = objective + loss
     optimizer = tf.train.GradientDescentOptimizer(learn_rate).minimize(objective)
-
   return graph, train_dataset, counter, optimizer, all_projections, all_contexts, objective
 
 
-def train_words(word_network, log_factor=10000):
-  total_edges = np.prod(word_network.edges.shape)
-  total_batches = total_edges // BATCH_SIZE
+def train_words(word_network, log_factor=1):
+  total_edges = word_network.edges.shape[0] * word_network.edges.shape[1]
+  total_batches = 4 * total_edges // BATCH_SIZE
   graph, train_dataset, counter, optimizer, all_projections, all_contexts, objective = line(total_batches)
   global data_index
   data_index = 0
   projections, contexts = None, None
-  session = tf.InteractiveSession(graph=graph)
-  # with tf.InteractiveSession(graph=graph) as session:
-  tf.global_variables_initializer().run()
-  for gen in range(total_batches)[:10]:
-    batch = generate_edge_batch(word_network.edges)
-    feed_dict = {train_dataset: batch, counter: [gen]}
-    _, projections, contexts, obj = session.run([optimizer, all_projections, all_contexts, objective], feed_dict=feed_dict)
-    if gen % log_factor == 0:
-      print("Batch : %d, Loss: %f" % (gen, obj))
-  session.close()
+  # session = tf.InteractiveSession(graph=graph)
+  with tf.Session(graph=graph) as session:
+    tf.global_variables_initializer().run()
+    for gen in range(total_batches):
+      batch = generate_edge_batch(word_network.edges)
+      feed_dict = {train_dataset: batch, counter: [gen]}
+      _, projections, contexts, obj = session.run([optimizer, all_projections, all_contexts, objective],
+                                                        feed_dict=feed_dict)
+      if gen % log_factor == 0:
+        print("Batch : %d / %d, Loss: %f" % (gen, total_batches, obj))
+  # session.close()
   return projections, contexts
 
 
