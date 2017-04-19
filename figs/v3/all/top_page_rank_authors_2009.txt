@@ -1,0 +1,188 @@
+Name, Score
+david lo, 0.000111
+mark harman, 0.000107
+massimiliano di penta, 0.000104
+rocco oliveto, 0.000103
+gabriele bavota, 0.000089
+rodrigo n. calheiros, 0.000087
+cesar augusto fonticielha de rose, 0.000087
+rajiv ranjan, 0.000087
+anton beloglazov, 0.000086
+bram adams, 0.000076
+denys poshyvanyk, 0.000072
+christian bird, 0.000067
+yann-gael gueheneuc, 0.000063
+thomas zimmermann 0001, 0.000060
+per runeson, 0.000060
+andrea de lucia, 0.000060
+tim menzies, 0.000059
+andrian marcus, 0.000057
+tao xie, 0.000056
+gordon fraser, 0.000056
+andy zaidman, 0.000055
+foutse khomh, 0.000052
+malcom gethers, 0.000052
+ahmed e. hassan, 0.000051
+abram hindle, 0.000051
+alberto bacchelli, 0.000050
+premkumar t. devanbu, 0.000049
+bogdan dit, 0.000048
+nachiappan nagappan, 0.000048
+andrea arcuri, 0.000048
+daniel m. german, 0.000048
+lu zhang, 0.000047
+earl t. barr, 0.000046
+yue jia, 0.000046
+lionel c. briand, 0.000046
+hoan anh nguyen, 0.000045
+mario linares vasquez, 0.000045
+meiyappan nagappan, 0.000042
+christian kastner, 0.000042
+sunghun kim 0001, 0.000041
+hongyu zhang, 0.000040
+audris mockus, 0.000040
+sven apel, 0.000038
+myra b. cohen, 0.000038
+tung thanh nguyen, 0.000038
+michele lanza, 0.000038
+martin pinzger, 0.000037
+claire le goues, 0.000036
+emad shihab, 0.000035
+collin mcmillan, 0.000035
+shin yoo, 0.000035
+lori l. pollock, 0.000035
+arie van deursen, 0.000035
+jane cleland-huang, 0.000034
+chris parnin, 0.000034
+mark grechanik, 0.000033
+burak turhan, 0.000033
+ali mesbah 0001, 0.000033
+sonia haiduc, 0.000032
+tsong yueh chen, 0.000032
+shing-chi cheung, 0.000031
+phil mcminn, 0.000031
+georgios gousios, 0.000030
+david m. binkley, 0.000030
+rajkumar buyya, 0.000030
+peter c. rigby, 0.000030
+paris avgeriou, 0.000030
+tony gorschek, 0.000029
+raffaela mirandola, 0.000029
+miryung kim, 0.000028
+giuliano antoniol, 0.000028
+paolo tonella, 0.000028
+muhammad ali babar, 0.000028
+harald c. gall, 0.000027
+nikolaos tsantalis, 0.000027
+marco d'ambros, 0.000027
+jonathan p. whittle, 0.000026
+foyzur rahman, 0.000025
+peter sawyer, 0.000025
+corina s. pasareanu, 0.000025
+gerardo canfora, 0.000025
+reid holmes, 0.000025
+ekrem kocaguneli, 0.000025
+martin p. robillard, 0.000025
+michael w. godfrey, 0.000025
+wing kwong chan, 0.000025
+giuseppe scanniello, 0.000024
+chanchal kumar roy, 0.000024
+romain robbes, 0.000024
+claes wohlin, 0.000023
+rui abreu, 0.000023
+patrick heymans, 0.000023
+suresh thummalapenta, 0.000023
+gail c. murphy, 0.000023
+forrest shull, 0.000023
+meghan revelle, 0.000023
+rainer koschke, 0.000022
+tracy hall, 0.000022
+sarfraz khurshid, 0.000022
+christoph treude, 0.000022
+kai petersen, 0.000022
+emerson r. murphy-hill, 0.000021
+andrew begel, 0.000021
+carlo ghezzi, 0.000021
+ayse bener, 0.000021
+w. eric wong, 0.000021
+anthony finkelstein, 0.000020
+stephanie forrest, 0.000020
+michael d. ernst, 0.000020
+t. h. tse, 0.000020
+mary jean harrold, 0.000020
+james r. cordy, 0.000020
+heiko koziolek, 0.000020
+tore dyba, 0.000019
+ying zou, 0.000019
+lin tan, 0.000019
+stephane ducasse, 0.000018
+alexander serebrenik, 0.000018
+koushik sen, 0.000018
+tien n. nguyen, 0.000018
+lars grunske, 0.000018
+daniela e. herlea, 0.000018
+darko marinov, 0.000017
+marco tulio de oliveira valente, 0.000017
+margaret-anne d. storey, 0.000017
+chengnian sun, 0.000017
+leon moonen, 0.000017
+aiko fallas yamashita, 0.000017
+philippe kruchten, 0.000016
+andreas zeller, 0.000016
+gregg rothermel, 0.000016
+danny dig, 0.000015
+lingxiao jiang, 0.000015
+sebastian g. elbaum, 0.000015
+xiangyun zhang, 0.000015
+westley weimer, 0.000015
+torgeir dingsoyr, 0.000014
+elmar jurgens, 0.000014
+raymond p. l. buse, 0.000014
+robert feldt, 0.000014
+brendan murphy, 0.000014
+laurie a. williams, 0.000014
+zhendong su, 0.000014
+houari a. sahraoui, 0.000014
+sam malek, 0.000013
+hong mei, 0.000012
+krzysztof czarnecki, 0.000012
+yves le traon, 0.000012
+james d. herbsleb, 0.000011
+jan bosch, 0.000011
+barbara a. kitchenham, 0.000011
+mauro pezze, 0.000011
+william g. j. halfond, 0.000010
+jonathan i. maletic, 0.000010
+alessandro orso, 0.000010
+zibin zheng, 0.000010
+abhik roychoudhury, 0.000010
+martin monperrus, 0.000010
+john c. grundy, 0.000009
+jeff offutt, 0.000009
+alexander chatzigeorgiou, 0.000009
+natalia juristo juzgado, 0.000009
+hareton leung, 0.000009
+magne jorgensen, 0.000008
+walid maalej, 0.000008
+iulian neamtiu, 0.000008
+robert m. hierons, 0.000008
+nils gode, 0.000008
+martin host, 0.000007
+christof ebert, 0.000007
+michael r. lyu, 0.000006
+alexander egyed, 0.000006
+daniel l. moody, 0.000006
+neil a. m. maiden, 0.000005
+wes masri, 0.000005
+john mylopoulos, 0.000004
+m. hakan erdogmus, 0.000004
+marsha chechik, 0.000004
+giordano tamburrelli, 0.000004
+atif m. memon, 0.000003
+steven p. reiss, 0.000002
+diomidis spinellis, 0.000001
+frank buschmann, 0.000001
+ralf h. reussner, 0.000000
+k. vijay-shanker, 0.000000
+richard n. taylor, 0.000000
+grady booch, 0.000000

@@ -262,11 +262,11 @@ def line(total_batches, initial_learn_rate=0.025):
     learn_rate = initial_learn_rate * (1 - counter[0] / total_batches)
     divs = tf.div(num, den)
     # divs = tf.Print(divs, [divs], message="Divs")
-    logs = tf.log(divs)
+    logs = tf.log(tf.sigmoid(divs))
     # logs = tf.Print(logs, [logs], message="Logs")
     objective = -1 * tf.reduce_sum(tf.multiply(weights, logs))
-    loss = 0.01 * (tf.nn.l2_loss(all_projections) + tf.nn.l2_loss(all_contexts))
-    objective = objective + loss
+    # loss = 0.01 * (tf.nn.l2_loss(all_projections) + tf.nn.l2_loss(all_contexts))
+    # objective = objective + loss
     optimizer = tf.train.GradientDescentOptimizer(learn_rate).minimize(objective)
   return graph, train_dataset, counter, optimizer, all_projections, all_contexts, objective
 

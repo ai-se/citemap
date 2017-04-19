@@ -3,6 +3,7 @@ import sys, os
 sys.path.append(os.path.abspath("."))
 import collections
 import functools
+import random
 
 __author__ = "panzer"
 
@@ -132,3 +133,9 @@ class Memoized(object):
   def __get__(self, obj, objtype):
     '''Support instance methods.'''
     return functools.partial(self.__call__, obj)
+
+
+def shuffle(lst):
+  if lst:
+    random.shuffle(lst)
+  return lst

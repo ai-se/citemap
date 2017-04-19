@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.abspath("."))
 sys.dont_write_bytecode = True
 
-from utils.lib import O, Memoized
+from utils.lib import O, Memoized, shuffle
 import numpy as np
 from collections import OrderedDict, Counter
 from network.mine import cite_graph, Miner
@@ -348,7 +348,7 @@ def topic_evolution(venue=THE.permitted):
   topics_map = {}
   n_topics = lda_model.n_topics
   for paper_id, paper in paper_nodes.items():
-    if int(paper.year) < 1993 or int(paper.year) > 2016: continue
+    if int(paper.year) < 1992 or int(paper.year) > 2016: continue
     document = miner.documents[paper_id]
     year_topics = topics_map.get(paper.year, np.array([0] * n_topics))
     topics_map[paper.year] = np.add(year_topics, document.topics_count)
@@ -357,7 +357,7 @@ def topic_evolution(venue=THE.permitted):
     yt_map[year] = percent_sort(t_count)
   width = 0.8
   plts = []
-  x_axis = np.arange(1, len(yt_map.keys()) + 1)
+  x_axis = np.arange(0, len(yt_map.keys()))
   y_offset = np.array([0] * len(yt_map.keys()))
   colors_dict = {}
   top_topic_count = 7
@@ -373,7 +373,7 @@ def topic_evolution(venue=THE.permitted):
     y_offset = np.add(y_offset, bar_val)
   plt.ylabel("Topic %")
   plt.xlabel("Year")
-  plt.xticks(x_axis + width / 2, [str(y)[2:] for y in sorted(yt_map.keys(), key=lambda x: int(x))], fontsize=9)
+  plt.xticks(x_axis, [str(y)[2:] for y in sorted(yt_map.keys(), key=lambda x: int(x))], fontsize=9)
   plt.yticks(np.arange(0, 101, 10))
   plt.ylim([0, 101])
   # Legends
@@ -382,7 +382,7 @@ def topic_evolution(venue=THE.permitted):
   for index, (topic, color) in enumerate(colors_dict.items()):
     patches.append(mpatches.Patch(color=color, label='Topic %s' % str(topic)))
     topics.append(get_topics()[topic])
-  plt.legend(tuple(patches), tuple(topics), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=6, fontsize=10,
+  plt.legend(tuple(patches), tuple(topics), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=5, fontsize=7,
              handlelength=0.7)
   plt.savefig("figs/v3/%s/topic_evolution/topic_evolution_%s.png" % (THE.permitted, venue))
   plt.clf()
@@ -686,6 +686,70 @@ def print_top_cited_contributed_authors(top_percent=0.01, min_year=None):
       f.write("\n")
 
 
+def make_author_dict(author_tuples):
+  names_to_ids, ids_to_names = OrderedDict(), OrderedDict()
+  for index, tup in enumerate(author_tuples):
+    names_to_ids[tup[0]] = index
+    ids_to_names[index] = tup[0]
+  n = len(author_tuples)
+  author_scores = np.full(n, 1 / n, dtype=np.float64)
+  return names_to_ids, ids_to_names, author_scores
+
+
+def list_out(lst):
+  for i in range(len(lst) - 1):
+    yield lst[i], set(lst[:i] + lst[i + 1:])
+
+
+def make_coauthor_map(graph, names_to_ids, min_year):
+  top_authors = set(names_to_ids.keys())
+  coauthor_count = {i: set() for i in range(len(top_authors))}
+  author_cite_count = {i: 0 for i in range(len(top_authors))}
+  for paper_id, paper in graph.paper_nodes.items():
+    if min_year and int(paper.year) < min_year: continue
+    authors = paper.authors.split(",")
+    cites = int(paper.cited_count) if paper.cited_count and paper.cited_count != 'None' else 0
+    if len(authors) <= 1: continue
+    for author_name, co_authors_name in list_out(authors):
+      if author_name not in top_authors: continue
+      author_index = names_to_ids[author_name]
+      co_authors_index = set([names_to_ids[co_author_name] for co_author_name in co_authors_name if co_author_name in top_authors])
+      coauthor_count[author_index] = coauthor_count[author_index].union(co_authors_index)
+      author_cite_count[author_index] += cites
+  coauthor_count = {i: np.array(sorted(co_authors), dtype=np.int32) for i, co_authors in coauthor_count.items()}
+  total_cites = sum(author_cite_count.values())
+  author_cite_count = {i: author_cite_count[i] / total_cites for i in author_cite_count.keys()}
+  return coauthor_count, author_cite_count
+
+
+def page_rank(d=0.45, top_percent=0.01, min_year=None, iterations=1000):
+  graph = retrieve_graph()
+  top_tups = top_cited_contributed_authors(graph, top_percent, min_year)
+  names_to_ids, ids_to_names, page_rank_scores = make_author_dict(top_tups)
+  coauthor_count, author_cite_count = make_coauthor_map(graph, names_to_ids, min_year)
+  self_score = 1 / page_rank_scores.shape[0]
+  for _ in xrange(iterations):
+    for i in shuffle(range(page_rank_scores.shape[0])):
+      co_authors_i = coauthor_count[i]
+      ext_score = 0
+      for j in co_authors_i:
+        links = len(coauthor_count[j])
+        if links > 0:
+          ext_score += page_rank_scores[j] / links
+      page_rank_scores[i] = (1 - d) * self_score * author_cite_count[i] + d * ext_score
+  top_author_indices = np.argsort(page_rank_scores)[::-1]
+  if min_year:
+    file_name = "figs/v3/%s/top_page_rank_authors_%s.txt" % (THE.permitted, min_year)
+  else:
+    file_name = "figs/v3/%s/top_page_rank_authors_all.txt" % THE.permitted
+  with open(file_name, "wb") as f:
+    f.write("Name, Score\n")
+    for index in top_author_indices:
+      f.write("%s, %f\n" % (ids_to_names[index], page_rank_scores[index]))
+  top_author_names = [ids_to_names[index] for index in top_author_indices]
+  return top_author_names, top_author_indices, page_rank_scores[top_author_indices]
+
+
 def _main():
   # reporter()
   # paper_bar()
@@ -706,7 +770,9 @@ def _main():
   # print_top_cited_contributed_authors(0.01)
   # print_top_cited_contributed_authors(0.01, 2009)
   # diversity("heatmap_all")
-  author_counts_vs_cites_per_year()
+  # author_counts_vs_cites_per_year()
+  page_rank()
+  page_rank(min_year=2009)
 
 
 def _store():

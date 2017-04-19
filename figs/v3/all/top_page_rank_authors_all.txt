@@ -1,0 +1,330 @@
+Name, Score
+lionel c. briand, 0.000059
+gregg rothermel, 0.000038
+mark harman, 0.000036
+barbara a. kitchenham, 0.000035
+victor r. basili, 0.000033
+massimiliano di penta, 0.000031
+giuliano antoniol, 0.000029
+andrea de lucia, 0.000028
+thomas zimmermann 0001, 0.000028
+audris mockus, 0.000026
+sebastian g. elbaum, 0.000025
+andrian marcus, 0.000025
+mary jean harrold, 0.000025
+gerardo canfora, 0.000025
+tim menzies, 0.000024
+khaled el emam, 0.000023
+denys poshyvanyk, 0.000023
+marlon dumas, 0.000022
+rocco oliveto, 0.000022
+boualem benatallah, 0.000021
+anne hee hiong ngu, 0.000021
+yann-gael gueheneuc, 0.000021
+liangzhao zeng, 0.000021
+jayant kalagnanam, 0.000021
+gail c. murphy, 0.000021
+barry w. boehm, 0.000021
+shari lawrence pfleeger, 0.000021
+premkumar t. devanbu, 0.000020
+shyam r. chidamber, 0.000020
+ahmed e. hassan, 0.000020
+jeff offutt, 0.000019
+tao xie, 0.000019
+carlo ghezzi, 0.000019
+forrest shull, 0.000018
+nenad medvidovic, 0.000018
+david garlan, 0.000017
+james d. herbsleb, 0.000017
+per runeson, 0.000017
+rajiv ranjan, 0.000017
+rainer koschke, 0.000017
+martin j. shepperd, 0.000017
+david lo, 0.000017
+david s. rosenblum, 0.000017
+nachiappan nagappan, 0.000017
+jeffrey kramer, 0.000016
+sunghun kim 0001, 0.000016
+david m. binkley, 0.000015
+alessandro orso, 0.000015
+rodrigo n. calheiros, 0.000015
+cesar augusto fonticielha de rose, 0.000015
+martin pinzger, 0.000015
+myra b. cohen, 0.000015
+alfonso fuggetta, 0.000015
+jane huffman hayes, 0.000015
+anton beloglazov, 0.000015
+bram adams, 0.000014
+elaine j. weyuker, 0.000014
+sandro morasca, 0.000014
+steve m. easterbrook, 0.000014
+abram hindle, 0.000014
+norman e. fenton, 0.000014
+paolo tonella, 0.000014
+john w. daly, 0.000014
+john mylopoulos, 0.000014
+michael w. godfrey, 0.000014
+christian bird, 0.000014
+don s. batory, 0.000013
+taghi m. khoshgoftaar, 0.000013
+matthew b. dwyer, 0.000013
+anthony finkelstein, 0.000013
+filippo lanubile, 0.000013
+lu zhang, 0.000013
+arie van deursen, 0.000013
+daniel m. german, 0.000012
+adam a. porter, 0.000012
+david notkin, 0.000012
+neil a. m. maiden, 0.000012
+rajkumar buyya, 0.000012
+andy zaidman, 0.000012
+dag i. k. sjoberg, 0.000012
+bashar nuseibeh, 0.000012
+tsong yueh chen, 0.000012
+michael d. ernst, 0.000012
+jane cleland-huang, 0.000012
+roland h. untch, 0.000012
+harald c. gall, 0.000012
+erik arisholm, 0.000012
+vaclav rajlich, 0.000011
+tore dyba, 0.000011
+filippo ricca, 0.000011
+miryung kim, 0.000011
+oliver laitenberger, 0.000011
+nancy g. leveson, 0.000011
+martin p. robillard, 0.000011
+dewayne e. perry, 0.000011
+daniela e. herlea, 0.000010
+hyunsook do, 0.000010
+michele lanza, 0.000010
+stephane ducasse, 0.000010
+rick kazman, 0.000010
+willem visser, 0.000010
+lori l. pollock, 0.000010
+thomas m. j. fruchterman, 0.000010
+yue jia, 0.000010
+james r. cordy, 0.000010
+sarfraz khurshid, 0.000010
+jim whitehead, 0.000010
+corina s. pasareanu, 0.000010
+sebastian uchitel, 0.000010
+darko marinov, 0.000010
+magne jorgensen, 0.000010
+atif m. memon, 0.000010
+gordon fraser, 0.000010
+christian kastner, 0.000009
+robert allen, 0.000009
+rudolf ferenc, 0.000009
+robert l. glass, 0.000009
+william g. griswold, 0.000009
+antonia bertolino, 0.000009
+richard a. demillo, 0.000009
+yvan labiche, 0.000009
+james a. jones, 0.000009
+hongyu zhang, 0.000009
+phyllis g. frankl, 0.000009
+stephan diehl 0001, 0.000009
+margaret-anne d. storey, 0.000008
+alexander egyed, 0.000008
+aniello cimitile, 0.000008
+andreas zeller, 0.000008
+paul grunbacher, 0.000008
+carolyn b. seaman, 0.000008
+jeffrey n. magee, 0.000008
+sven apel, 0.000008
+tony gorschek, 0.000008
+leon moonen, 0.000008
+koushik sen, 0.000008
+roy thomas fielding, 0.000008
+shin yoo, 0.000008
+shing-chi cheung, 0.000008
+tibor gyimothy, 0.000008
+emilia mendes, 0.000008
+paola inverardi, 0.000008
+constance l. heitmeyer, 0.000008
+reidar conradi, 0.000008
+hausi a. muller, 0.000008
+shinji kusumoto, 0.000008
+steve counsell, 0.000008
+andrea arcuri, 0.000008
+w. eric wong, 0.000008
+nikolaos tsantalis, 0.000008
+anneliese von mayrhauser, 0.000008
+alexey g. malishevsky, 0.000008
+alexander dekhtyar, 0.000008
+tom mens, 0.000008
+tracy hall, 0.000008
+t. h. tse, 0.000008
+lawrence chung, 0.000007
+natalia juristo juzgado, 0.000007
+guttorm sindre, 0.000007
+phil mcminn, 0.000007
+matthias jarke, 0.000007
+janice a. singer, 0.000007
+huzefa h. kagdi, 0.000007
+walcelio l. melo, 0.000007
+emmanuel letier, 0.000007
+danilo ardagna, 0.000007
+danny dig, 0.000007
+jonathan i. maletic, 0.000007
+peter weissgerber, 0.000007
+ettore merlo, 0.000007
+laurie a. williams, 0.000007
+gian pietro picco, 0.000007
+axel van lamsweerde, 0.000007
+serge demeyer, 0.000007
+toshihiro kamiya, 0.000007
+claes wohlin, 0.000007
+chanchal kumar roy, 0.000007
+reid holmes, 0.000007
+jonathan e. cook, 0.000007
+mary lou soffa, 0.000007
+colette rolland, 0.000007
+julio cesar sampaio do prado leite, 0.000007
+robert m. hierons, 0.000007
+kevin j. sullivan, 0.000007
+alistair g. sutcliffe, 0.000007
+jens krinke, 0.000007
+orlena gotel, 0.000007
+jonathan p. whittle, 0.000007
+michael jackson, 0.000007
+john c. munson, 0.000007
+jamie andrews, 0.000007
+wolfgang emmerich, 0.000007
+philippe kruchten, 0.000007
+erik stensrud, 0.000006
+malcolm munro, 0.000006
+balasubramaniam ramesh, 0.000006
+roel wieringa, 0.000006
+thomas j. ostrand, 0.000006
+mary m. shaw, 0.000006
+david lorge parnas, 0.000006
+klaus havelund, 0.000006
+richard c. holt, 0.000006
+norman wilde, 0.000006
+hong mei, 0.000006
+andy podgurski, 0.000006
+keith h. bennett, 0.000006
+william b. frakes, 0.000006
+jurgen wust, 0.000006
+maurizio morisio, 0.000006
+william g. j. halfond, 0.000006
+annie i. anton, 0.000006
+marsha chechik, 0.000006
+romain robbes, 0.000006
+ali mesbah 0001, 0.000006
+martin host, 0.000006
+mats per erik heimdahl, 0.000006
+paul c. clements, 0.000005
+michael r. lyu, 0.000005
+keith gallagher, 0.000005
+lawrence g. votta, 0.000005
+mauro pezze, 0.000005
+zhenchang xing, 0.000005
+gianpaolo cugola, 0.000005
+jan bosch, 0.000005
+spiros mancoridis, 0.000005
+paris avgeriou, 0.000005
+andre van der hoek, 0.000005
+zhendong su, 0.000005
+wei li 0014, 0.000005
+rajiv gupta, 0.000005
+daniel m. berry, 0.000005
+richard n. taylor, 0.000005
+colin atkinson, 0.000005
+chris f. kemerer, 0.000005
+martin s. feather, 0.000005
+norman f. schneidewind, 0.000005
+qing xie, 0.000005
+john d. musa, 0.000005
+colin m. potts, 0.000005
+jeffrey m. voas, 0.000005
+bernard berthomieu, 0.000005
+mario piattini velthius, 0.000004
+barbara pernici, 0.000004
+klaus pohl, 0.000004
+timothy c. lethbridge, 0.000004
+ingunn myrtveit, 0.000004
+d. richard kuhn, 0.000004
+kostas kontogiannis, 0.000004
+richard g. hamlet, 0.000004
+giancarlo succi, 0.000004
+david harel, 0.000004
+alexander chatzigeorgiou, 0.000004
+james m. bieman, 0.000004
+chin-chen chang, 0.000004
+eleni stroulia, 0.000004
+pamela zave, 0.000004
+gunes koru, 0.000004
+john c. grundy, 0.000004
+joachim karlsson, 0.000004
+franco zambonelli, 0.000004
+christof ebert, 0.000004
+wojtek kozaczynski, 0.000004
+eric s. k. yu, 0.000004
+m. hakan erdogmus, 0.000004
+amy moormann zaremski, 0.000004
+mikael lindvall, 0.000004
+aditya p. mathur, 0.000004
+james miller, 0.000003
+katsuro inoue, 0.000003
+thomas a. henzinger, 0.000003
+daniel b. jackson, 0.000003
+betty h. c. cheng, 0.000003
+alan m. davis, 0.000003
+gunther ruhe, 0.000003
+bogdan korel, 0.000003
+yves le traon, 0.000003
+james a. whittaker, 0.000003
+lars grunske, 0.000003
+naeem seliya, 0.000003
+robyn r. lutz, 0.000003
+thomas a. ball, 0.000003
+didar zowghi, 0.000003
+mark c. paulk, 0.000003
+panos louridas, 0.000002
+tom tourwe, 0.000002
+kuo-chung tai, 0.000002
+christopher j. schofield, 0.000002
+chin-yu huang, 0.000002
+yannis smaragdakis, 0.000002
+vassilios tzerpos, 0.000002
+daniel l. moody, 0.000002
+martin neil, 0.000002
+tien n. nguyen, 0.000002
+donald j. reifer, 0.000002
+martin glinz, 0.000002
+chris verhoef, 0.000002
+niclas ohlsson, 0.000002
+radu marinescu 0001, 0.000002
+mayuram s. krishnan, 0.000002
+diomidis spinellis, 0.000002
+kevin ryan, 0.000002
+hareton leung, 0.000002
+harry m. sneed, 0.000001
+hai zhuge, 0.000001
+westley weimer, 0.000001
+gerard j. holzmann, 0.000001
+jianhui tian, 0.000001
+alexander l. wolf, 0.000001
+johannes c. van vliet, 0.000001
+william n. robinson, 0.000001
+ian f. alexander, 0.000001
+steven p. reiss, 0.000001
+bran selic, 0.000001
+les hatton, 0.000001
+michel diaz, 0.000000
+sallie m. henry, 0.000000
+jeannette m. wing, 0.000000
+giuseppe visaggio, 0.000000
+edward m. reingold, 0.000000
+ben shneiderman, 0.000000
+grady booch, 0.000000
+r. geoff dromey, 0.000000
+amnon naamad, 0.000000
+nigel bevan, 0.000000
+deependra moitra, 0.000000
+lotfi a. zadeh, 0.000000
+ben light, 0.000000
+henry chang, 0.000000
+brenda s. baker, 0.000000
