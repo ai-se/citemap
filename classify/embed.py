@@ -18,6 +18,7 @@ import numpy as np
 import tensorflow as tf
 import math
 import random
+from sklearn.manifold import TSNE
 
 
 RANDOM_STATE = 1
@@ -399,6 +400,36 @@ def train__words_negative(word_network, negative_samples_list, log_factor=1):
   return projections, contexts
 
 
+def embed(edges, components, file_name):
+  if os.path.isfile(file_name):
+    with open(file_name) as f:
+      return cPkl.load(f)
+  distance_edges = np.amax(edges, axis=1, keepdims=True) - edges
+  tsne = TSNE(n_components=components, metric='precomputed', n_iter=200, random_state=RANDOM_STATE, verbose=2)
+  embeddings = tsne.fit_transform(distance_edges)
+  print(embeddings)
+  print(embeddings.shape)
+  with open(file_name, "wb") as f:
+    cPkl.dump(embeddings, f, cPkl.HIGHEST_PROTOCOL)
+  return embeddings
+
+
+def tsne_runner(use_references):
+  n_components = 64
+  graph = retrieve_graph()
+  cite_map = citation_map(graph)
+  papers, groups = predict.get_papers_and_groups(graph, is_independent=True)
+  for index, (train_x, train_y, test_x, test_y) in enumerate(split(papers, groups, 5)):
+    print("### Iteration %d" % index)
+    word_network = build_graph(index, train_x, train_y, cite_map, use_references)
+    if use_references:
+      embed_file = "cache/tsne/%d_components_%d_ref.pkl" % (n_components, index)
+    else:
+      embed_file = "cache/tsne/%d_components_%d.pkl" % (n_components, index)
+    edges = word_network.edges
+    embed(edges, n_components, embed_file)
+
+
 def runner(use_references, use_neg_samples):
   graph = retrieve_graph()
   cite_map = citation_map(graph)
@@ -422,9 +453,9 @@ def runner(use_references, use_neg_samples):
 
 
 if __name__ == "__main__":
-  # runner(False)
   # with open("cache/graphs/results/0_ref.pkl") as f:
   #   dump = cPkl.load(f)
   #   # print(dump["projections"])
   #   print(np.argwhere(np.isnan(dump["projections"])))
-  runner(False, True)
+  # runner(False, True)
+  tsne_runner(True)
