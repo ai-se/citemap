@@ -7,7 +7,7 @@ import matplotlib.colors as clrs
 import matplotlib.patches as mpatches
 from collections import Counter, OrderedDict
 import numpy as np
-import db.mysql as mysql
+import db.mysqldb as mysql
 import pandas as pd
 from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, dendrogram

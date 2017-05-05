@@ -10,7 +10,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from collections import OrderedDict, Counter
 import matplotlib.patches as mpatches
-import db.mysql as mysql
+import db.mysqldb as mysql
 import pandas as pd
 import pickle
 from matplotlib.colors import ColorConverter

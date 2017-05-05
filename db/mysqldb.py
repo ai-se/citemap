@@ -2,7 +2,7 @@ from __future__ import print_function, division
 import sys
 import os
 sys.path.append(os.path.abspath("."))
-import MySQLdb
+import mysql.connector as sqldb
 from utils.lib import O, Paper, PC, Node, Venue
 from collections import OrderedDict
 import cPickle as pkl
@@ -11,6 +11,7 @@ import cPickle as pkl
 # SCHEMA_NAME = "conferences_dummy"
 SCHEMA_NAME = "se"
 
+MYSQL_PASSWORD = os.environ['MYSQL_ROOT_PASSWORD'] if 'MYSQL_ROOT_PASSWORD' in os.environ else ''
 
 class DB(O):
   _db = None
@@ -18,9 +19,9 @@ class DB(O):
   @staticmethod
   def get():
     if DB._db is None:
-      DB._db = MySQLdb.connect(host="localhost",
+      DB._db = sqldb.connect(host="localhost",
                                user="root",
-                               passwd="root",
+                               passwd=MYSQL_PASSWORD,
                                db=SCHEMA_NAME)
     return DB._db
 
@@ -208,9 +209,8 @@ def update_citation_count():
   DB.close()
 
 
-
 if __name__ == "__main__":
   # get_conferences()
-  dump(file_name='data/citemap_v8.csv')
-  # print(get_venues())
+  # dump(file_name='data/citemap_v8.csv')
+  print(get_venues())
   # update_citation_count()

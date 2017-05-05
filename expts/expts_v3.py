@@ -10,7 +10,7 @@ from collections import OrderedDict, Counter
 from network.mine import cite_graph, Miner
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from db import mysql
+from db import mysqldb
 import pandas as pd
 from sklearn.feature_extraction import text
 from scipy.spatial.distance import pdist
@@ -79,7 +79,7 @@ STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering', 'paper', 
                                             'author', 'proposed', 'icse', 'article', 'year', 'articles', 'page', '2000',
                                             '2004', 'papers', 'computer', 'held', 'editor'])
 
-CONFERENCES = [venue.acronym for venue in mysql.get_conferences()]
+CONFERENCES = [venue.acronym for venue in mysqldb.get_conferences()]
 
 # Config
 THE = O()
@@ -346,7 +346,7 @@ def diversity(fig_name, paper_range=None):
   venue_topics = {}
   venue_heatmaps = {}
   valid_conferences = []
-  venues = mysql.get_venues()
+  venues = mysqldb.get_venues()
   for conference_id, papers in paper_map.items():
     topics = np.array([0] * lda_model.n_topics)
     for tup in yearize(papers).items():

@@ -2,7 +2,7 @@ from __future__ import print_function, division
 import os, sys
 sys.path.append(os.path.abspath("."))
 from utils.lib import O, Node, Edge
-from db import mysql
+from db import mysqldb
 from utils.unicoder import UnicodeReader
 
 __author__ = "panzer"
@@ -26,7 +26,7 @@ class Graph(O):
     author_edges = {}
     cite_edges = {}
     collaborator_edges = {}
-    author_nodes = mysql.get_authors()
+    author_nodes = mysqldb.get_authors()
     ref_nodes = {}
 
     def add_collaborator_edges(authors):
@@ -85,7 +85,7 @@ class Graph(O):
     graph.author_edges = author_edges
     graph.cite_edges = cite_edges
     graph.collaborator_edges = collaborator_edges
-    graph.add_pc_membership(mysql.get_pc_membership())
+    graph.add_pc_membership(mysqldb.get_pc_membership())
     return graph
 
   def add_pc_membership(self, pc_members):
@@ -120,7 +120,7 @@ class Graph(O):
     }
     """
     papers = {}
-    venues = mysql.get_venues()
+    venues = mysqldb.get_venues()
     for paper_id, paper in self.paper_nodes.items():
       venue = venues[paper.venue]
       if venue.is_conference and permitted == 'journals': continue
@@ -134,7 +134,7 @@ class Graph(O):
 
   def get_paper_nodes(self, permitted='conferences'):
     paper_nodes = {}
-    venues = mysql.get_venues()
+    venues = mysqldb.get_venues()
     for p_id, paper in self.paper_nodes.items():
       venue = venues[paper.venue]
       if venue.is_conference and permitted == 'journals':
@@ -151,7 +151,7 @@ class Graph(O):
     }
     """
     papers = {}
-    venues = mysql.get_venues()
+    venues = mysqldb.get_venues()
     for edge in self.author_edges.values():
       author_papers = papers.get(edge.source, [])
       paper = self.paper_nodes[edge.target]
@@ -167,7 +167,7 @@ class Graph(O):
 
 if __name__ == "__main__":
   g = Graph.from_file("citemap.csv")
-  g.add_pc_membership(mysql.get_pc_membership())
+  g.add_pc_membership(mysqldb.get_pc_membership())
   confs = g.get_committee_by_conference()
   paps = g.get_papers_by_authors()
   print(paps)

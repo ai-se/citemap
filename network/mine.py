@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from nltk import word_tokenize
 from nltk.stem.porter import PorterStemmer
 from sklearn.feature_extraction import text
-from db import mysql
+from db import mysqldb
 
 __author__ = "panzer"
 
