@@ -77,9 +77,6 @@ def retrieve_vocabulary(min_tfidf_score=0.1, from_cache=True):
   reverse_vocab_map[VOCAB_SIZE - 1] = "UNK"
   return vocab_map, reverse_vocab_map
 
-VOCABULARY, REVERSE_VOCABULARY = retrieve_vocabulary()
-VOCABULARY_WORDS = VOCABULARY.keys()
-VOCABULARY_INDICES = REVERSE_VOCABULARY.keys()
 
 def split(dependent, independent, n_folds):
   skf = StratifiedKFold(n_splits=n_folds, random_state=RANDOM_STATE)
@@ -451,6 +448,10 @@ def runner(use_references, use_neg_samples):
     # with open(file_name, 'wb') as f:
     #   cPkl.dump(dump, f, cPkl.HIGHEST_PROTOCOL)
 
+
+VOCABULARY, REVERSE_VOCABULARY = retrieve_vocabulary()
+VOCABULARY_WORDS = VOCABULARY.keys()
+VOCABULARY_INDICES = REVERSE_VOCABULARY.keys()
 
 if __name__ == "__main__":
   # with open("cache/graphs/results/0_ref.pkl") as f:
