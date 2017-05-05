@@ -19,6 +19,7 @@ from expts.settings import dend as dend_settings
 from matplotlib.colors import ColorConverter
 import cPickle as pkl
 from sklearn.externals import joblib
+from utils.sk import rdivDemo as sk
 
 GRAPH_CSV = "data/citemap_v8.csv"
 
@@ -43,6 +44,10 @@ COLORS_ALL = ["lightgray", "red", "blue", "darkslategray",
             "orange", "lime", "hotpink"]
 
 COLOR_CONVERTER = ColorConverter()
+
+
+def is_true(val):
+  return val in [True, 'True', 'true']
 
 
 def get_color(index):
@@ -303,6 +308,34 @@ def paper_bar(start=1992, end=2016):
   plt.clf()
 
 
+def paper_and_author_growth(min_year=1992, max_year=2015):
+  graph = cite_graph(GRAPH_CSV)
+  year_authors_map = OrderedDict()
+  year_papers_map = OrderedDict()
+  for _, paper in graph.get_paper_nodes(permitted=THE.permitted).items():
+    year = int(paper.year)
+    if not (min_year < year < max_year): continue
+    authors = paper.authors.split(",")
+    year_authors_map[year] = year_authors_map.get(year, set([])).union(authors)
+    year_papers_map[year] = year_papers_map.get(year, 0) + 1
+  x_axis = []
+  papers = []
+  authors = []
+  for key in sorted(year_authors_map.keys()):
+    x_axis.append(key)
+    papers.append(year_papers_map[key])
+    authors.append(len(year_authors_map[key]))
+  plt.plot(x_axis, papers)
+  plt.plot(x_axis, authors)
+  legends = ['Papers', 'Authors']
+  plt.legend(legends, loc='upper left')
+  plt.title('Growth of Papers and Authors')
+  plt.xlabel("Year")
+  plt.ylabel(" Count")
+  plt.savefig("figs/v3/%s/paper_author_count.png" % THE.permitted)
+  plt.clf()
+
+
 def diversity(fig_name, paper_range=None):
   if paper_range:
     print("DIVERSITY for %s between %d - %d" % (THE.permitted, paper_range[0], paper_range[-1]))
@@ -469,15 +502,16 @@ def super_author(top_percents):
     vals = sorted(author_topics.values(), reverse=True)
     counter = Counter()
     for val in vals:
-      counter[val] += 1
+      if val > 0:
+        counter[val] += 1
     bar_x = []
     bar_y = []
     for key in sorted(counter.keys()):
       bar_x.append(key)
       bar_y.append(counter[key])
-    bar_y = [0] * (lda_model.n_topics + 1 - len(bar_y)) + bar_y
+    bar_y = [0] * (lda_model.n_topics - len(bar_y)) + bar_y
     author_publications[p_key] = bar_y
-  ind = np.arange(1, lda_model.n_topics + 2)  # the x locations for the groups
+  ind = np.arange(1, lda_model.n_topics + 1)  # the x locations for the groups
   fig = plt.figure(figsize=(8, 2))
   width = 0.2  # the width of the bars
   fig, ax = plt.subplots()
@@ -489,7 +523,7 @@ def super_author(top_percents):
     rects.append(rect[0])
     keys.append(key)
   ax.legend(tuple(rects), tuple(keys), loc='upper center',
-            bbox_to_anchor=(0.5, 1.12), ncol=4, fontsize=16)
+            bbox_to_anchor=(0.5, 1.15), ncol=4, fontsize=12)
   plt.xticks(ind + 2 * width, ind, fontsize=16)
   plt.xlabel("Cumulative # of Topics", fontsize=16)
   plt.ylabel("Authors Count", fontsize=16)
@@ -537,9 +571,9 @@ def authors_percent_in_papers_year(min_year=1992):
   print("#AUTHOR PERCENT vs YEAR for %s" % THE.permitted)
   graph = retrieve_graph()
   year_authors_map = OrderedDict()
-  for _, paper in graph.get_paper_nodes().items():
+  for _, paper in graph.get_paper_nodes(permitted=THE.permitted).items():
     year = paper.year
-    if int(year) < min_year: continue
+    if int(year) < min_year or int(year) > 2015: continue
     num_authors = len(paper.authors.split(","))
     year_authors_count = year_authors_map.get(year, {})
     key = str(num_authors) if num_authors < 7 else "7+"
@@ -578,7 +612,7 @@ def author_counts_vs_cites_per_year(min_year=1992):
   print("#AUTHOR PERCENT vs CITES for %s" % THE.permitted)
   graph = retrieve_graph()
   year_authors_map = OrderedDict()
-  for _, paper in graph.get_paper_nodes().items():
+  for _, paper in graph.get_paper_nodes(permitted=THE.permitted).items():
     year = paper.year
     if int(year) < min_year or int(year) > 2015: continue
     num_authors = len(paper.authors.split(","))
@@ -592,7 +626,6 @@ def author_counts_vs_cites_per_year(min_year=1992):
   year_author_percent_map = OrderedDict()
   keys = ["1", "2", "3", "4", "5", "6", "7+"]
   authors_count_year_map = OrderedDict()
-  print(year_authors_map.keys())
   for year in sorted(year_authors_map.keys()):
     authors_count = year_authors_map[year]
     # total = sum(authors_count.values())
@@ -621,11 +654,53 @@ def author_counts_vs_cites_per_year(min_year=1992):
   plt.clf()
 
 
+def venue_type_vs_cites_per_year(min_year=1992):
+  print("#VENUE TYPE vs CITES for %s" % THE.permitted)
+  graph = retrieve_graph()
+  paper_cites_map = OrderedDict()
+  for _, paper in graph.get_paper_nodes(permitted=THE.permitted).items():
+    year = paper.year
+    if int(year) < min_year or int(year) > 2015: continue
+    paper_cites_count = paper_cites_map.get(year, {})
+    cites = int(paper.cited_count) if is_not_none(paper.cited_count) else 0
+    key = "Conference" if is_true(paper.is_conference) else "Journal"
+    years_since = 2017 - int(year)
+    avg_cites = cites / years_since
+    paper_cites_count[key] = paper_cites_count.get(year, []) + [avg_cites]
+    paper_cites_map[year] = paper_cites_count
+
+  keys = ["Conference", "Journal"]
+  cites_count_year_map = OrderedDict()
+  for year in sorted(paper_cites_map.keys()):
+    paper_cites_count = paper_cites_map[year]
+    for key in keys:
+      all_cites = paper_cites_count.get(key, [0])
+      avg_cites = round(sum(all_cites) / len(all_cites), 2)
+      # avg_cites = np.median(all_cites)
+      cites_count_year_map[key] = cites_count_year_map.get(key, []) + [avg_cites]
+
+  colors = ["green", "red"]
+  x_axis = sorted(paper_cites_map.keys())
+  x_indices = np.arange(1, len(x_axis) + 1)
+  legends = []
+  for i, key in enumerate(keys):
+    plt.plot(x_indices, cites_count_year_map[key], color=colors[i])
+    legends.append(key)
+  plt.legend(legends, loc='upper left', ncol=2, fontsize=10)
+  fig_name = "figs/v3/%s/venue_type_vs_cites_per_year.png" % THE.permitted
+  plt.title("Average cites per year for Conferences & Journals")
+  plt.xticks(x_indices, x_axis, rotation=60)
+  plt.xlabel("Year")
+  plt.ylabel("Average Cites Per Year")
+  plt.savefig(fig_name, bbox_inches='tight')
+  plt.clf()
+
+
 def author_bar(min_year=1992):
   print("AUTHOR BAR for %s" % THE.permitted)
   graph = retrieve_graph()
   year_authors_map = OrderedDict()
-  for _, paper in graph.get_paper_nodes().items():
+  for _, paper in graph.get_paper_nodes(permitted=THE.permitted).items():
     year = paper.year
     if int(year) < min_year: continue
     authors = paper.authors.split(",")
@@ -750,12 +825,86 @@ def page_rank(d=0.45, top_percent=0.01, min_year=None, iterations=1000):
   return top_author_names, top_author_indices, page_rank_scores[top_author_indices]
 
 
+def score_plotter(file):
+  x, y = [], []
+  with open(file) as f:
+    line = f.readline().split(",")
+    while len(line) > 1:
+      x.append(int(line[0]))
+      y.append(float(line[1]))
+      line = f.readline().split(",")
+  plt.plot(x, y, 'r--')
+  plt.xlabel('Topics ->')
+  plt.ylabel('Perplexity ->')
+  plt.savefig("figs/v3/%s/perplexity.png" % THE.permitted, bbox_inches='tight')
+  plt.clf()
+
+
+def stat_author_counts_vs_cites_per_year(min_year=1992):
+  print("#AUTHOR PERCENT vs CITES for %s" % THE.permitted)
+  graph = retrieve_graph()
+  year_authors_map = OrderedDict()
+  for _, paper in graph.get_paper_nodes(permitted=THE.permitted).items():
+    year = paper.year
+    if int(year) < min_year or int(year) > 2015: continue
+    num_authors = len(paper.authors.split(","))
+    year_authors_count = year_authors_map.get(year, {})
+    key = str(num_authors) if num_authors < 7 else "7+"
+    cites = int(paper.cited_count) if is_not_none(paper.cited_count) else 0
+    years_since = 2017 - int(year)
+    avg_cites = cites / years_since
+    year_authors_count[key] = year_authors_count.get(key, []) + [avg_cites]
+    year_authors_map[year] = year_authors_count
+  keys = ["1", "2", "3", "4", "5", "6", "7+"]
+  file_name = "figs/v3/%s/stats/authors_vs_cites.txt" % THE.permitted
+  f = open(file_name, "wb")
+  for year in sorted(year_authors_map.keys()):
+    authors_count = year_authors_map[year]
+    percent_map = []
+    for key in keys:
+      cites = authors_count.get(key, [0])
+      percent_map.append([key] + cites)
+    f.write("\n## %s\n" % year)
+    sk(percent_map, f)
+  f.close()
+
+
+def stat_venue_type_vs_cites_per_year(min_year=1992):
+  print("#VENUE TYPE vs CITES for %s" % THE.permitted)
+  graph = retrieve_graph()
+  paper_cites_map = OrderedDict()
+  for _, paper in graph.get_paper_nodes(permitted=THE.permitted).items():
+    year = paper.year
+    if int(year) < min_year or int(year) > 2015: continue
+    paper_cites_count = paper_cites_map.get(year, {})
+    cites = int(paper.cited_count) if is_not_none(paper.cited_count) else 0
+    key = "Conference" if is_true(paper.is_conference) else "Journal"
+    years_since = 2017 - int(year)
+    avg_cites = cites / years_since
+    paper_cites_count[key] = paper_cites_count.get(key, []) + [avg_cites]
+    paper_cites_map[year] = paper_cites_count
+
+  keys = ["Conference", "Journal"]
+  file_name = "figs/v3/%s/stats/venue_type_vs_cites.txt" % THE.permitted
+  f = open(file_name, "wb")
+  for year in sorted(paper_cites_map.keys()):
+    paper_cites_count = paper_cites_map[year]
+    percent_map = []
+    for key in keys:
+      all_cites = paper_cites_count.get(key, [0])
+      percent_map.append([key[:4]] + all_cites)
+    print("\n## %s" % year)
+    f.write("\n## %s\n" % year)
+    sk(percent_map, f)
+  f.close()
+
+
 def _main():
   # reporter()
   # paper_bar()
   # diversity("heatmap_09_16", range(2009, 2017))
   # diversity("heatmap_01_08", range(2001, 2009))
-  # diversity("heatmap_93_00", range(1993, 2000))
+  # diversity("heatmap_93_00", range(1992, 2001))
   # diversity("heatmap_93_00", range(2013, 2007))
   # topic_evolution(venue="all")
   # topic_evolution(venue="conferences")
@@ -763,21 +912,26 @@ def _main():
   # super_author([0.01, 0.1, 0.2, 1.0])
   # get_top_papers(year_from=2009)
   # get_top_papers()
-  # authors_percent_in_papers_year()
+  # authors_percent_in_papers_year(1993)
   # author_bar()
   # print_top_cited_authors(0.01)
   # print_top_cited_authors(0.01, 2009)
   # print_top_cited_contributed_authors(0.01)
   # print_top_cited_contributed_authors(0.01, 2009)
   # diversity("heatmap_all")
-  # author_counts_vs_cites_per_year()
-  page_rank()
-  page_rank(min_year=2009)
+  # author_counts_vs_cites_per_year(1993)
+  # page_rank()
+  # page_rank(min_year=2009)
+  # venue_type_vs_cites_per_year(1993)
+  stat_author_counts_vs_cites_per_year()
+  stat_venue_type_vs_cites_per_year()
 
 
 def _store():
   store_graph_lda_data()
 
 if __name__ == "__main__":
-  _main()
+  # _main()
+  # score_plotter("figs/v3/all/scores.csv")
   # _store()
+  paper_and_author_growth()

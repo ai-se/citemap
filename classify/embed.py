@@ -16,6 +16,9 @@ import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import tensorflow as tf
+import math
+import random
+
 
 RANDOM_STATE = 1
 GRAPH_CSV = "data/citemap_v8.csv"
@@ -31,7 +34,7 @@ TOKEN_PATTERN = r"(?u)\b\w\w\w+\b"
 VOCAB_SIZE = 30000
 BATCH_SIZE = 128
 EMBEDDING_SIZE = 64
-
+NEGATIVE_SAMPLE_SIZE = 5
 
 def retrieve_graph(graph_file=GRAPH_CSV, from_cache=True):
   cached = 'cache/graph.pkl'
@@ -231,6 +234,36 @@ def generate_edge_batch(edges):
   return batch
 
 
+def make_negative_samples_map(edges, index, use_references, deg=0.75):
+  if use_references:
+    file_name = "cache/graphs/neg_samples/%d_ref.pkl" % index
+  else:
+    file_name = "cache/graphs/neg_samples/%d.pkl" % index
+  if os.path.isfile(file_name):
+    with open(file_name) as f:
+      return cPkl.load(f)
+  num_neg_samples = 1e8
+  degrees = (edges != 0).sum(1)
+  norm = sum([math.pow(node_degree, deg) for node_degree in degrees])
+  num_nodes = edges.shape[0]
+  p = 0
+  i = 0
+  neg_samples = np.zeros(int(num_neg_samples), dtype=np.int32)
+  for j in range(num_nodes):
+    if j % 10000 == 0:
+      print(j)
+    if i >= num_neg_samples:
+      break
+    p += math.pow(degrees[j], deg) / norm
+    while i < num_neg_samples and i / num_neg_samples < p:
+      neg_samples[i] = j
+      i += 1
+  print("Done :", index)
+  with open(file_name, "wb") as f:
+    cPkl.dump(neg_samples, f, cPkl.HIGHEST_PROTOCOL)
+  return neg_samples
+
+
 def line(total_batches, initial_learn_rate=0.025):
   graph = tf.Graph()
   with graph.as_default(), tf.device("/cpu:0"):
@@ -271,6 +304,46 @@ def line(total_batches, initial_learn_rate=0.025):
   return graph, train_dataset, counter, optimizer, all_projections, all_contexts, objective
 
 
+def line_negative(total_batches, sample_size=NEGATIVE_SAMPLE_SIZE, initial_learn_rate=0.025):
+  graph = tf.Graph()
+  with graph.as_default(), tf.device("/cpu:0"):
+
+
+    # Input data
+    train_dataset = tf.placeholder(tf.int32, shape=[BATCH_SIZE, 3])
+    negative_samples = tf.placeholder(tf.int32, shape=[BATCH_SIZE * sample_size])
+    positive_samples = tf.placeholder(tf.int32, shape=[BATCH_SIZE * sample_size])
+    counter = tf.placeholder(tf.int32, shape=[1])
+
+    # Variables
+    all_projections = tf.Variable(tf.random_uniform([VOCAB_SIZE, EMBEDDING_SIZE], -1.0, 1.0))
+    all_contexts = tf.Variable(tf.random_uniform([VOCAB_SIZE, EMBEDDING_SIZE], -1.0, 1.0))
+
+    source_projections = tf.nn.embedding_lookup(all_projections, train_dataset[:, 0])
+    target_contexts = tf.nn.embedding_lookup(all_contexts, train_dataset[:, 1])
+    # target_projections = tf.nn.embedding_lookup(all_projections, train_dataset[:, 1])
+    neg_samples_lookup = tf.nn.embedding_lookup(all_projections, negative_samples)
+    pos_samples_lookup = tf.nn.embedding_lookup(all_projections, positive_samples)
+
+    # source_projections = tf.Print(source_projections, [source_projections], message="Source Projections")
+    # target_contexts = tf.Print(target_contexts, [target_contexts], message="Target Contexts")
+
+    negative_scores = tf.log(tf.sigmoid(-1 * tf.reduce_sum(tf.multiply(neg_samples_lookup, pos_samples_lookup), axis=1)))
+    negative_scores = tf.reduce_sum(tf.reshape(negative_scores, shape=[BATCH_SIZE, sample_size]), axis=1)
+
+    weights = tf.to_float(tf.convert_to_tensor(train_dataset[:, 2], dtype=tf.int32))
+    positive_scores = tf.log(tf.sigmoid(tf.reduce_sum(tf.multiply(source_projections, target_contexts), axis=1)))
+    total_scores = positive_scores + negative_scores
+
+    learn_rate = initial_learn_rate * (1 - counter[0] / total_batches)
+    objective = -1 * tf.reduce_sum(total_scores)
+    # objective = -1 * tf.reduce_sum(tf.multiply(weights, total_scores))
+    # loss = 0.01 * (tf.nn.l2_loss(all_projections) + tf.nn.l2_loss(all_contexts))
+    # objective = objective + loss
+    optimizer = tf.train.GradientDescentOptimizer(learn_rate).minimize(objective)
+  return graph, train_dataset, negative_samples, positive_samples, counter, optimizer, all_projections, all_contexts, objective
+
+
 def train_words(word_network, log_factor=1):
   total_edges = word_network.edges.shape[0] * word_network.edges.shape[1]
   total_batches = 4 * total_edges // BATCH_SIZE
@@ -292,20 +365,60 @@ def train_words(word_network, log_factor=1):
   return projections, contexts
 
 
-def runner(use_references):
+def train__words_negative(word_network, negative_samples_list, log_factor=1):
+  total_edges = word_network.edges.shape[0] * word_network.edges.shape[1]
+  total_batches = 4 * total_edges // BATCH_SIZE
+  graph, train_dataset, negative_samples, positive_samples, counter, optimizer, all_projections, all_contexts, objective = \
+      line_negative(total_batches)
+  global data_index
+  data_index = 0
+  projections, contexts = None, None
+  # session = tf.InteractiveSession(graph=graph)
+  with tf.Session(graph=graph) as session:
+    tf.global_variables_initializer().run()
+    for gen in range(total_batches):
+      batch = generate_edge_batch(word_network.edges)
+      sources = batch[:, 0]
+      neg_samples = np.ndarray(shape=[BATCH_SIZE * NEGATIVE_SAMPLE_SIZE], dtype=np.int32)
+      pos_samples = np.ndarray(shape=[BATCH_SIZE * NEGATIVE_SAMPLE_SIZE], dtype=np.int32)
+      for index, source in enumerate(sources):
+        k = 0
+        while k < NEGATIVE_SAMPLE_SIZE:
+          negative_sample = None
+          while negative_sample is None or negative_sample == source:
+            negative_sample = negative_samples_list[random.randint(0, negative_samples_list.shape[0])]
+            neg_samples[index * NEGATIVE_SAMPLE_SIZE + k] = negative_sample
+            pos_samples[index * NEGATIVE_SAMPLE_SIZE + k] = source
+          k += 1
+      feed_dict = {train_dataset: batch, negative_samples: neg_samples, positive_samples: pos_samples, counter: [gen]}
+      _, projections, contexts, obj = session.run([optimizer, all_projections, all_contexts, objective],
+                                                        feed_dict=feed_dict)
+      if gen % log_factor == 0:
+        print("Batch : %d / %d, Loss: %f" % (gen, total_batches, obj))
+  # session.close()
+  return projections, contexts
+
+
+def runner(use_references, use_neg_samples):
   graph = retrieve_graph()
   cite_map = citation_map(graph)
   papers, groups = predict.get_papers_and_groups(graph, is_independent=True)
   for index, (train_x, train_y, test_x, test_y) in enumerate(split(papers, groups, 5)):
     word_network = build_graph(index, train_x, train_y, cite_map, use_references)
-    projections, contexts = train_words(word_network)
-    dump = {"projections": projections, "contexts": contexts}
-    if use_references:
-      file_name = "cache/graphs/results/%d_ref.pkl" % index
+    if use_neg_samples:
+      negative_samples = make_negative_samples_map(word_network.edges, index, use_references)
+      projections, contexts = train__words_negative(word_network, negative_samples)
     else:
-      file_name = "cache/graphs/results/%d.pkl" % index
-    with open(file_name, 'wb') as f:
-      cPkl.dump(dump, f, cPkl.HIGHEST_PROTOCOL)
+      projections, contexts = train_words(word_network)
+    exit()
+
+    # dump = {"projections": projections, "contexts": contexts}
+    # if use_references:
+    #   file_name = "cache/graphs/results/%d_ref.pkl" % index
+    # else:
+    #   file_name = "cache/graphs/results/%d.pkl" % index
+    # with open(file_name, 'wb') as f:
+    #   cPkl.dump(dump, f, cPkl.HIGHEST_PROTOCOL)
 
 
 if __name__ == "__main__":
@@ -314,4 +427,4 @@ if __name__ == "__main__":
   #   dump = cPkl.load(f)
   #   # print(dump["projections"])
   #   print(np.argwhere(np.isnan(dump["projections"])))
-  runner(True)
+  runner(False, True)
