@@ -18,7 +18,7 @@ import numpy as np
 import tensorflow as tf
 import math
 import random
-from sklearn.manifold import TSNE
+from bhtsne import tsne
 
 
 RANDOM_STATE = 1
@@ -401,9 +401,11 @@ def embed(edges, components, file_name):
   if os.path.isfile(file_name):
     with open(file_name) as f:
       return cPkl.load(f)
-  distance_edges = np.amax(edges, axis=1, keepdims=True) - edges
-  tsne = TSNE(n_components=components, metric='precomputed', n_iter=200, random_state=RANDOM_STATE, verbose=2)
-  embeddings = tsne.fit_transform(distance_edges)
+  # distance_edges = np.amax(edges, axis=1, keepdims=True) - edges
+  # tsne = TSNE(n_components=components, metric='precomputed', n_iter=200, random_state=RANDOM_STATE, verbose=2)
+  # embeddings = tsne.fit_transform(distance_edges)
+  distance_edges = edges.astype(np.float64)
+  embeddings = tsne(distance_edges, dimensions=components, rand_seed=RANDOM_STATE)
   print(embeddings)
   print(embeddings.shape)
   with open(file_name, "wb") as f:
