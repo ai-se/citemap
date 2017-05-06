@@ -457,7 +457,7 @@ def tsne_runner(use_references):
     else:
       embed_file = "cache/tsne/%d_components_%d.pkl" % (n_components, index)
     edges = word_network.edges
-    # embed(edges, n_components, embed_file)
+    embed(edges, n_components, embed_file)
 
 
 def runner(use_references, use_neg_samples):
