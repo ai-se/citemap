@@ -444,8 +444,7 @@ def embed(edges, components, file_name):
   return embeddings
 
 
-def tsne_runner(use_references):
-  n_components = 64
+def tsne_runner(use_references, n_components):
   graph = retrieve_graph()
   cite_map = citation_map(graph)
   papers, groups = predict.get_papers_and_groups(graph, is_independent=True)
@@ -492,7 +491,7 @@ if __name__ == "__main__":
   #   # print(dump["projections"])
   #   print(np.argwhere(np.isnan(dump["projections"])))
   # runner(False, True)
-  tsne_runner(True)
-  tsne_runner(False)
+  tsne_runner(True, 128)
+  tsne_runner(False, 128)
   # print(VOCABULARY)
 
