@@ -59,7 +59,7 @@ class Miner(O):
     if self.documents: return self.documents
     paper_nodes = self.graph.paper_nodes
     documents = {}
-    venues = mysql.get_venues()
+    venues = mysqldb.get_venues()
     for paper_id, paper in paper_nodes.items():
       venue = venues[paper.venue]
       if venue.is_conference and self.permitted == 'journals': continue

@@ -25,14 +25,6 @@ from collections import OrderedDict
 RANDOM_STATE = 1
 GRAPH_CSV = "data/citemap_v8.csv"
 ALL = 'all'
-STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering', 'paper', 'study', 'based',
-                                            'results', 'approach', 'case', 'workshop', 'international', 'research',
-                                            'conference', 'introduction', 'editors', 'article', 'issue', 'month',
-                                            'copyright', 'special', 'used', 'using', 'use', 'studies', 'review',
-                                            'editorial', 'report', 'book', 'ieee', 'published', 'science', 'column',
-                                            'author', 'proposed', 'icse', 'article', 'year', 'articles', 'page', '2000',
-                                            '2004', 'papers', 'computer', 'held', 'editor'])
-TOKEN_PATTERN = r"(?u)\b\w\w\w+\b"
 VOCAB_SIZE = 5000
 BATCH_SIZE = 128
 EMBEDDING_SIZE = 64
@@ -59,7 +51,7 @@ def retrieve_vocabulary(min_tfidf_score=0.1, from_cache=True):
       vocabulary = cPkl.load(f)[:VOCAB_SIZE - 1].tolist()
   else:
     graph = retrieve_graph()
-    vectorizer = TfidfVectorizer(analyzer=analyzer())
+    vectorizer = TfidfVectorizer(analyzer=predict.analyzer())
     papers, groups = predict.get_papers_and_groups(graph, is_independent=True)
     documents = [paper.raw for paper in papers]
     tfidf_matrix = vectorizer.fit_transform(documents).toarray()
@@ -84,7 +76,7 @@ def construct_vocabulary(papers, cache_file=None):
     with open(cache_file) as f:
       mappings = cPkl.load(f)
       return mappings['forward'], mappings['reverse']
-  vectorizer = TfidfVectorizer(analyzer=analyzer())
+  vectorizer = TfidfVectorizer(analyzer=predict.analyzer())
   documents = [paper.raw for paper in papers]
   tfidf_matrix = vectorizer.fit_transform(documents).toarray()
   tfidf_means = np.mean(tfidf_matrix, axis=0)
@@ -104,41 +96,6 @@ def construct_vocabulary(papers, cache_file=None):
       }
       cPkl.dump(mappings, f, cPkl.HIGHEST_PROTOCOL)
   return vocab_map, reverse_vocab_map
-
-
-def split(dependent, independent, n_folds):
-  skf = StratifiedKFold(n_splits=n_folds, random_state=RANDOM_STATE)
-  for train_indices, test_indices in skf.split(dependent, independent):
-    train_x = dependent[train_indices]
-    train_y = independent[train_indices]
-    test_x = dependent[test_indices]
-    test_y = independent[test_indices]
-    yield train_x, train_y, test_x, test_y
-
-
-def pre_processor(lowercase=True):
-  if lowercase:
-    return lambda doc: doc.lower()
-  else:
-    return lambda doc: doc
-
-
-def tokenizer(token_pattern=TOKEN_PATTERN):
-  t_p = re.compile(token_pattern)
-  return lambda doc: t_p.findall(doc)
-
-
-def stop_words_cleaner(tokens, stop_words=None):
-  if stop_words is not None:
-    tokens = [token for token in tokens if token not in stop_words]
-  return tokens
-
-
-def analyzer():
-  pre_process = pre_processor()
-  tokenize = tokenizer()
-  return lambda doc: stop_words_cleaner(tokenize(pre_process(doc)), STOP_WORDS)
-
 
 class Doc(O):
   def __init__(self, _id, tokens, label):
@@ -216,7 +173,7 @@ def build_graph(index, train_x, train_y, cite_map, use_references=True, from_cac
   vocab_file = 'cache/vocabulary/%d.pkl' % index
   vocabulary, reverse_vocabulary = construct_vocabulary(train_x, vocab_file)
   vocabulary_words = set(vocabulary.keys())
-  analyze = analyzer()
+  analyze = predict.analyzer()
   doc_map = {}
   for x, y in zip(train_x, train_y):
     tokens = set(analyze(x.raw)).intersection(vocabulary_words)
@@ -448,7 +405,7 @@ def tsne_runner(use_references, n_components):
   graph = retrieve_graph()
   cite_map = citation_map(graph)
   papers, groups = predict.get_papers_and_groups(graph, is_independent=True)
-  for index, (train_x, train_y, test_x, test_y) in enumerate(split(papers, groups, 5)):
+  for index, (train_x, train_y, test_x, test_y) in enumerate(predict.split(papers, groups, 5)):
     print("### Iteration %d" % index)
     word_network = build_graph(index, train_x, train_y, cite_map, use_references)
     if use_references:
@@ -463,7 +420,7 @@ def runner(use_references, use_neg_samples):
   graph = retrieve_graph()
   cite_map = citation_map(graph)
   papers, groups = predict.get_papers_and_groups(graph, is_independent=True)
-  for index, (train_x, train_y, test_x, test_y) in enumerate(split(papers, groups, 5)):
+  for index, (train_x, train_y, test_x, test_y) in enumerate(predict.split(papers, groups, 5)):
     word_network = build_graph(index, train_x, train_y, cite_map, use_references)
     if use_neg_samples:
       negative_samples = make_negative_samples_map(word_network.edges, index, use_references)
