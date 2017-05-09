@@ -1,15 +1,15 @@
 from __future__ import print_function, division
 import os, sys
 sys.path.append(os.path.abspath("."))
-from db import mongo, mysql
+from db import mongo, mysqldb
 
 __author__ = "panzer"
 
 
 def abstracts():
   def convert(t):
-    return t.decode('utf-8', 'ignore').encode("utf-8").lower()
-  paper_names, years = mysql.get_paper_names_and_years()
+    return t.encode("utf-8").decode('utf-8', 'ignore').lower()
+  paper_names, years = mysqldb.get_paper_names_and_years()
   paper_map = mongo.get_papers_with_titles(paper_names)
   count = 0
   papers = {}
@@ -30,7 +30,7 @@ def abstracts():
       papers[(name, year)] = details
     if papers and (i + 1) % 1000 == 0:
       print("Batch : %d" % ((i + 1) / 1000))
-      mysql.update_papers(papers)
+      mysqldb.update_papers(papers)
       papers = {}
   print("\n%d / %d" % (count, len(paper_names)))
 

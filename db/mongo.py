@@ -37,7 +37,7 @@ def get_paper(title):
 
 
 def get_papers_with_titles(titles):
-  tits = [title.decode('utf-8', 'ignore').encode("utf-8").lower() for title in titles]
+  tits = [title.encode("utf-8").decode('ascii', 'ignore').lower() for title in titles]
   cursor = db.paper.find({"title": {"$in": tits}})
   paper_map = {}
   print("Fetched All")

@@ -89,16 +89,16 @@ def get_venues():
 
 
 def dump(to_csv=True, file_name='data/citemap.csv', delimiter="$|$"):
+  venues = get_venues()
   cur = DB.get().cursor()
   cur.execute("SELECT * FROM papers")
   papers = []
-  venues = get_venues()
   for row in cur.fetchall():
     paper = Paper()
     paper.id = row[0]
     paper.venue_id = row[1]
     paper.year = row[2]
-    paper.title = row[3]
+    paper.title = row[3].encode("utf-8").decode('ascii', 'ignore')
     paper.h2 = row[6]
     paper.h3 = row[7]
     paper.ref_id = row[9]
@@ -197,7 +197,7 @@ def update_citation_count():
   cur = db.cursor()
   count = 0
   stmt = "UPDATE papers SET citation_count=%s WHERE id=%s"
-  with open("data/cross_ref.pkl") as f:
+  with open("data/cross_ref_2.pkl") as f:
     data = pkl.load(f)
     values = []
     for key, value in data.items():
@@ -211,6 +211,6 @@ def update_citation_count():
 
 if __name__ == "__main__":
   # get_conferences()
-  # dump(file_name='data/citemap_v8.csv')
-  print(get_venues())
+  dump(file_name='data/citemap_v9.csv')
+  # print(get_venues())
   # update_citation_count()

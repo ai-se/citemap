@@ -1,0 +1,32 @@
+# cite
+         ## cite 329
+         ## harm 243 - 74
+         ## page 262 - 80
+         ## publ 220 - 67
+         ## unif 245 - 74
+# harm
+         ## cite 243 - 74
+         ## harm 329
+         ## page 259 - 79
+         ## publ 194 - 59
+         ## unif 258 - 78
+
+# publ
+         ## cite 220 - 67
+         ## harm 194 - 59
+         ## page 236 - 72
+         ## publ 329
+         ## unif 225 - 68
+# unif
+         ## cite 245 - 74
+         ## harm 258 - 78
+         ## page 250 - 76
+         ## publ 225 - 72
+         ## unif 329
+
+# page
+         ## cite 262 - 80
+         ## harm 259 - 79
+         ## page 329
+         ## publ 236 - 72
+         ## unif 250 - 76

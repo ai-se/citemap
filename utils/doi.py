@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.path.abspath("."))
 sys.dont_write_bytecode = True
-from db.mysql import get_papers
+from db.mysqldb import get_papers
 from urlparse import urlparse
 import requests
 from bs4 import BeautifulSoup
@@ -16,14 +16,19 @@ __author__ = "bigfatnoob"
 INVALID_SOURCES = ["com", "computer", "ieee"]
 NAMESPACES = {'doi':'http://www.crossref.org/qrschema/3.0'}
 
+
+def is_none(s):
+  return s is None or s == 'None'
+
 def make_doi_pkl():
   papers = get_papers()
   source_map = {}
   pkl_map = {}
   for paper in papers:
-    print("Paper ID:", paper[0])
     doi_url = paper[-2]
-    if not doi_url: continue
+    cited_count = paper[-1]
+    if not is_none(cited_count) or not doi_url: continue
+    print("Paper ID:", paper[0])
     source, doi = process_url(doi_url)
     if source in INVALID_SOURCES:
       continue
@@ -35,7 +40,7 @@ def make_doi_pkl():
     cnt += 1
     source_map[source] = cnt
   print(source_map)
-  with open("data/cross_ref.pkl", "wb") as f:
+  with open("data/cross_ref_2.pkl", "wb") as f:
     pkl.dump(pkl_map, f, pkl.HIGHEST_PROTOCOL)
 
 

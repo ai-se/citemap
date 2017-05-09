@@ -722,7 +722,7 @@ def author_bar(min_year=1992):
 def print_top_cited_authors(top_percent=None, min_year=None):
   graph = retrieve_graph()
   tops = top_cited_authors(graph, top_percent=top_percent, min_year=min_year)
-  author_papers = graph.get_papers_by_authors()
+  author_papers = graph.get_papers_by_authors(THE.permitted)
   top_tups = []
   for author_id, author in graph.author_nodes.items():
     if author_id in tops:

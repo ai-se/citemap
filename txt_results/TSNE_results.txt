@@ -1,0 +1,450 @@
+## Independent
+
+#### Iteration 1
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+#### Iteration 2
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+#### Iteration 3
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+#### Iteration 4
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+#### Iteration 5
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+### decision_tree - pre_process_tfidf
+Accuracy:0.16+-0.00; F Score:0.15+-0.00; Precision:0.15+-0.00; Recall:0.16+-0.00
+### decision_tree - pre_process_pruned_tfidf
+Accuracy:0.15+-0.00; F Score:0.11+-0.00; Precision:0.13+-0.00; Recall:0.15+-0.00
+### decision_tree - pre_process_ldade
+Accuracy:0.11+-0.01; F Score:0.11+-0.02; Precision:0.11+-0.01; Recall:0.11+-0.01
+### decision_tree - pre_process_64
+Accuracy:0.11+-0.00; F Score:0.03+-0.00; Precision:0.06+-0.06; Recall:0.11+-0.00
+### decision_tree - pre_process_64_ref
+Accuracy:0.11+-0.00; F Score:0.03+-0.00; Precision:0.09+-0.05; Recall:0.11+-0.00
+### decision_tree - pre_process_128
+Accuracy:0.13+-0.00; F Score:0.07+-0.01; Precision:0.16+-0.02; Recall:0.13+-0.00
+### decision_tree - pre_process_128_ref
+Accuracy:0.13+-0.00; F Score:0.06+-0.02; Precision:0.18+-0.02; Recall:0.13+-0.00
+### logistic_regression - pre_process_tfidf
+Accuracy:0.19+-0.00; F Score:0.15+-0.00; Precision:0.19+-0.01; Recall:0.19+-0.00
+### logistic_regression - pre_process_pruned_tfidf
+Accuracy:0.15+-0.00; F Score:0.10+-0.00; Precision:0.13+-0.00; Recall:0.15+-0.00
+### logistic_regression - pre_process_ldade
+Accuracy:0.18+-0.01; F Score:0.14+-0.00; Precision:0.14+-0.01; Recall:0.18+-0.01
+### logistic_regression - pre_process_64
+Accuracy:0.11+-0.00; F Score:0.02+-0.00; Precision:0.03+-0.01; Recall:0.11+-0.00
+### logistic_regression - pre_process_64_ref
+Accuracy:0.11+-0.00; F Score:0.02+-0.00; Precision:0.03+-0.01; Recall:0.11+-0.00
+### logistic_regression - pre_process_128
+Accuracy:0.11+-0.00; F Score:0.03+-0.00; Precision:0.11+-0.02; Recall:0.11+-0.00
+### logistic_regression - pre_process_128_ref
+Accuracy:0.11+-0.00; F Score:0.03+-0.00; Precision:0.04+-0.04; Recall:0.11+-0.00
+### svm - pre_process_tfidf
+Accuracy:0.20+-0.00; F Score:0.16+-0.00; Precision:0.19+-0.01; Recall:0.20+-0.00
+### svm - pre_process_pruned_tfidf
+Accuracy:0.16+-0.00; F Score:0.10+-0.00; Precision:0.12+-0.01; Recall:0.16+-0.00
+### svm - pre_process_ldade
+Accuracy:0.18+-0.01; F Score:0.12+-0.01; Precision:0.11+-0.01; Recall:0.18+-0.01
+### svm - pre_process_64
+Accuracy:0.11+-0.00; F Score:0.02+-0.01; Precision:0.03+-0.02; Recall:0.11+-0.00
+### svm - pre_process_64_ref
+Accuracy:0.11+-0.00; F Score:0.02+-0.01; Precision:0.02+-0.02; Recall:0.11+-0.00
+### svm - pre_process_128
+Accuracy:0.11+-0.00; F Score:0.03+-0.00; Precision:0.06+-0.02; Recall:0.11+-0.00
+### svm - pre_process_128_ref
+Accuracy:0.11+-0.00; F Score:0.03+-0.00; Precision:0.06+-0.01; Recall:0.11+-0.00
+### random_forest - pre_process_tfidf
+Accuracy:0.18+-0.01; F Score:0.17+-0.00; Precision:0.17+-0.00; Recall:0.18+-0.01
+### random_forest - pre_process_pruned_tfidf
+Accuracy:0.16+-0.00; F Score:0.12+-0.00; Precision:0.14+-0.00; Recall:0.16+-0.00
+### random_forest - pre_process_ldade
+Accuracy:0.14+-0.01; F Score:0.12+-0.01; Precision:0.12+-0.01; Recall:0.14+-0.01
+### random_forest - pre_process_64
+Accuracy:0.11+-0.00; F Score:0.03+-0.00; Precision:0.06+-0.05; Recall:0.11+-0.00
+### random_forest - pre_process_64_ref
+Accuracy:0.11+-0.00; F Score:0.03+-0.00; Precision:0.08+-0.05; Recall:0.11+-0.00
+### random_forest - pre_process_128
+Accuracy:0.13+-0.00; F Score:0.08+-0.00; Precision:0.18+-0.02; Recall:0.13+-0.00
+### random_forest - pre_process_128_ref
+Accuracy:0.13+-0.00; F Score:0.07+-0.02; Precision:0.19+-0.02; Recall:0.13+-0.00
+### naive_bayes - pre_process_tfidf
+Accuracy:0.18+-0.00; F Score:0.16+-0.00; Precision:0.17+-0.01; Recall:0.18+-0.00
+### naive_bayes - pre_process_pruned_tfidf
+Accuracy:0.16+-0.00; F Score:0.11+-0.00; Precision:0.14+-0.01; Recall:0.16+-0.00
+### naive_bayes - pre_process_ldade
+Accuracy:0.17+-0.00; F Score:0.09+-0.01; Precision:0.08+-0.00; Recall:0.17+-0.00
+
+
+## Clustered
+
+#### Iteration 1
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+#### Iteration 2
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+#### Iteration 3
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+#### Iteration 4
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+#### Iteration 5
+decision_tree - pre_process_tfidf
+decision_tree - pre_process_pruned_tfidf
+decision_tree - pre_process_ldade
+decision_tree - pre_process_64
+decision_tree - pre_process_64_ref
+decision_tree - pre_process_128
+decision_tree - pre_process_128_ref
+logistic_regression - pre_process_tfidf
+logistic_regression - pre_process_pruned_tfidf
+logistic_regression - pre_process_ldade
+logistic_regression - pre_process_64
+logistic_regression - pre_process_64_ref
+logistic_regression - pre_process_128
+logistic_regression - pre_process_128_ref
+svm - pre_process_tfidf
+svm - pre_process_pruned_tfidf
+svm - pre_process_ldade
+svm - pre_process_64
+svm - pre_process_64_ref
+svm - pre_process_128
+svm - pre_process_128_ref
+random_forest - pre_process_tfidf
+random_forest - pre_process_pruned_tfidf
+random_forest - pre_process_ldade
+random_forest - pre_process_64
+random_forest - pre_process_64_ref
+random_forest - pre_process_128
+random_forest - pre_process_128_ref
+naive_bayes - pre_process_tfidf
+naive_bayes - pre_process_pruned_tfidf
+naive_bayes - pre_process_ldade
+### decision_tree - pre_process_tfidf
+Accuracy:0.29+-0.01; F Score:0.29+-0.01; Precision:0.29+-0.01; Recall:0.29+-0.01
+### decision_tree - pre_process_pruned_tfidf
+Accuracy:0.27+-0.01; F Score:0.25+-0.01; Precision:0.28+-0.02; Recall:0.27+-0.01
+### decision_tree - pre_process_ldade
+Accuracy:0.25+-0.01; F Score:0.25+-0.01; Precision:0.25+-0.01; Recall:0.25+-0.01
+### decision_tree - pre_process_64
+Accuracy:0.23+-0.00; F Score:0.10+-0.00; Precision:0.23+-0.06; Recall:0.23+-0.00
+### decision_tree - pre_process_64_ref
+Accuracy:0.23+-0.00; F Score:0.10+-0.00; Precision:0.24+-0.06; Recall:0.23+-0.00
+### decision_tree - pre_process_128
+Accuracy:0.25+-0.00; F Score:0.17+-0.02; Precision:0.30+-0.05; Recall:0.25+-0.00
+### decision_tree - pre_process_128_ref
+Accuracy:0.26+-0.00; F Score:0.16+-0.02; Precision:0.32+-0.03; Recall:0.26+-0.00
+### logistic_regression - pre_process_tfidf
+Accuracy:0.34+-0.00; F Score:0.33+-0.00; Precision:0.35+-0.01; Recall:0.34+-0.00
+### logistic_regression - pre_process_pruned_tfidf
+Accuracy:0.29+-0.01; F Score:0.26+-0.01; Precision:0.30+-0.01; Recall:0.29+-0.01
+### logistic_regression - pre_process_ldade
+Accuracy:0.34+-0.00; F Score:0.32+-0.01; Precision:0.33+-0.01; Recall:0.34+-0.00
+### logistic_regression - pre_process_64
+Accuracy:0.23+-0.00; F Score:0.09+-0.00; Precision:0.10+-0.04; Recall:0.23+-0.00
+### logistic_regression - pre_process_64_ref
+Accuracy:0.23+-0.00; F Score:0.09+-0.00; Precision:0.10+-0.04; Recall:0.23+-0.00
+### logistic_regression - pre_process_128
+Accuracy:0.23+-0.00; F Score:0.10+-0.00; Precision:0.27+-0.09; Recall:0.23+-0.00
+### logistic_regression - pre_process_128_ref
+Accuracy:0.23+-0.00; F Score:0.10+-0.00; Precision:0.19+-0.06; Recall:0.23+-0.00
+### svm - pre_process_tfidf
+Accuracy:0.33+-0.02; F Score:0.32+-0.02; Precision:0.34+-0.01; Recall:0.33+-0.02
+### svm - pre_process_pruned_tfidf
+Accuracy:0.29+-0.00; F Score:0.26+-0.01; Precision:0.29+-0.00; Recall:0.29+-0.00
+### svm - pre_process_ldade
+Accuracy:0.35+-0.00; F Score:0.32+-0.00; Precision:0.33+-0.01; Recall:0.35+-0.00
+### svm - pre_process_64
+Accuracy:0.23+-0.00; F Score:0.09+-0.00; Precision:0.18+-0.02; Recall:0.23+-0.00
+### svm - pre_process_64_ref
+Accuracy:0.23+-0.00; F Score:0.09+-0.00; Precision:0.12+-0.06; Recall:0.23+-0.00
+### svm - pre_process_128
+Accuracy:0.23+-0.00; F Score:0.10+-0.00; Precision:0.21+-0.05; Recall:0.23+-0.00
+### svm - pre_process_128_ref
+Accuracy:0.23+-0.00; F Score:0.10+-0.00; Precision:0.21+-0.03; Recall:0.23+-0.00
+### random_forest - pre_process_tfidf
+Accuracy:0.33+-0.01; F Score:0.33+-0.01; Precision:0.33+-0.01; Recall:0.33+-0.01
+### random_forest - pre_process_pruned_tfidf
+Accuracy:0.28+-0.01; F Score:0.26+-0.01; Precision:0.29+-0.02; Recall:0.28+-0.01
+### random_forest - pre_process_ldade
+Accuracy:0.29+-0.00; F Score:0.29+-0.00; Precision:0.30+-0.01; Recall:0.29+-0.00
+### random_forest - pre_process_64
+Accuracy:0.23+-0.00; F Score:0.10+-0.00; Precision:0.24+-0.01; Recall:0.23+-0.00
+### random_forest - pre_process_64_ref
+Accuracy:0.23+-0.00; F Score:0.10+-0.01; Precision:0.25+-0.04; Recall:0.23+-0.00
+### random_forest - pre_process_128
+Accuracy:0.26+-0.00; F Score:0.18+-0.02; Precision:0.30+-0.04; Recall:0.26+-0.00
+### random_forest - pre_process_128_ref
+Accuracy:0.26+-0.01; F Score:0.16+-0.02; Precision:0.31+-0.04; Recall:0.26+-0.01
+### naive_bayes - pre_process_tfidf
+Accuracy:0.32+-0.01; F Score:0.32+-0.01; Precision:0.32+-0.01; Recall:0.32+-0.01
+### naive_bayes - pre_process_pruned_tfidf
+Accuracy:0.26+-0.01; F Score:0.23+-0.01; Precision:0.26+-0.00; Recall:0.26+-0.01
+### naive_bayes - pre_process_ldade
+Accuracy:0.32+-0.01; F Score:0.26+-0.00; Precision:0.29+-0.01; Recall:0.32+-0.01

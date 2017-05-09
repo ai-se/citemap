@@ -414,8 +414,9 @@ if __name__ == "__main__":
   pre_processors = [pre_process_tfidf, pre_process_pruned_tfidf, pre_process_ldade,
                     pre_process_64, pre_process_64_ref, pre_process_128, pre_process_128_ref]
   # predictors = [random_forest]
-  predictors = [decision_tree, logistic_regression, svm, random_forest, naive_bayes]
+  predictors = [decision_tree, logistic_regression, svm, random_forest]
   predict_estimators = [(pred, pp) for pred in predictors for pp in pre_processors]
+  predict_estimators += [(naive_bayes, pre_process_tfidf), (naive_bayes, pre_process_pruned_tfidf), (naive_bayes, pre_process_ldade)]
   print("## Independent\n")
   predict_venues(predict_estimators, is_independent=True)
   print("\n\n## Clustered\n")
