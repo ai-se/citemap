@@ -7,10 +7,13 @@ sys.dont_write_bytecode = True
 from utils.lib import Node, Edge
 import networkx as nx
 
-CITEMAP_FILE = 'data/citemap_v4.csv'
+CITEMAP_FILE = 'data/citemap_v9.csv'
 MIN_SIZE = 3
 SAVE_AS_NAME = False
-TRUTH_FILE = 'data/ground_truth_ids.csv'
+TRUTH_ID_FILE = 'data/ground_truth_ids.csv'
+TRUTH_NAME_FILE = 'data/ground_truth_names.csv'
+ID_INDEX = -5
+NAME_INDEX = -4
 
 
 def read(file_name, delimiter='$|$'):
@@ -22,7 +25,7 @@ def read(file_name, delimiter='$|$'):
       columns = line.strip().split(delimiter)
       conference_id = int(columns[1])
       paper_authors = []
-      for author_id, author in zip(columns[-3].split(","), columns[-2].split(",")):
+      for author_id, author in zip(columns[ID_INDEX].split(","), columns[NAME_INDEX].split(",")):
         if author in author_nodes:
           author_node = author_nodes[author]
         else:
@@ -45,19 +48,21 @@ def read(file_name, delimiter='$|$'):
 
 def make_ground_truth():
   edge_map, node_map = read(CITEMAP_FILE)
-  with open(TRUTH_FILE, 'w') as f:
-    for conference in edge_map.keys():
-      edges = edge_map[conference]
-      graph = nx.Graph()
-      edge_ids = [(edge.source, edge.target) for edge in edges]
-      graph.add_edges_from(edge_ids)
-      for component in nx.connected_components(graph):
-        if len(component) >= MIN_SIZE:
-          if SAVE_AS_NAME:
-            authors = ", ".join([node_map[node_id].name for node_id in component])
-          else:
-            authors = ", ".join(component)
-          f.write(authors + "\n")
+  f_id = open(TRUTH_ID_FILE, 'wb')
+  f_name = open(TRUTH_NAME_FILE, 'wb')
+  for conference in edge_map.keys():
+    edges = edge_map[conference]
+    graph = nx.Graph()
+    edge_ids = [(edge.source, edge.target) for edge in edges]
+    graph.add_edges_from(edge_ids)
+    for component in nx.connected_components(graph):
+      if len(component) >= MIN_SIZE:
+        author_names = ", ".join([node_map[node_id].name for node_id in component])
+        author_ids = ", ".join(component)
+        f_id.write(author_ids + "\n")
+        f_name.write(author_names + "\n")
+  f_id.close()
+  f_name.close()
 
 
 if __name__ == "__main__":
