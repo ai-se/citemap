@@ -9,6 +9,7 @@ import cPickle as pkl
 import numpy as np
 from network.graph import Graph
 from collections import OrderedDict
+import matplotlib.pyplot as plt
 
 __author__ = "bigfatnoob"
 
@@ -150,6 +151,14 @@ def page_rank(graph, d=0.45, top_percent=0.01, min_year=None, iterations=1000):
           ext_score += page_rank_scores[j] / links
       page_rank_scores[i] = (1 - d) * self_score * author_cite_count[i] + d * ext_score
   top_author_indices = np.argsort(page_rank_scores)[::-1][:int(len(page_rank_scores) / factor)]
+  y_axis = [page_rank_scores[index] for index in top_author_indices]
+  x_axis = range(1, len(top_author_indices) + 1)
+  plt.plot(x_axis, y_axis)
+  plt.title("Page Rank Scores for authors in descending order")
+  plt.xlabel("Author Rank")
+  plt.ylabel("Page Rank Score")
+  plt.savefig("figs/v3/%s/page_rank_scores.png" % THE.permitted)
+  plt.clf()
   top_author_names = [ids_to_names[index] for index in top_author_indices]
   return top_author_names
 
@@ -181,4 +190,4 @@ def __main():
 
 
 if __name__ == "__main__":
-  __main()
+  page_rank(retrieve_graph())

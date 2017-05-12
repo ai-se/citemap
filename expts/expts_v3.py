@@ -21,7 +21,7 @@ import cPickle as pkl
 from sklearn.externals import joblib
 from utils.sk import rdivDemo as sk
 
-GRAPH_CSV = "data/citemap_v8.csv"
+GRAPH_CSV = "data/citemap_v9.csv"
 
 # For 11 TOPICS
 ALPHA = 0.22359
@@ -31,9 +31,12 @@ ITERATIONS = 100
 # TOPICS = ["Design", "Testing", "Modelling", "Mobile", "Energy", "Defects",
 #           "SourceCode", "WebApps", "Configuration", "Developer", "Mining"]
 TOPICS_JOURNALS = ["Requirements", "Applications", "Source Code", "Empirical", "Testing", "Security", "Modelling"]
-TOPICS_ALL = ["Performance", "Management", "Metrics", "Requirements", "Empirical",
-              "Security", "Applications", "Modelling", "Source Code", "Program Analysis",
-              "Testing"]
+# TOPICS_ALL = ["Performance", "Management", "Metrics", "Requirements", "Empirical",
+#               "Security", "Applications", "Modelling", "Source Code", "Program Analysis",
+#               "Testing"]
+TOPICS_ALL = ["Testing", "Requirements", "Applications", "Modeling", "Management",
+              "Source Code", "Design", "Program Analysis", "Metrics", "Performance", "Security"]
+
 TOPIC_THRESHOLD = 3
 
 COLORS_JOURNAL = ["grey", "red", "blue", "green",
@@ -314,17 +317,23 @@ def paper_and_author_growth(min_year=1992, max_year=2015):
   year_papers_map = OrderedDict()
   for _, paper in graph.get_paper_nodes(permitted=THE.permitted).items():
     year = int(paper.year)
-    if not (min_year < year < max_year): continue
+    if not (min_year < year <= max_year): continue
     authors = paper.authors.split(",")
     year_authors_map[year] = year_authors_map.get(year, set([])).union(authors)
     year_papers_map[year] = year_papers_map.get(year, 0) + 1
   x_axis = []
   papers = []
   authors = []
-  for key in sorted(year_authors_map.keys()):
+  seen = set(year_authors_map[sorted(year_authors_map.keys())[0]])
+  f = open("figs/v3/%s/paper_author_count.csv" % THE.permitted, "wb")
+  f.write("Year, # Papers, # Authors\n")
+  for key in sorted(year_authors_map.keys())[1:]:
     x_axis.append(key)
     papers.append(year_papers_map[key])
-    authors.append(len(year_authors_map[key]))
+    new_authors = set(year_authors_map[key]).difference(seen)
+    authors.append(len(new_authors))
+    seen = seen.union(set(year_authors_map[key]))
+    f.write("%d, %d, %d\n" % (key, year_papers_map[key], len(new_authors)))
   plt.plot(x_axis, papers)
   plt.plot(x_axis, authors)
   legends = ['Papers', 'Authors']
@@ -334,6 +343,7 @@ def paper_and_author_growth(min_year=1992, max_year=2015):
   plt.ylabel(" Count")
   plt.savefig("figs/v3/%s/paper_author_count.png" % THE.permitted)
   plt.clf()
+  f.close()
 
 
 def diversity(fig_name, paper_range=None):
@@ -374,6 +384,14 @@ def diversity(fig_name, paper_range=None):
                "figs/v3/%s/diversity/%s.png" % (THE.permitted, fig_name), paper_range)
 
 
+def test_dendo_heatmap(col_size, paper_range):
+  row_labels = TOPICS_ALL
+  column_labels = ["VEN%d" % i for i in range(col_size)]
+  heatmap_arr = np.random.rand(len(row_labels), len(column_labels))
+  make_dendo_heatmap(heatmap_arr, row_labels, column_labels,
+                     "temp.png", paper_range)
+
+
 def topic_evolution(venue=THE.permitted):
   print("TOPIC EVOLUTION for %s" % venue)
   miner, graph, lda_model, vocab = retrieve_graph_lda_data()
@@ -381,6 +399,8 @@ def topic_evolution(venue=THE.permitted):
   topics_map = {}
   n_topics = lda_model.n_topics
   for paper_id, paper in paper_nodes.items():
+    # if int(paper.venue) == 38:
+    #   continue
     if int(paper.year) < 1992 or int(paper.year) > 2016: continue
     document = miner.documents[paper_id]
     year_topics = topics_map.get(paper.year, np.array([0] * n_topics))
@@ -388,12 +408,13 @@ def topic_evolution(venue=THE.permitted):
   yt_map = {}
   for year, t_count in topics_map.items():
     yt_map[year] = percent_sort(t_count)
-  width = 0.8
+  width = 0.6
   plts = []
   x_axis = np.arange(0, len(yt_map.keys()))
   y_offset = np.array([0] * len(yt_map.keys()))
   colors_dict = {}
-  top_topic_count = 7
+  top_topic_count = 9
+  # plt.figure(figsize=(8, 8))
   for index in range(top_topic_count):
     bar_val, color = [], []
     for year in sorted(yt_map.keys(), key=lambda x: int(x)):
@@ -415,9 +436,10 @@ def topic_evolution(venue=THE.permitted):
   for index, (topic, color) in enumerate(colors_dict.items()):
     patches.append(mpatches.Patch(color=color, label='Topic %s' % str(topic)))
     topics.append(get_topics()[topic])
+
   plt.legend(tuple(patches), tuple(topics), loc='upper center', bbox_to_anchor=(0.5, 1.14), ncol=5, fontsize=7,
              handlelength=0.7)
-  plt.savefig("figs/v3/%s/topic_evolution/topic_evolution_%s.png" % (THE.permitted, venue))
+  plt.savefig("figs/v3/%s/topic_evolution/topic_evolution_%s.png" % (THE.permitted, venue), bbox_inches='tight')
   plt.clf()
 
 
@@ -900,15 +922,15 @@ def stat_venue_type_vs_cites_per_year(min_year=1992):
 
 
 def _main():
+  # test_dendo_heatmap(24, range(2009, 2017))
   # reporter()
   # paper_bar()
   # diversity("heatmap_09_16", range(2009, 2017))
   # diversity("heatmap_01_08", range(2001, 2009))
   # diversity("heatmap_93_00", range(1992, 2001))
-  # diversity("heatmap_93_00", range(2013, 2007))
-  # topic_evolution(venue="all")
-  # topic_evolution(venue="conferences")
-  # topic_evolution(venue="journals")
+  topic_evolution(venue="all")
+  topic_evolution(venue="conferences")
+  topic_evolution(venue="journals")
   # super_author([0.01, 0.1, 0.2, 1.0])
   # get_top_papers(year_from=2009)
   # get_top_papers()
@@ -923,8 +945,8 @@ def _main():
   # page_rank()
   # page_rank(min_year=2009)
   # venue_type_vs_cites_per_year(1993)
-  stat_author_counts_vs_cites_per_year()
-  stat_venue_type_vs_cites_per_year()
+  # stat_author_counts_vs_cites_per_year()
+  # stat_venue_type_vs_cites_per_year()
 
 
 def _store():
