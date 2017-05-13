@@ -36,10 +36,12 @@ def read(file_name, delimiter='$|$'):
         paper_authors.append(author_node)
       if len(paper_authors) > 1:
         edges = []
-        for i in range(len(paper_authors)):
+        for i in range(len(paper_authors) - 1):
           for j in range(i + 1, len(paper_authors)):
-            edge = Edge(source=paper_authors[i].id, target=paper_authors[j].id, edge_type='co_author')
-            edges.append(edge)
+            edge1 = Edge(source=paper_authors[i].id, target=paper_authors[j].id, edge_type='co_author')
+            edge2 = Edge(source=paper_authors[j].id, target=paper_authors[i].id, edge_type='co_author')
+            edges.append(edge1)
+            edges.append(edge2)
         all_edges = conference_edge_map.get(conference_id, [])
         all_edges += edges
         conference_edge_map[conference_id] = all_edges
