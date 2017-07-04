@@ -1,0 +1,11 @@
+,MDLS,SOSYM,S/W,RE,REJ,ESEM,ESE,SMR,SQJ,IST,ISSE,IJSEKE,NOTES,SSBSE,JSS,SPE,MSR,WCRE,ICPC,ICSM,CSMR,ISSTA,ICST,STVR,ICSE,SANER,FSE,ASE,ASEJ,TSE,TOSEM,SCAM,GPCE,FASE
+Source Code,F,,,F,,F,F,F,T,,,F,,F,,F,F,F,F,F,F,F,,,F,F,F,F,F,F,F,F,F,F
+Requirements,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,,,,F,F,,F,,F,,,,F,F,F,,,
+Modeling,F,F,,F,F,,,,F,F,F,F,F,F,F,F,,,,,,,F,F,T,,F,F,F,F,F,F,F,F
+Program Analysis,,,,,,,,,,,F,,,F,,F,,F,F,F,,F,F,F,T,F,F,F,F,F,F,F,F,F
+Metrics,,,,,,F,F,F,F,F,F,F,F,F,F,,F,F,F,F,F,,,,,F,,,F,F,F,,,
+Developer,,,F,,,F,F,,,F,,,F,,,,F,F,F,F,F,,,,F,F,F,,,,,,,
+Applications,,,F,F,F,,,,,,F,F,F,,F,F,,,,,,,F,,F,F,F,F,F,F,T,,F,F
+Testing,,,,,,,,,F,F,,,,F,,,,,,,,F,F,F,,,F,F,,F,F,,,
+Performance,,,,,,,,,,,,F,,F,F,F,,,,,,,,,,,,,,,,,,
+Architecture,,,F,,,,,,,,,F,,,,,,,,,,,,,,F,,,,,,,F,

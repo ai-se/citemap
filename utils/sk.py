@@ -139,6 +139,12 @@ class Num:
     xs = i.all
     n  = int(len(xs)*0.25)
     return p(n) , p(2*n) , p(3*n)
+  def quintiles(i):
+    def p(x): return round(xs[x], 2)
+    i.median()
+    xs = i.all
+    n = int(len(xs) * 0.1)
+    return p(n), p(3 * n), p(5 * n), p(7 * n), p(9 * n)
   def quartiles_noround(i):
     def p(x) : return round(g(xs[x]), 2)
     i.median()
@@ -499,22 +505,56 @@ def rdivDemo(data, f=None):
   lo, hi = all[0], all[-1]
   line = "----------------------------------------------------"
   last = None
-  row = ('%4s , %22s ,    %s   , %4s ' % ('rank', 'name', 'med', 'iqr'))+ "\n"+ line
+  row = ('%4s , %22s , %4s , %4s ' % ('rank', 'name', 'med', 'iqr'))+ "\n"+ line
   if f:
-    f.write(row + "\n")
+    f.skwrite(row + "\n")
   else:
     print row
   for _,__,___,x in sorted(ranks, key=lambda a: (a[0], a[1], a[2])):
     q1,q2,q3 = x.quartiles()
     #xtile(x.all,lo=lo,hi=hi,width=30,show="%5.2f")
-    row = ('%1s , %22s , %4s , %4s ' % (x.rank+1, x.name, q2, q3 - q1))
+    row = ('%1s    , %22s , %4s , %4s ' % (x.rank+1, x.name, q2, q3 - q1))
            # + \
            #    xtile(x,lo=lo,hi=hi,width=30,show="%5.2f")
     if f:
       f.write(row + "\n")
     else:
       print row
-    last = x.rank 
+    last = x.rank
+
+def qDemo(data, f=None):
+  def z(x):
+    return int(100 * (x - lo) / (hi - lo + 0.00001))
+  data = map(lambda lst:Num(lst[0],lst[1:]),
+             data)
+  ranks=[]
+  maxMedian = -1
+  for x in scottknott(data,useA12=True):
+    q1,q2,q3 = x.quartiles()
+    maxMedian = max(maxMedian, x.median())
+    ranks += [(x.rank,q2,q3 - q1, x)]
+  all=[]
+  for _,__,___,x in sorted(ranks): all += x.all
+  all = sorted(all)
+  lo, hi = all[0], all[-1]
+  line = "----------------------------------------------------"
+  last = None
+  row = ('%4s , %22s , %4s , %4s , %4s , %4s' % ('rank', 'name', '50p', '70p', '90p', 'iqr')) + "\n" + line
+  if f:
+    f.write(row + "\n")
+  else:
+    print row
+  for _,__,___,x in sorted(ranks, key=lambda a: (a[0], a[1], a[2])):
+    q1,q2,q3,q4,q5 = x.quintiles()
+    #xtile(x.all,lo=lo,hi=hi,width=30,show="%5.2f")
+    row = ('%1s    , %22s , [%4s , %4s , %4s , %4s],' % (x.rank+1, x.name, q3, q4, q5, round(x.spread(), 2)))
+           # + \
+           #    xtile(x,lo=lo,hi=hi,width=30,show="%5.2f")
+    if f:
+      f.write(row + "\n")
+    else:
+      print row
+    last = x.rank
 """
 
 The demos:

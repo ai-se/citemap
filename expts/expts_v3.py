@@ -20,6 +20,7 @@ from matplotlib.colors import ColorConverter
 import cPickle as pkl
 from sklearn.externals import joblib
 from utils.sk import rdivDemo as sk
+import matplotlib as mpl
 
 GRAPH_CSV = "data/citemap_v9.csv"
 
@@ -613,7 +614,7 @@ def authors_percent_in_papers_year(min_year=1992):
       percent_map.append(percent)
       authors_count_year_map[key] = authors_count_year_map.get(key, []) + [percent]
     year_author_percent_map[year] = percent_map
-  colors = ["red", "blue", "darkslategray", "yellow", "darkmagenta", "cyan", "saddlebrown"]
+  colors = ["red", "blue", "darkslategray", "orange", "darkmagenta", "cyan", "saddlebrown"]
   x_axis = sorted(year_authors_map.keys())
   x_indices = np.arange(1, len(x_axis) + 1)
   legends = []
@@ -855,9 +856,10 @@ def score_plotter(file):
       x.append(int(line[0]))
       y.append(float(line[1]))
       line = f.readline().split(",")
+  plt.figure(figsize=(8, 3))
   plt.plot(x, y, 'r--')
-  plt.xlabel('Topics ->')
-  plt.ylabel('Perplexity ->')
+  plt.xlabel('Topics')
+  plt.ylabel('Perplexity')
   plt.savefig("figs/v3/%s/perplexity.png" % THE.permitted, bbox_inches='tight')
   plt.clf()
 
@@ -921,6 +923,82 @@ def stat_venue_type_vs_cites_per_year(min_year=1992):
   f.close()
 
 
+def pc_heatmap_delta(fig_name, title=None, paper_range=None):
+  def index_by_year(tups):
+    y_comm = {}
+    for tup in tups:
+      comm = y_comm.get(tup[1], set())
+      comm.add(tup[0])
+      y_comm[tup[1]] = comm
+    return y_comm
+
+  miner, graph, lda_model, vocab = get_graph_lda_data()
+  p_conferences = graph.get_papers_by_venue()
+  p_committees = graph.get_committee_by_conference()
+  conference_topics = {}
+  pc_conference_topics = {}
+  for conference in mysqldb.get_conferences():
+    year_committees = index_by_year(p_committees[conference.id])
+    year_papers = index_by_year(p_conferences[conference.id])
+    topics = np.array([0] * lda_model.n_topics)
+    pc_topics = np.array([0] * lda_model.n_topics)
+    for year in sorted(year_committees.keys(), key=lambda y: int(y)):
+      if (paper_range is not None) and (int(year) not in paper_range):
+        continue
+      papers = year_papers.get(year, None)
+      if papers is None:
+        continue
+      committee = year_committees[year]
+      for paper_id in papers:
+        paper = graph.paper_nodes[paper_id]
+        author_ids = set(paper.author_ids.strip().split(","))
+        paper_topics = miner.documents[paper_id].topics_count
+        if len(author_ids.intersection(committee)) != 0:
+          pc_topics = np.add(pc_topics, paper_topics)
+        topics = np.add(topics, paper_topics)
+    pc_conference_topics[conference.id] = pc_topics
+    conference_topics[conference.id] = topics
+  heatmap_arr = []
+  valid_conferences = []
+  for conference_id in sorted(conference_topics.keys(), key=lambda x: int(x)):
+    tot = sum(conference_topics[conference_id])
+    pc_tot = sum(pc_conference_topics[conference_id])
+    if tot <= 0 or pc_tot <= 0:
+      continue
+    valid_conferences.append(conference_id)
+    dist = [top / tot for top in conference_topics[conference_id]]
+    pc_dist = [top / pc_tot for top in pc_conference_topics[conference_id]]
+    # heatmap_arr.append([round(pc_d - d, 2) for d, pc_d in zip(dist, pc_dist)])
+    heatmap_arr.append([int(round(100 * (pc_d - d) / d, 0)) for d, pc_d in zip(dist, pc_dist)])
+    # heatmap_arr.append([round(d / pc_d, 2) for d, pc_d in zip(dist, pc_dist)])
+
+  np.savetxt("temp.csv", np.transpose(np.array(heatmap_arr)), delimiter=",")
+  # HeatMap
+  # row_labels = ["%2d" % ind for ind in range(lda_model.n_topics)]
+  row_labels = TOPICS_ALL
+  col_labels = [c.acronym for c in mysqldb.get_conferences() if c.id in valid_conferences]
+  heatmap_arr = np.transpose(np.array(heatmap_arr, np.int))
+  plt.figure(figsize=(4, 3))
+  cmap = mpl.colors.ListedColormap(['red', 'lightsalmon', 'white', 'palegreen','lime'])
+  bounds = [-20, -12, -5, 5, 12, 20]
+  # bounds = [-0.2, -0.12, -0.05, 0.05, 0.12, 0.2]
+  norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+  # df = pd.DataFrame(heatmap_arr, columns=col_labels, index=row_labels)
+  cax = plt.matshow(heatmap_arr, interpolation='nearest', cmap=cmap, norm=norm)
+  for (i, j), z in np.ndenumerate(heatmap_arr):
+    plt.text(j, i, abs(z), ha='center', va='center', fontsize=11)
+  # ticks = [-0.2, -0.1, 0, 0.1, 0.2]
+  ticks = [-20, -10, 0, 10, 20]
+  plt.colorbar(cax, cmap=cmap, norm=norm, boundaries=bounds, ticks=ticks)
+  plt.xticks(np.arange(len(list(col_labels))), list(col_labels), rotation="vertical")
+  plt.yticks(np.arange(len(list(row_labels))), list(row_labels))
+  if title is None:
+    title = "Topic Distribution Delta between papers by PC and all papers"
+  plt.title(title, y=1.2)
+  plt.savefig("figs/v3/%s/pc/%s.png" % (THE.permitted, fig_name), bbox_inches='tight')
+  plt.clf()
+
+
 def _main():
   # test_dendo_heatmap(24, range(2009, 2017))
   # reporter()
@@ -928,13 +1006,13 @@ def _main():
   # diversity("heatmap_09_16", range(2009, 2017))
   # diversity("heatmap_01_08", range(2001, 2009))
   # diversity("heatmap_93_00", range(1992, 2001))
-  topic_evolution(venue="all")
-  topic_evolution(venue="conferences")
-  topic_evolution(venue="journals")
+  # topic_evolution(venue="all")
+  # topic_evolution(venue="conferences")
+  # topic_evolution(venue="journals")
   # super_author([0.01, 0.1, 0.2, 1.0])
   # get_top_papers(year_from=2009)
   # get_top_papers()
-  # authors_percent_in_papers_year(1993)
+  authors_percent_in_papers_year(1993)
   # author_bar()
   # print_top_cited_authors(0.01)
   # print_top_cited_authors(0.01, 2009)
@@ -949,11 +1027,14 @@ def _main():
   # stat_venue_type_vs_cites_per_year()
 
 
+
+
 def _store():
   store_graph_lda_data()
 
 if __name__ == "__main__":
   # _main()
+  pc_heatmap_delta("all_pc", "Topic Dist. Delta between papers by PC and all papers(2009-2016)", range(2009, 2017))
   # score_plotter("figs/v3/all/scores.csv")
   # _store()
-  paper_and_author_growth()
+  # paper_and_author_growth()

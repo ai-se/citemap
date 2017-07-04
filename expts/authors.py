@@ -151,14 +151,35 @@ def page_rank(graph, d=0.45, top_percent=0.01, min_year=None, iterations=1000):
           ext_score += page_rank_scores[j] / links
       page_rank_scores[i] = (1 - d) * self_score * author_cite_count[i] + d * ext_score
   top_author_indices = np.argsort(page_rank_scores)[::-1][:int(len(page_rank_scores) / factor)]
-  y_axis = [page_rank_scores[index] for index in top_author_indices]
+  large = max(page_rank_scores)
+  small = min(page_rank_scores)
+
+  def norm(v):
+    return (v - small) / (large - small)
+
+  y_axis = [norm(page_rank_scores[index]) for index in top_author_indices]
   x_axis = range(1, len(top_author_indices) + 1)
+  mid = len(x_axis) // 2
+  plt.figure(figsize=(8, 3))
   plt.plot(x_axis, y_axis)
   plt.title("Page Rank Scores for authors in descending order")
   plt.xlabel("Author Rank")
   plt.ylabel("Page Rank Score")
   plt.savefig("figs/v3/%s/page_rank_scores.png" % THE.permitted)
   plt.clf()
+  # plt.plot(x_axis[:mid], y_axis[:mid])
+  # plt.title("Page Rank Scores for authors in descending order")
+  # plt.xlabel("Author Rank")
+  # plt.ylabel("Page Rank Score")
+  # plt.savefig("figs/v3/%s/page_rank_scores_high.png" % THE.permitted)
+  # plt.clf()
+  # plt.plot(x_axis[mid:], y_axis[mid:])
+  # plt.title("Page Rank Scores for authors in descending order")
+  # plt.xlabel("Author Rank")
+  # plt.ylabel("Page Rank Score")
+  # plt.savefig("figs/v3/%s/page_rank_scores_low.png" % THE.permitted)
+  # plt.clf()
+
   top_author_names = [ids_to_names[index] for index in top_author_indices]
   return top_author_names
 
@@ -190,4 +211,4 @@ def __main():
 
 
 if __name__ == "__main__":
-  page_rank(retrieve_graph())
+  page_rank(retrieve_graph(), top_percent=0.01)

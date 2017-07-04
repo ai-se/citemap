@@ -9,7 +9,8 @@ import cPickle as pkl
 
 # SCHEMA_NAME = "conferences"
 # SCHEMA_NAME = "conferences_dummy"
-SCHEMA_NAME = "se"
+# SCHEMA_NAME = "se"
+SCHEMA_NAME = "se_v2"
 
 MYSQL_PASSWORD = os.environ['MYSQL_ROOT_PASSWORD'] if 'MYSQL_ROOT_PASSWORD' in os.environ else ''
 
@@ -71,6 +72,21 @@ def update_papers(paper_map):
   DB.close()
 
 
+def update_genders(authors):
+  db = DB.get()
+  cur = db.cursor()
+  stmt = "UPDATE persons SET gender=%s WHERE id=%s"
+  values = []
+  # count = 0
+  # for gender, a_id in authors:
+  #   cur.execute(stmt, (gender, a_id))
+  #   count += 1
+  #   print("Statement : ", count)
+  cur.executemany(stmt, authors)
+  db.commit()
+  DB.close()
+
+
 def get_venues():
   db = DB.get()
   cur = db.cursor()
@@ -81,7 +97,7 @@ def get_venues():
     venue.id = str(row[0])
     venue.acronym = row[1]
     venue.name = row[2]
-    venue.impact = row[3]
+    venue.impact = int(row[3])
     venue.is_conference = True if row[4] == 1 else False
     venues[venue.id] = venue
   DB.close()
@@ -161,6 +177,7 @@ def get_authors():
     author_node.id = str(int(row[0]))
     author_node.name = row[1]
     author_node.type = "author"
+    author_node.gender = row[2]
     author_nodes[str(int(row[0]))] = author_node
   DB.close()
   return author_nodes
@@ -197,7 +214,7 @@ def update_citation_count():
   cur = db.cursor()
   count = 0
   stmt = "UPDATE papers SET citation_count=%s WHERE id=%s"
-  with open("data/cross_ref_2.pkl") as f:
+  with open("data/cross_ref_3.pkl") as f:
     data = pkl.load(f)
     values = []
     for key, value in data.items():
@@ -211,6 +228,6 @@ def update_citation_count():
 
 if __name__ == "__main__":
   # get_conferences()
-  dump(file_name='data/citemap_v9.csv')
+  dump(file_name='data/citemap_v10.csv')
   # print(get_venues())
   # update_citation_count()

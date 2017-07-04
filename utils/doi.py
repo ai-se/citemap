@@ -40,7 +40,7 @@ def make_doi_pkl():
     cnt += 1
     source_map[source] = cnt
   print(source_map)
-  with open("data/cross_ref_2.pkl", "wb") as f:
+  with open("data/cross_ref_3.pkl", "wb") as f:
     pkl.dump(pkl_map, f, pkl.HIGHEST_PROTOCOL)
 
 
@@ -114,5 +114,5 @@ if __name__ == "__main__":
   # fetch_from_crossref("10.1109/ICSE.2015.24")
   # print(fetch_from_crossref("10.1109/TASC.2010.2088091"))
   # fetch_from_acm("http://doi.acm.org/10.1145/2884781.2884828")
-  # make_doi_pkl()
-  read_pkl()
+  make_doi_pkl()
+  # read_pkl()
