@@ -69,8 +69,8 @@ target/
 
 # Large files
 data/aminer
-data/us_names/*
-data/us_states/*
+data/us_names
+data/us_states
 data/ind_names.txt
 data/*.pkl
 DBLP_Citation_2014_May
