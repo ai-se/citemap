@@ -139,3 +139,7 @@ def shuffle(lst):
   if lst:
     random.shuffle(lst)
   return lst
+
+
+def file_exists(file_name):
+  return os.path.isfile(file_name)

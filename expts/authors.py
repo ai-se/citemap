@@ -3,53 +3,40 @@ import sys
 import os
 sys.path.append(os.path.abspath("."))
 sys.dont_write_bytecode = True
-
-from utils.lib import O, shuffle
-import cPickle as pkl
+from utils.lib import O, Memoized, file_exists
 import numpy as np
-from network.graph import Graph
 from collections import OrderedDict
-import matplotlib.pyplot as plt
+from network.graph import Graph
+import pandas as pd
+from sklearn import preprocessing
+import cPickle as cPkl
+
+
 
 __author__ = "bigfatnoob"
 
-GRAPH_CSV = "data/citemap_v8.csv"
+
+GRAPH_CSV = "data/citemap_v10.csv"
 
 THE = O()
 THE.permitted = 'all'
+THE.version = 'v4'
 
-
-def harmonic_dist(n):
-  dist = [1 / i for i in range(1, n + 1)]
-  total = sum(dist)
-  return [d / total for d in dist]
-
-
-def uniform_dist(n):
-  return [1 / n] * n
+@Memoized
+def cite_graph(file_name):
+  return Graph.from_file(file_name)
 
 
 def is_not_none(s):
   return s and s != 'None'
 
 
-def cite_graph(file_name):
-  return Graph.from_file(file_name)
-
-
-def retrieve_graph():
-  graph_file = 'cache/%s/graph.pkl' % THE.permitted
-  if os.path.isfile(graph_file):
-    with open(graph_file) as f:
-      graph = pkl.load(f)
-  else:
-    graph = cite_graph(GRAPH_CSV)
-    with open(graph_file, 'wb') as f:
-      pkl.dump(graph, f, pkl.HIGHEST_PROTOCOL)
-  return graph
-
-
 def all_authors(graph, min_year=None):
+  """
+  :param graph:
+  :param min_year:
+  :return: [(str(author_id), paper_count, cite_count)]
+  """
   authors = graph.get_papers_by_authors(THE.permitted)
   author_cites = []
   for author_id, papers in authors.items():
@@ -67,148 +54,163 @@ def all_authors(graph, min_year=None):
 
 
 def most_cited_authors(graph, top_percent=None, min_year=None):
+  """
+  [(str(author_id), paper_count, cite_count)]
+  :param graph:
+  :param top_percent:
+  :param min_year:
+  :return:
+  """
   authors = all_authors(graph, min_year)
   if top_percent is None:
     top_percent = 1
-  authors = sorted(authors, key=lambda x: x[2], reverse=True)[:int(top_percent * len(authors))]
-  return [a[0] for a in authors]
+  return [a for a in sorted(authors, key=lambda x: x[2], reverse=True)[:int(top_percent * len(authors))]]
 
 
-def most_published_authors(graph, top_percent=None, min_year=None):
-  authors = all_authors(graph, min_year)
-  if top_percent is None:
-    top_percent = 1
-  authors = sorted(authors, key=lambda x: x[1], reverse=True)[:int(top_percent * len(authors))]
-  return [a[0] for a in authors]
+def link_matrix(graph, valid_authors, min_year=None):
+  links_file = "figs/%s/%s/authors/links.pkl" % (THE.version, THE.permitted)
+  collaborators_file = "figs/%s/%s/authors/collaborators.pkl" % (THE.version, THE.permitted)
+  if file_exists(links_file) and file_exists(collaborators_file):
+    with open(collaborators_file) as f:
+      collaborators = cPkl.load(f)
+    with open(links_file) as f:
+      data = cPkl.load(f)
+      if data.columns.values.tolist() == valid_authors:
+        return data, collaborators
+  papers = graph.get_paper_nodes(permitted=THE.permitted)
+  valid_authors_set = set(valid_authors)
+  matrix = pd.DataFrame(index=valid_authors, columns=valid_authors).fillna(0)
+  collaborators = {a: set() for a in valid_authors}
+  for paper_id, paper in papers.items():
+    if min_year is not None and int(paper.year) < min_year:
+      continue
+    author_ids = paper.author_ids.strip().split(",")
+    for i in range(len(author_ids) - 1):
+      if author_ids[i] not in valid_authors_set:
+        continue
+      for j in range(i + 1, len(author_ids)):
+        if author_ids[j] not in valid_authors_set:
+          continue
+        # Setting as 1 rather than forced increment to
+        # avoid over collaboration
+        matrix.ix[author_ids[i], author_ids[j]] += 1
+        matrix.ix[author_ids[j], author_ids[i]] += 1
+        i_collaborators = collaborators[author_ids[i]]
+        i_collaborators.add(author_ids[j])
+        collaborators[author_ids[i]] = i_collaborators
+        j_collaborators = collaborators[author_ids[j]]
+        j_collaborators.add(author_ids[i])
+        collaborators[author_ids[j]] = j_collaborators
+  with open(links_file, "wb") as f:
+    cPkl.dump(matrix, f)
+  with open(collaborators_file, "wb") as f:
+    cPkl.dump(collaborators, f)
+  return matrix, collaborators
 
 
-def most_contributed_authors(graph, distribution, top_percent=0.01, min_year=None):
-  author_contributions = OrderedDict()
-  for paper_id, paper in graph.get_paper_nodes(THE.permitted).items():
-    if min_year is not None and int(paper.year) < min_year: continue
-    cites = int(paper.cited_count) + 1 if is_not_none(paper.cited_count) else 1
-    if not paper.author_ids: continue
-    authors = paper.author_ids.split(",")
-    dist = distribution(len(authors))
-    for d, author in zip(dist, authors):
-      author_contributions[author] = author_contributions.get(author, []) + [d * cites]
-  author_list = []
-  for author, contribution in author_contributions.items():
-    author_list.append((author, sum(contribution)))
-  tops = sorted(author_list, key=lambda x: x[1], reverse=True)[:int(top_percent * len(all_authors(graph, min_year)))]
-  return [t[0] for t in tops]
+def page_rank(authors, links, author_collaborators, damp=0.5, iterations=100000,
+              file_name="page_rank", prefix=None):
+  init = 1 / len(authors)
+  pr = {a: init for a in authors}
+  for i in xrange(iterations):
+    if i % 100 == 0:
+      print("Iteration : %d" % i)
+    recomputed_pr = {}
+    for a in pr.keys():
+      collaborators = author_collaborators[a]
+      link_score = 0
+      for collaborator in collaborators:
+        # link_score += pr[collaborator] / sum(links.ix[:, collaborator] > 0)
+        link_score += pr[collaborator] / len(author_collaborators[collaborator])
+      link_score *= damp
+      self_score = (1 - damp) * init
+      recomputed_pr[a] = self_score + link_score
+    pr = recomputed_pr
+  if prefix is None:
+    f_name = "figs/%s/%s/authors/%s.pkl" % (THE.version, THE.permitted, file_name)
+  else:
+    f_name = "figs/%s/%s/authors/%s/%s.pkl" % (THE.version, THE.permitted, prefix, file_name)
+  with open(f_name, "wb") as f:
+    cPkl.dump(pr, f, cPkl.HIGHEST_PROTOCOL)
+  return pr
 
 
-def make_author_dict(author_tuples):
-  names_to_ids, ids_to_names = OrderedDict(), OrderedDict()
-  for index, tup in enumerate(author_tuples):
-    names_to_ids[tup] = index
-    ids_to_names[index] = tup
-  n = len(author_tuples)
-  author_scores = np.full(n, 1 / n, dtype=np.float64)
-  return names_to_ids, ids_to_names, author_scores
+def df_column_normalize(df):
+  x = df.values  # returns a numpy array
+  min_max_scaler = preprocessing.MinMaxScaler()
+  x_scaled = min_max_scaler.fit_transform(x)
+  return pd.DataFrame(x_scaled, index=df.index.values, columns=df.columns.values)
 
 
-def list_out(lst):
-  for i in range(len(lst) - 1):
-    yield lst[i], set(lst[:i] + lst[i + 1:])
+def weighted_page_rank(authors, links, weights, author_collaborators, damp=0.5, iterations=100000,
+                       file_name="cite_page_rank", prefix=None):
+  init = 1 / len(authors)
+  pr = {a: init for a in authors}
+  links = df_column_normalize(links).sum(axis=1)
+  links = {a: links[a] for a in pr.keys()}
+  total_weights = sum(weights.values())
+  weights = {a_id: w / total_weights for a_id, w in weights.items()}
+  for i in xrange(iterations):
+    if i % 100 == 0:
+      print("Iteration : %d" % i)
+    recomputed_pr = {}
+    for a in pr.keys():
+      collaborators = author_collaborators[a]
+      link_score = 0
+      for collaborator in collaborators:
+        # link_score += pr[collaborator] / sum(links.ix[:, collaborator] > 0)
+        link_score += pr[collaborator] / links[collaborator]
+      link_score *= damp
+      self_score = (1 - damp) * weights[a]
+      recomputed_pr[a] = self_score + link_score
+    pr = recomputed_pr
+  if prefix is None:
+    f_name = "figs/%s/%s/authors/%s.pkl" % (THE.version, THE.permitted, file_name)
+  else:
+    f_name = "figs/%s/%s/authors/%s/%s.pkl" % (THE.version, THE.permitted, prefix, file_name)
+  with open(f_name, "wb") as f:
+    cPkl.dump(pr, f, cPkl.HIGHEST_PROTOCOL)
+  return pr
 
 
-def make_coauthor_map(graph, top_authors, names_to_ids, min_year):
-  coauthor_count = {i: set() for i in range(len(top_authors))}
-  author_cite_count = {i: 0 for i in range(len(top_authors))}
-  for paper_id, paper in graph.paper_nodes.items():
-    if min_year and int(paper.year) < min_year: continue
-    authors = paper.author_ids.split(",")
-    cites = int(paper.cited_count) if paper.cited_count and paper.cited_count != 'None' else 0
-    if len(authors) <= 1: continue
-    for author_name, co_authors_name in list_out(authors):
-      if author_name not in top_authors: continue
-      author_index = names_to_ids[author_name]
-      co_authors_index = set([names_to_ids[co_author_name]
-                              for co_author_name in co_authors_name if co_author_name in top_authors])
-      coauthor_count[author_index] = coauthor_count[author_index].union(co_authors_index)
-      author_cite_count[author_index] += cites
-  coauthor_count = {i: np.array(sorted(co_authors), dtype=np.int32) for i, co_authors in coauthor_count.items()}
-  total_cites = sum(author_cite_count.values())
-  author_cite_count = {i: author_cite_count[i] / total_cites for i in author_cite_count.keys()}
-  return coauthor_count, author_cite_count
+def run_page_rank(min_year, damp, top=0.01, iterations=100000, use_prefix=False):
+  graph = cite_graph(GRAPH_CSV)
+  authors = [a[0] for a in most_cited_authors(graph, top, min_year)]
+  links, author_collaborators = link_matrix(graph, authors, min_year)
+  if use_prefix:
+    page_rank(authors, links, author_collaborators, damp, iterations=iterations,
+              file_name="page_rank_%0.2f" % damp, prefix="naive")
+  else:
+    page_rank(authors, links, author_collaborators, damp, iterations=iterations,
+              file_name="page_rank_%0.2f" % damp)
 
 
-def page_rank(graph, d=0.45, top_percent=0.01, min_year=None, iterations=1000):
-  factor = 50
-  top_tups = most_cited_authors(graph, top_percent=factor * top_percent, min_year=min_year)
-  names_to_ids, ids_to_names, page_rank_scores = make_author_dict(top_tups)
-  coauthor_count, author_cite_count = make_coauthor_map(graph, top_tups, names_to_ids, min_year)
-  self_score = 1 / page_rank_scores.shape[0]
-  for _ in xrange(iterations):
-    for i in shuffle(range(page_rank_scores.shape[0])):
-      co_authors_i = coauthor_count[i]
-      ext_score = 0
-      for j in co_authors_i:
-        links = len(coauthor_count[j])
-        if links > 0:
-          ext_score += page_rank_scores[j] / links
-      page_rank_scores[i] = (1 - d) * self_score * author_cite_count[i] + d * ext_score
-  top_author_indices = np.argsort(page_rank_scores)[::-1][:int(len(page_rank_scores) / factor)]
-  large = max(page_rank_scores)
-  small = min(page_rank_scores)
-
-  def norm(v):
-    return (v - small) / (large - small)
-
-  y_axis = [norm(page_rank_scores[index]) for index in top_author_indices]
-  x_axis = range(1, len(top_author_indices) + 1)
-  mid = len(x_axis) // 2
-  plt.figure(figsize=(8, 3))
-  plt.plot(x_axis, y_axis)
-  plt.title("Page Rank Scores for authors in descending order")
-  plt.xlabel("Author Rank")
-  plt.ylabel("Page Rank Score")
-  plt.savefig("figs/v3/%s/page_rank_scores.png" % THE.permitted)
-  plt.clf()
-  # plt.plot(x_axis[:mid], y_axis[:mid])
-  # plt.title("Page Rank Scores for authors in descending order")
-  # plt.xlabel("Author Rank")
-  # plt.ylabel("Page Rank Score")
-  # plt.savefig("figs/v3/%s/page_rank_scores_high.png" % THE.permitted)
-  # plt.clf()
-  # plt.plot(x_axis[mid:], y_axis[mid:])
-  # plt.title("Page Rank Scores for authors in descending order")
-  # plt.xlabel("Author Rank")
-  # plt.ylabel("Page Rank Score")
-  # plt.savefig("figs/v3/%s/page_rank_scores_low.png" % THE.permitted)
-  # plt.clf()
-
-  top_author_names = [ids_to_names[index] for index in top_author_indices]
-  return top_author_names
+def run_weighted_page_rank(min_year, damp, top=0.01, iterations=100000, weight_param="cite", use_prefix=False):
+  graph = cite_graph(GRAPH_CSV)
+  authors, weights = [], OrderedDict()
+  for a in most_cited_authors(graph, top, min_year):
+    authors.append(a[0])
+    if weight_param == "cite":
+      weights[a[0]] = a[2]
+    elif weight_param == "publ":
+      weights[a[0]] = a[1]
+    else:
+      print ("Invalid weighing scheme : %s " % weight_param)
+      exit()
+  links, author_collaborators = link_matrix(graph, authors, min_year)
+  if use_prefix:
+    weighted_page_rank(authors, links, weights, author_collaborators, damp,
+                       iterations=iterations, file_name="page_rank_%0.2f" % damp, prefix=weight_param)
+  else:
+    weighted_page_rank(authors, links, weights, author_collaborators, damp,
+                       iterations=iterations, file_name="%s_page_rank_%0.2f" % (weight_param, damp))
 
 
-def __main():
-  graph = retrieve_graph()
-  cited = set(most_cited_authors(graph, top_percent=0.01, min_year=2009))
-  published = set(most_published_authors(graph, top_percent=0.01, min_year=2009))
-  harmonic = set(most_contributed_authors(graph, harmonic_dist, top_percent=0.01, min_year=2009))
-  uniform = set(most_contributed_authors(graph, uniform_dist, top_percent=0.01, min_year=2009))
-  pr = set(page_rank(graph, top_percent=0.01, min_year=2009))
-  print("Cited: ", len(cited))
-  print("Published: ", len(published))
-  print("Harmonic: ", len(harmonic))
-  print("Uniform: ", len(uniform))
-  print("Page Rank: ", len(pr))
-  metrics = {
-    'cite' : cited,
-    'publ' : published,
-    'harm': harmonic,
-    'unif': uniform,
-    'page': pr
-  }
-  keys = sorted(metrics.keys())
-  for key in keys:
-    print("#", key)
-    for key1 in keys:
-      print("\t ##", key1, len(metrics[key].intersection(metrics[key1])))
-
+def _main():
+  for damp in np.arange(0.05, 1.00, 0.05):
+    run_page_rank(1992, damp, use_prefix=True)
+    run_weighted_page_rank(1992, damp, weight_param="cite", use_prefix=True)
+    run_weighted_page_rank(1992, damp, weight_param="publ", use_prefix=True)
 
 if __name__ == "__main__":
-  page_rank(retrieve_graph(), top_percent=0.01)
+  _main()
