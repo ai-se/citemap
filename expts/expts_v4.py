@@ -57,6 +57,15 @@ COLORS_ALL = ["lightgray", "red", "blue", "darkslategray",
 
 MIN_DIVERSITY_SCORE = 0.075
 
+def mkdir(directory):
+  """
+  Implements the "mkdir" linux function
+  :param directory:
+  :return:
+  """
+  if directory and not os.path.exists(directory):
+    os.makedirs(directory)
+
 
 def get_n_topics():
   if THE.permitted == "journals":
@@ -122,6 +131,8 @@ def retrieve_graph_lda_data():
 
 def store_graph_lda_data():
   miner, graph, lda_model, vocab = get_graph_lda_data()
+  folder_name = 'cache/%s/%s' % (THE.version, THE.permitted)
+  mkdir(folder_name)
   with open('cache/%s/%s/graph.pkl' % (THE.version, THE.permitted), 'wb') as f:
     cPkl.dump(graph, f, cPkl.HIGHEST_PROTOCOL)
   with open('cache/%s/%s/vectorizer.pkl' % (THE.version, THE.permitted), 'wb') as f:
@@ -887,10 +898,10 @@ def yearly_compare_gender_topics(years, source="topic_contribution", target="sta
 
 def _main():
   reporter()
-  diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
+  # diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
   # diversity("heatmap_01_08", range(2001, 2009))
   # diversity("heatmap_93_00", range(1992, 2001))
-  topic_evolution(venue="all")
+  # topic_evolution(venue="all")
   # topic_evolution(venue="conferences")
   # topic_evolution(venue="journals")
   # gender_over_time()
