@@ -35,9 +35,9 @@ TOPICS_ALL = ["Program Analysis", "Requirements", "Metrics", "Applications",
 
 TOPIC_THRESHOLD = 3
 
-# Settings
+# Global Settings
 THE = O()
-THE.permitted = "all"
+THE.permitted = "all"  # conference/journal/all
 THE.version = "v4"
 THE.use_numeric = False
 
@@ -56,6 +56,7 @@ COLORS_ALL = ["lightgray", "red", "blue", "darkslategray",
 
 
 MIN_DIVERSITY_SCORE = 0.075
+
 
 def mkdir(directory):
   """
@@ -102,6 +103,10 @@ CONFERENCES = [shorter_names(conf.acronym) for conf in mysqldb.get_conferences()
 
 @Memoized
 def retrieve_graph_lda_data():
+  """
+  Fetch stored metadata
+  :return:
+  """
   graph_file = 'cache/%s/%s/graph.pkl' % (THE.version, THE.permitted)
   vectorizer_file = 'cache/%s/%s/vectorizer.pkl' % (THE.version, THE.permitted)
   doc_2_vec_file = 'cache/%s/%s/doc_2_vec.pkl' % (THE.version, THE.permitted)
@@ -181,7 +186,7 @@ def report(lda_model, vocab, fig_name="topic_dist", n_top_words=10, plot_terms=5
     topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
     legends.append("Topic %d" % index)
     # legends.append(TOPICS_ALL[index])
-    print('%2d : %16s : %s' % (index, TOPICS_ALL[index].upper(), ', '.join(topic_words)))
+    print('%2d : %16s : %s' % (index, get_topics()[index].upper(), ', '.join(topic_words)))
   plt.legend(legends, loc='upper right')
   plt.title(fig_name)
   plt.xlabel("Term Index")
@@ -898,10 +903,10 @@ def yearly_compare_gender_topics(years, source="topic_contribution", target="sta
 
 def _main():
   reporter()
-  # diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
+  diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
   # diversity("heatmap_01_08", range(2001, 2009))
   # diversity("heatmap_93_00", range(1992, 2001))
-  # topic_evolution(venue="all")
+  topic_evolution(venue="all")
   # topic_evolution(venue="conferences")
   # topic_evolution(venue="journals")
   # gender_over_time()
@@ -924,7 +929,6 @@ def _main():
   # print_gender_topics("yearly_stat_11_12")
   # print_gender_topics("yearly_stat_13_14")
   # print_gender_topics("yearly_stat_15_16")
-
 
 
 if __name__ == "__main__":
