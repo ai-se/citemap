@@ -10,7 +10,9 @@ from network.graph import Graph
 import pandas as pd
 from sklearn import preprocessing
 import cPickle as cPkl
-
+import db.mysqldb as mysql
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 __author__ = "bigfatnoob"
@@ -108,6 +110,11 @@ def link_matrix(graph, valid_authors, min_year=None):
   return matrix, collaborators
 
 
+def max_normalize(d):
+  max_val = max(d.values())
+  return {d_i: d[d_i] / max_val for d_i in d.keys()}
+
+
 def page_rank(authors, links, author_collaborators, damp=0.5, iterations=100000,
               file_name="page_rank", prefix=None):
   init = 1 / len(authors)
@@ -125,7 +132,7 @@ def page_rank(authors, links, author_collaborators, damp=0.5, iterations=100000,
       link_score *= damp
       self_score = (1 - damp) * init
       recomputed_pr[a] = self_score + link_score
-    pr = recomputed_pr
+    pr = max_normalize(recomputed_pr)
   if prefix is None:
     f_name = "figs/%s/%s/authors/%s.pkl" % (THE.version, THE.permitted, file_name)
   else:
@@ -163,7 +170,7 @@ def weighted_page_rank(authors, links, weights, author_collaborators, damp=0.5, 
       link_score *= damp
       self_score = (1 - damp) * weights[a]
       recomputed_pr[a] = self_score + link_score
-    pr = recomputed_pr
+    pr = max_normalize(recomputed_pr)
   if prefix is None:
     f_name = "figs/%s/%s/authors/%s.pkl" % (THE.version, THE.permitted, file_name)
   else:
@@ -206,11 +213,62 @@ def run_weighted_page_rank(min_year, damp, top=0.01, iterations=100000, weight_p
                        iterations=iterations, file_name="%s_page_rank_%0.2f" % (weight_param, damp))
 
 
-def _main():
-  for damp in np.arange(0.05, 1.00, 0.05):
-    run_page_rank(1992, damp, use_prefix=True)
-    run_weighted_page_rank(1992, damp, weight_param="cite", use_prefix=True)
-    run_weighted_page_rank(1992, damp, weight_param="publ", use_prefix=True)
+def plot_damp_top_authors(folder, damps, top, min_year, plot_author_count=20):
+  graph = cite_graph(GRAPH_CSV)
+  top_authors = most_cited_authors(graph, top, min_year)[:plot_author_count]
+  author_nodes = mysql.get_authors()
+  x_labels = [author_nodes[a[0]].name for a in top_authors]
+  x_axis = range(1, plot_author_count + 1)
+  top_author_ids = np.array([a[0] for a in top_authors])
+  folder_path = "figs/%s/%s/authors/%s" % (THE.version, THE.permitted, folder)
+  palette = np.array(sns.color_palette("hls", plot_author_count))
+  legends = []
+  # for i, f_name in enumerate(os.listdir(folder_path)):
+  y_axes = []
+  means = np.array([0.0] * plot_author_count)
+  for i, _ in enumerate(damps):
+    # file_name = "%s/%s" % (folder_path, name)
+    file_name = "%s/page_rank_%0.2f.pkl" % (folder_path, damps[i])
+    with open(file_name) as f:
+      pr_scores = cPkl.load(f)
+      y_axis = np.array([pr_scores[a] for a in top_author_ids])
+      y_axes.append(y_axis)
+      means += y_axis
+  indices = np.argsort(means)[::-1]
+  top_author_ids = top_author_ids[indices]
+  # sns.set_style("whitegrid", {'axes.grid': False})
+  sns.set_style("white")
+  for i, y_axis in enumerate(y_axes):
+    plt.plot(x_axis, y_axis[indices], c=palette[i])
+    legends.append("%0.2f" % damps[i])
+  plt.legend(legends, loc='upper right', ncol=2)
+  fig_name = "figs/%s/%s/authors/damp_%s.png" % (THE.version, THE.permitted, folder)
+  plt.ylabel("Page Rank Score")
+  plt.xlabel("Author ID")
+  plt.xticks(x_axis, top_author_ids, rotation='vertical')
+  plt.title("Page Rank Score for top %d cited author with varying damping factors" % plot_author_count)
+  plt.savefig(fig_name)
+  plt.clf()
+
+
+def _damp_plotter(damps=None):
+  if damps is None:
+    damps = np.arange(0.05, 1.00, 0.05)
+  plot_damp_top_authors("naive", damps, top=0.01, min_year=1992)
+  plot_damp_top_authors("cite", damps, top=0.01, min_year=1992)
+  plot_damp_top_authors("publ", damps, top=0.01, min_year=1992)
+
+
+def _damp_scores():
+  iters = 1000
+  damps = np.arange(0.05, 1.00, 0.05)
+  for damp in damps:
+    run_page_rank(1992, damp, use_prefix=True, iterations=iters)
+    run_weighted_page_rank(1992, damp, weight_param="cite", use_prefix=True, iterations=iters)
+    run_weighted_page_rank(1992, damp, weight_param="publ", use_prefix=True, iterations=iters)
+  _damp_plotter(damps)
+
 
 if __name__ == "__main__":
-  _main()
+  # _damp_scores()
+  _damp_plotter()

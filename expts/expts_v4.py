@@ -281,6 +281,14 @@ def make_dendo_heatmap(arr, row_labels, column_labels, figname, paper_range, sav
 
 
 def diversity(fig_name, paper_range=None, min_diversity_score=MIN_DIVERSITY_SCORE, save_labels=False):
+  """
+  Heat map in paper
+  :param fig_name:
+  :param paper_range:
+  :param min_diversity_score:
+  :param save_labels:
+  :return:
+  """
   if paper_range:
     print("DIVERSITY for %s between %d - %d" % (THE.permitted, paper_range[0], paper_range[-1]))
   else:
@@ -320,6 +328,11 @@ def diversity(fig_name, paper_range=None, min_diversity_score=MIN_DIVERSITY_SCOR
 
 
 def topic_evolution(venue=THE.permitted):
+  """
+  Stacked bar-charts
+  :param venue:
+  :return:
+  """
   print("TOPIC EVOLUTION for %s" % venue)
   miner, graph, lda_model, vocab = retrieve_graph_lda_data()
   paper_nodes = graph.get_paper_nodes(venue)
@@ -544,7 +557,7 @@ def print_gender_topics(file_name):
     arr = [topic_name]
     for venue in permitted_venues:
       venue_id = venue_names[venue]
-      if valid_data[venue][topic_name] > 0:
+      if venue_id in stat_map and valid_data[venue][topic_name] > 0:
         m_v_f = 'T' if stat_map[venue_id][topic_id][2] else 'F'
       else:
         m_v_f = ''
@@ -747,25 +760,160 @@ def plot_topical_gender_delta():
   plt.clf()
 
 
+def yearly_gender_topics(paper_range=None, file_name="yearly_topic_contribution"):
+  def index_by_year(tups):
+    y_comm = {}
+    for tup in tups:
+      comm = y_comm.get(tup[1], set())
+      comm.add(tup[0])
+      y_comm[tup[1]] = comm
+    return y_comm
+
+  def normalize(arr):
+    arr_tot = sum(arr)
+    if arr_tot == 0:
+      return [0] * len(arr)
+    return [arr_i / arr_tot for arr_i in arr]
+
+  miner, graph, lda_model, vocab = get_graph_lda_data()
+  p_venues = graph.get_papers_by_venue(permitted=THE.permitted)
+  author_gender_map = get_author_genders()
+  venue_topics = OrderedDict()
+  for venue_id in sorted(mysqldb.get_venues().keys()):
+    venue_id = str(venue_id)
+    year_papers = index_by_year(p_venues[venue_id])
+    year_topics = OrderedDict()
+    for year in sorted(year_papers.keys(), key=lambda y: int(y)):
+      both_genders_topics = []
+      male_topics = []
+      female_topics = []
+      if (paper_range is not None) and (int(year) not in paper_range):
+        continue
+      papers = year_papers.get(year, [])
+      if len(papers) > 0:
+        for paper_id in papers:
+          paper = graph.paper_nodes[paper_id]
+          author_ids = paper.author_ids.strip().split(",")
+          paper_topics = miner.documents[paper_id].topics_count
+          # unit_paper_topics = [t / len(author_ids) for t in paper_topics]
+          male_count, female_count = 0, 0
+          for author_id in author_ids:
+            gender = author_gender_map.get(author_id, None)
+            if gender == 'm':
+              male_count += 1
+            elif gender == 'f':
+              female_count += 1
+          normalized_topics = normalize(paper_topics)
+          if sum(normalized_topics) > 0:
+            both_genders_topics.append(normalized_topics)
+          if male_count > 0:
+            male_topics.append(normalized_topics)
+          if female_count > 0:
+            female_topics.append(normalized_topics)
+      year_topics[year] = {
+          "all": both_genders_topics,
+          "male": male_topics,
+          "female": female_topics
+      }
+    venue_topics[venue_id] = year_topics
+  save_file = "figs/%s/%s/gender/%s.pkl" % (THE.version, THE.permitted, file_name)
+  with open(save_file, "wb") as f:
+    cPkl.dump(venue_topics, f, cPkl.HIGHEST_PROTOCOL)
+
+
+def yearly_compare_gender_topics(years, source="topic_contribution", target="stat"):
+  gender_file = "figs/%s/%s/gender/%s.pkl" % (THE.version, THE.permitted, source)
+  with open(gender_file) as f:
+    venue_topics = cPkl.load(f)
+  stat_map = {}
+  print("# Years : %s" % years)
+  for venue_id, year_topics in venue_topics.items():
+    both, male, female = [], [], []
+    for year in years:
+      year_str = str(year)
+      if year_str not in year_topics: continue
+      topic_map = year_topics[year_str]
+      both += topic_map["all"]
+      male += topic_map["male"]
+      female += topic_map["female"]
+    if len(both) == 0: continue
+    both = np.transpose(both)
+    male = np.transpose(male)
+    female = np.transpose(female)
+    stat_topic_map = {}
+    for i in range(get_n_topics()):
+      print("Venue %s, Topic %d" % (venue_id, i))
+      both_i = both[i, ]
+      male_i = male[i, ]
+      female_i = female[i, ]
+      a_v_m = bootstrap(both_i, male_i)
+      a_v_f = bootstrap(both_i, female_i)
+      m_v_f = bootstrap(female_i, male_i)
+      stat_topic_map[i] = (a_v_m, a_v_f, m_v_f)
+    stat_map[venue_id] = stat_topic_map
+  stat_file = "figs/%s/%s/gender/%s.pkl" % (THE.version, THE.permitted, target)
+  with open(stat_file, "wb") as f:
+    cPkl.dump(stat_map, f, cPkl.HIGHEST_PROTOCOL)
+
+
+# def print_gender_topics(file_name):
+#   stat_file = "figs/%s/%s/gender/%s.pkl" % (THE.version, THE.permitted, file_name)
+#   with open(stat_file) as f:
+#     stat_map = cPkl.load(f)
+#   # print(stat_map.keys())
+#   # for venue_id in sorted(stat_map.keys(), lambda k: int(k)):
+#   venues = mysqldb.get_venues()
+#   venue_names = {shorter_names(venues[v_id].acronym): v_id for v_id in sorted(venues.keys(), key=lambda k: int(k))}
+#   with open("figs/%s/%s/stats/heatmap_data.pkl" % (THE.version, THE.permitted)) as f:
+#     axis_data = cPkl.load(f)
+#     permitted_topics = axis_data['rows']
+#     permitted_venues = axis_data['columns']
+#     valid_data = axis_data['data']
+#   print("," + ",".join(permitted_venues))
+#   topics = get_topics()
+#   for topic_name in permitted_topics:
+#     topic_id = topics.index(topic_name)
+#     arr = [topic_name]
+#     for venue in permitted_venues:
+#       venue_id = venue_names[venue]
+#       if valid_data[venue][topic_name] > 0:
+#         m_v_f = 'T' if stat_map[venue_id][topic_id][2] else 'F'
+#       else:
+#         m_v_f = ''
+#       # print("Venue: %s, Topic: %d, Stat: %s" % (venue_id, topic, m_v_f))
+#       arr.append(m_v_f)
+#     print(",".join(arr))
+
+
 def _main():
-  # reporter()
-  # diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
+  reporter()
+  diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
   # diversity("heatmap_01_08", range(2001, 2009))
   # diversity("heatmap_93_00", range(1992, 2001))
-  # topic_evolution(venue="all")
+  topic_evolution(venue="all")
   # topic_evolution(venue="conferences")
   # topic_evolution(venue="journals")
   # gender_over_time()
   # gender_topics(range(2009, 2017), "topic_contribution_09_17")
   # compare_gender_topics("topic_contribution_09_17", "stat_09_17")
   # print_gender_topics('stat_09_17')
-  topical_gender_diff(range(1992, 2017))
+  # topical_gender_diff(range(1992, 2017))
   # get_top_papers(year_from=2009)
   # get_top_papers()
   # stat_venue_type_vs_cites_per_year()
   # stat_cites_per_year()
   # percentile_lines_per_year()
   # test_dendo_heatmap(34, range(1992, 2016), True)
+  # yearly_gender_topics(range(2009, 2017), "yearly_topic_contribution_09_16")
+  # yearly_compare_gender_topics(range(2009, 2011), "yearly_topic_contribution_09_16", "yearly_stat_09_10")
+  # yearly_compare_gender_topics(range(2011, 2013), "yearly_topic_contribution_09_16", "yearly_stat_11_12")
+  # yearly_compare_gender_topics(range(2013, 2015), "yearly_topic_contribution_09_16", "yearly_stat_13_14")
+  # yearly_compare_gender_topics(range(2015, 2017), "yearly_topic_contribution_09_16", "yearly_stat_15_16")
+  # print_gender_topics("yearly_stat_09_10")
+  # print_gender_topics("yearly_stat_11_12")
+  # print_gender_topics("yearly_stat_13_14")
+  # print_gender_topics("yearly_stat_15_16")
+
 
 
 if __name__ == "__main__":
