@@ -11,9 +11,13 @@ import pandas as pd
 from sklearn import preprocessing
 import cPickle as cPkl
 import db.mysqldb as mysql
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-import seaborn as sns
+import seaborn.apionly as sns
 
+# mpl.rc('axes', grid = False)
+# Set backgound color to white
+# mpl.rc('axes', facecolor = 'white')
 
 __author__ = "bigfatnoob"
 
@@ -180,19 +184,21 @@ def weighted_page_rank(authors, links, weights, author_collaborators, damp=0.5, 
   return pr
 
 
-def run_page_rank(min_year, damp, top=0.01, iterations=100000, use_prefix=False):
+def run_page_rank(min_year, damp, top=0.01, iterations=100000, use_prefix=False, f_name=None):
   graph = cite_graph(GRAPH_CSV)
   authors = [a[0] for a in most_cited_authors(graph, top, min_year)]
   links, author_collaborators = link_matrix(graph, authors, min_year)
-  if use_prefix:
-    page_rank(authors, links, author_collaborators, damp, iterations=iterations,
-              file_name="page_rank_%0.2f" % damp, prefix="naive")
+  if f_name:
+    file_name = f_name
+  elif use_prefix:
+    file_name = "%s/page_rank_%0.2f" % ("naive", damp)
   else:
-    page_rank(authors, links, author_collaborators, damp, iterations=iterations,
-              file_name="page_rank_%0.2f" % damp)
+    file_name = "%s_page_rank_%0.2f" % ("naive", damp)
+  page_rank(authors, links, author_collaborators, damp, iterations=iterations,
+            file_name=file_name)
 
 
-def run_weighted_page_rank(min_year, damp, top=0.01, iterations=100000, weight_param="cite", use_prefix=False):
+def run_weighted_page_rank(min_year, damp, top=0.01, iterations=100000, weight_param="cite", use_prefix=False, f_name=None):
   graph = cite_graph(GRAPH_CSV)
   authors, weights = [], OrderedDict()
   for a in most_cited_authors(graph, top, min_year):
@@ -205,12 +211,14 @@ def run_weighted_page_rank(min_year, damp, top=0.01, iterations=100000, weight_p
       print ("Invalid weighing scheme : %s " % weight_param)
       exit()
   links, author_collaborators = link_matrix(graph, authors, min_year)
-  if use_prefix:
-    weighted_page_rank(authors, links, weights, author_collaborators, damp,
-                       iterations=iterations, file_name="page_rank_%0.2f" % damp, prefix=weight_param)
+  if f_name:
+    file_name = f_name
+  elif use_prefix:
+    file_name = "%s/page_rank_%0.2f" % (weight_param, damp)
   else:
-    weighted_page_rank(authors, links, weights, author_collaborators, damp,
-                       iterations=iterations, file_name="%s_page_rank_%0.2f" % (weight_param, damp))
+    file_name = "%s_page_rank_%0.2f" % (weight_param, damp)
+  weighted_page_rank(authors, links, weights, author_collaborators, damp,
+                     iterations=iterations, file_name=file_name)
 
 
 def plot_damp_top_authors(folder, damps, top, min_year, plot_author_count=20):
@@ -251,6 +259,120 @@ def plot_damp_top_authors(folder, damps, top, min_year, plot_author_count=20):
   plt.clf()
 
 
+def get_author_genders():
+  authors = mysql.get_authors()
+  gender_map = {}
+  for a_id, node in authors.items():
+    if not node.gender:
+      gender_map[a_id] = "u"
+    else:
+      gender_map[a_id] = node.gender
+  return gender_map
+
+
+def top_authors_with_gender(metric, count):
+  # TODO: Create a file with more than 1% top authors for all methods
+  file_name = "figs/%s/%s/authors/for_gender/%s_page_rank.pkl" % (THE.version, THE.permitted, metric)
+  gender_map = get_author_genders()
+  with open(file_name) as f:
+    author_map = cPkl.load(f)
+    author_tups = []
+    for key, val in author_map.items():
+      author_tups.append((key, val, gender_map[key]))
+    author_tups = sorted(author_tups, key=lambda x: x[1], reverse=True)
+  mc, fc, uc = 0, 0, 0
+  for author in author_tups[:count]:
+    if author[2] == 'm':
+      mc += 1
+    elif author[2] == 'f':
+      fc += 1
+    else:
+      uc += 1
+  print("For %s and top %d => Males, Females, Unknowns, FP: %d, %d, %d, %0.2f" % (metric.upper(), count, mc, fc, uc,                                                                                  100 * fc / (fc + mc)))
+  return [mc, fc, uc, 100 * fc / (fc + mc)]
+
+
+def run_top_authors_with_gender():
+  gender_map = get_author_genders()
+  mc, fc, uc = 0, 0, 0
+  for a_id, gender in gender_map.items():
+    if gender == 'm':
+      mc += 1
+    elif gender == 'f':
+      fc += 1
+    else:
+      uc += 1
+  print("For all authors => Males, Females, Unknowns: %d, %d, %d, %0.2f" % (mc, fc, uc, 100 * fc / (fc + mc)))
+  x_axis = [10, 20, 50, 100, 200, 500, 1000]
+  y_axes = {}
+  metrics = ["naive", "cite", "publ"]
+  for metric in metrics:
+    y_axis = []
+    for count in x_axis:
+      y_axis.append(top_authors_with_gender(metric, count))
+    y_axes[metric] = y_axis
+  width = 0.3
+  print(y_axes)
+
+
+def plot_top_authors_with_genders():
+  def autolabel(rects, labels):
+    """
+    Attach a text label above each bar displaying its height
+    """
+    for rect, label in zip(rects, labels):
+      height = rect.get_height()
+      ax.text(rect.get_x() + rect.get_width() / 2., height + 1,
+              '%d:%d' % (label[1], label[0]),
+              ha='center', va='bottom', rotation='vertical')
+  y_axes = {
+      'naive': [[10, 0, 0, 0.0],
+                [17, 3, 0, 15.0],
+                [41, 8, 1, 16.3265306122449],
+                [73, 22, 5, 23.157894736842106],
+                [145, 43, 12, 22.872340425531913],
+                [367, 100, 33, 21.41327623126338],
+                [738, 188, 74, 20.302375809935207]],
+      'cite': [[6, 3, 1, 33.333333333333336],
+               [15, 4, 1, 21.05263157894737],
+               [38, 9, 3, 19.148936170212767],
+               [73, 22, 5, 23.157894736842106],
+               [146, 38, 16, 20.652173913043477],
+               [365, 97, 38, 20.995670995670995],
+               [731, 194, 75, 20.972972972972972]],
+      'publ': [[6, 3, 1, 33.333333333333336],
+               [15, 4, 1, 21.05263157894737],
+               [38, 9, 3, 19.148936170212767],
+               [73, 22, 5, 23.157894736842106],
+               [146, 38, 16, 20.652173913043477],
+               [365, 97, 38, 20.995670995670995],
+               [732, 194, 74, 20.950323974082075]]
+  }
+  fig, ax = plt.subplots()
+  width = 0.5
+  x_axis = [10, 20, 50, 100, 200, 500, 1000]
+  metrics = ["naive", "cite", "publ"]
+  ind = np.arange(len(x_axis))
+  percenter = lambda x: round(x[-1], 2)
+  naives = map(percenter, y_axes['naive'])
+  cites = map(percenter, y_axes['cite'])
+  publs = map(percenter, y_axes['publ'])
+  naive_bar = ax.bar(2*ind, naives, width, color='r')
+  cite_bar = ax.bar(2*ind + width, cites, width, color='y')
+  publ_bar = ax.bar(2*ind + 2 * width, publs, width, color='b')
+  ax.set_ylabel('% of women in top authors')
+  ax.set_xlabel('top authors under consideration')
+  ax.set_title('% of women in top X authors where X is varied b/w 10-1000')
+  ax.set_xticks(2*ind + width)
+  ax.set_xticklabels(x_axis)
+  ax.set_ylim([0, 38])
+  autolabel(naive_bar, y_axes['naive'])
+  autolabel(cite_bar, y_axes['cite'])
+  autolabel(publ_bar, y_axes['publ'])
+  plt.savefig("figs/%s/%s/authors/for_gender/women.png" % (THE.version, THE.permitted), bbox_inches='tight')
+  plt.clf()
+
+
 def _damp_plotter(damps=None):
   if damps is None:
     damps = np.arange(0.05, 1.00, 0.05)
@@ -269,6 +391,17 @@ def _damp_scores():
   _damp_plotter(damps)
 
 
+def _top_authors_for_gender():
+  damp = 0.5
+  iters = 1000
+  run_page_rank(1992, damp, top=0.05, use_prefix=True, iterations=iters, f_name="for_gender/naive_page_rank")
+  run_weighted_page_rank(1992, damp, top=0.05, weight_param="cite", iterations=iters, f_name="for_gender/cite_page_rank")
+  run_weighted_page_rank(1992, damp, top=0.05, weight_param="publ", iterations=iters, f_name="for_gender/publ_page_rank")
+
+
 if __name__ == "__main__":
   # _damp_scores()
-  _damp_plotter()
+  # _damp_plotter()
+  # _top_authors_for_gender()
+  plot_top_authors_with_genders()
+

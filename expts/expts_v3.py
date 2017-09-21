@@ -848,9 +848,9 @@ def page_rank(d=0.45, top_percent=0.01, min_year=None, iterations=1000):
   return top_author_names, top_author_indices, page_rank_scores[top_author_indices]
 
 
-def score_plotter(file):
+def score_plotter(file_name):
   x, y = [], []
-  with open(file) as f:
+  with open(file_name) as f:
     line = f.readline().split(",")
     while len(line) > 1:
       x.append(int(line[0]))
