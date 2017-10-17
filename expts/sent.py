@@ -7,20 +7,10 @@ sys.path.append("..")
 sys.dont_write_bytecode = True
 import pickle
 from utils.lib import O, Memoized
-import numpy as np
-from collections import OrderedDict
 from network.mine import cite_graph, Miner
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-from db import mysqldb
-import pandas as pd
 from sklearn.feature_extraction import text
-from scipy.spatial.distance import pdist
-from scipy.cluster.hierarchy import linkage, dendrogram
-from expts.settings import dend as dend_settings
 import cPickle as cPkl
 from sklearn.externals import joblib
-from utils.sk import bootstrap, qDemo
 
 from pycorenlp import StanfordCoreNLP
 nlp = StanfordCoreNLP('http://localhost:9000')
