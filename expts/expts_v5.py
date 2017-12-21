@@ -187,6 +187,14 @@ def get_documents(graph):
   return docs
 
 
+def print_results(result_file = "cache/%s/%s/perplexity.pkl" % (THE.version, THE.permitted)):
+  if os.path.isfile(result_file):
+    with open(result_file) as f:
+      print(cPkl.load(f))
+  else:
+    print("Not Found")
+
+
 def split_perplexity(splits):
   result_file = "cache/%s/%s/perplexity.pkl" % (THE.version, THE.permitted)
 
@@ -239,4 +247,5 @@ def _main():
 
 if __name__ == "__main__":
   # reporter()
-  split_perplexity(10)
+  # split_perplexity(10)
+  print_results()
