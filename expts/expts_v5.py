@@ -188,7 +188,7 @@ def get_documents(graph):
 def split_perplexity(splits):
   topics = range(2, 51, 1)
   graph = retrieve_graph()
-  raw_docs = np.array([doc for doc in get_documents()])
+  raw_docs = np.array([doc for doc in get_documents(graph)])
   k_folds = KFold(n_splits=splits, random_state=THE.random_state, shuffle=True)
   for train_index, test_index in k_folds.split(raw_docs):
     train_docs = raw_docs[train_index]
