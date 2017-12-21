@@ -507,7 +507,7 @@ def rdivDemo(data, f=None):
   last = None
   row = ('%4s , %22s , %4s , %4s ' % ('rank', 'name', 'med', 'iqr'))+ "\n"+ line
   if f:
-    f.skwrite(row + "\n")
+    f.write(row + "\n")
   else:
     print row
   for _,__,___,x in sorted(ranks, key=lambda a: (a[0], a[1], a[2])):

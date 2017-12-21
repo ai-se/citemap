@@ -6,7 +6,7 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
-from utils.lib import O, Memoized
+from utils.lib import O, Memoized, file_exists
 import numpy as np
 from collections import OrderedDict
 from network.mine import cite_graph, Miner
@@ -21,6 +21,7 @@ from expts.settings import dend as dend_settings
 import cPickle as cPkl
 from sklearn.externals import joblib
 from utils.sk import bootstrap, qDemo
+from utils.sk import rdivDemo as sk
 
 GRAPH_CSV = "data/citemap_v10.csv"
 
@@ -343,7 +344,7 @@ def diversity(fig_name, paper_range=None, min_diversity_score=MIN_DIVERSITY_SCOR
                      paper_range, save_labels)
 
 
-def topic_evolution(venue=THE.permitted):
+def topic_evolution(venue=THE.permitted, reverse=False):
   """
   Stacked bar-charts
   :param venue:
@@ -372,13 +373,19 @@ def topic_evolution(venue=THE.permitted):
   top_topic_count = 9
   plt.figure(figsize=(8, 6))
   for index in range(top_topic_count):
+    if reverse:
+      index = top_topic_count - index - 1
     bar_val, color = [], []
     for year in sorted(yt_map.keys(), key=lambda x: int(x)):
       topic = yt_map[year][index]
       if topic[0] not in colors_dict:
         colors_dict[topic[0]] = get_color(topic[0])
-      color.append(colors_dict[topic[0]])
+      # if reverse:
+      #   bar_val.insert(0, topic[1])
+      #   color.insert(0, colors_dict[topic[0]])
+      # else:
       bar_val.append(topic[1])
+      color.append(colors_dict[topic[0]])
     plts.append(plt.bar(x_axis, bar_val, width, color=color, bottom=y_offset))
     y_offset = np.add(y_offset, np.array(bar_val))
   plt.ylabel("Topic %")
@@ -418,6 +425,14 @@ def get_author_genders():
 
 
 def gender_over_time(min_year=1992):
+  def autolabel(rects):
+    """
+    Attach a text label above each bar displaying its height
+    """
+    for rect in rects:
+      height = rect.get_height()
+      plt.text(rect.get_x() + rect.get_width() / 2., height + 0.5,
+               '%0.2f' % height, ha='center', va='bottom', rotation='vertical', fontsize=9)
   print("Gender difference for %s since %d" % (THE.permitted, min_year))
   graph = retrieve_graph()
   gender_publish_map = {}
@@ -453,13 +468,16 @@ def gender_over_time(min_year=1992):
   plt.ylabel("# Authors")
   plt.savefig(count_fig_name, bbox_inches='tight')
   plt.clf()
-  plt.plot(x_axis, male_percents, color='red')
-  plt.plot(x_axis, female_percents, color='blue')
-  plt.legend(['male', 'female'], loc='upper right', ncol=2, fontsize=10)
+  # plt.plot(x_axis, male_percents, color='red')
+  plt.figure(figsize=(8, 2))
+  bars = plt.bar(x_axis, female_percents, color='red')
+  # plt.legend(['male', 'female'], loc='upper right', ncol=2, fontsize=10)
   percent_fig_name = "figs/%s/%s/gender/percent_genders_vs_year.png" % (THE.version, THE.permitted)
-  plt.title("% of Male and Female authors per year")
+  plt.title("Rise in female authors in SE")
   plt.xlabel("Year")
-  plt.ylabel("% of Authors")
+  plt.ylabel("% of Female Authors")
+  plt.ylim([10, 27])
+  autolabel(bars)
   plt.savefig(percent_fig_name, bbox_inches='tight')
   plt.clf()
 
@@ -610,6 +628,48 @@ def get_top_papers(top_count=5, year_from=None):
         f.write("%s, %d, %d, \"%s\", \"%s\"\n" % (topic_names[index], paper[0], paper[-1], paper[1], paper[2]))
 
 
+def get_top_authors_per_topic(top_count=10, year_from=None, force=False):
+  if year_from:
+    print("TOP %d AUTHORS per Topic for %s from %d" % (top_count, THE.permitted, year_from))
+  else:
+    print("TOP %d ALL TIME PAPERS for %s" % (top_count, THE.permitted))
+  save_file = "figs/%s/%s/authors/top_papers_per_topic.pkl" % (THE.version, THE.permitted)
+  if not force and file_exists(save_file):
+    with open(save_file) as f:
+      top_papers = cPkl.load(f)
+  else:
+    top_papers = {}
+    for index in range(get_n_topics()):
+      top_papers[index] = []
+    miner, graph, lda_model, vocab = retrieve_graph_lda_data()
+    for paper_id, paper in graph.get_paper_nodes(THE.permitted).items():
+      topics = miner.documents[paper_id].topics_count
+      if year_from and int(paper.year) < year_from: continue
+      if max(topics) == 0:
+        continue
+      topic = topics.argmax()
+      cites = int(paper.cited_count) if is_not_none(paper.cited_count) else 0
+      top_papers[topic].append((cites, paper.title, paper.authors, paper.author_ids, int(paper.year)))
+    with open(save_file, "wb") as f:
+      cPkl.dump(top_papers, f, cPkl.HIGHEST_PROTOCOL)
+  suffix = str(year_from) if year_from else 'all'
+  topic_names = get_topics()
+  with open("figs/%s/%s/authors/top_papers_per_topic_%s.md" % (THE.version, THE.permitted, suffix), "wb") as f:
+    for index in range(get_n_topics()):
+      topic_authors = {}
+      for paper in top_papers[index]:
+        cites = paper[0]
+        paper_authors = map(lambda x: x.strip(), paper[2].split(","))
+        for author in paper_authors:
+          topic_authors[author] = topic_authors.get(author, 0) + cites
+      topic_authors = sorted([(author, cites) for author, cites in topic_authors.items()], key=lambda x:x[1], reverse=True)
+      f.write("#### Topic: %s \n" % topic_names[index])
+      print("#### Topic: %s " % topic_names[index])
+      for topic_author, cite in topic_authors[:top_count]:
+        f.write("* %s : %d\n" % (topic_author, cite))
+      f.write("\n")
+
+
 def stat_venue_type_vs_cites_per_year(min_year=1992):
   print("#VENUE TYPE vs CITES for %s" % THE.permitted)
   graph = retrieve_graph()
@@ -662,6 +722,59 @@ def stat_cites_per_year(min_year=1992):
     print("\n## %s" % year)
     f.write("\n## %s\n" % year)
     qDemo(percent_map, f)
+  f.close()
+
+
+def stat_author_counts_vs_cites_per_year(min_year=1992):
+  print("#AUTHOR PERCENT vs CITES for %s" % THE.permitted)
+  def get_collaboration_size(author_size):
+    if author_size == 1:
+      return "Single"
+    elif author_size <= 4:
+      return "Small"
+    else:
+      return "Large"
+  def get_interval(yr):
+    if yr <= 1995:
+      return "92-95"
+    elif yr <= 2000:
+      return "96-00"
+    elif yr <= 2005:
+      return "01-05"
+    elif yr <= 2010:
+      return "06-10"
+    elif yr <= 2015:
+      return "11-15"
+    else:
+      return "16+"
+
+  graph = retrieve_graph()
+  year_authors_map = OrderedDict()
+  for _, paper in graph.get_paper_nodes(permitted=THE.permitted).items():
+    year = paper.year
+    if int(year) < min_year or int(year) > 2015: continue
+    num_authors = len(paper.authors.split(","))
+    interval = get_interval(int(year))
+    year_authors_count = year_authors_map.get(interval, {})
+    # key = str(num_authors) if num_authors < 7 else "7+"
+    key = get_collaboration_size(num_authors)
+    cites = int(paper.cited_count) if is_not_none(paper.cited_count) else 0
+    years_since = 2016 - int(year)
+    avg_cites = cites / years_since
+    year_authors_count[key] = year_authors_count.get(key, []) + [avg_cites]
+    year_authors_map[interval] = year_authors_count
+  file_name = "figs/%s/%s/stats/authors_vs_cites.txt" % (THE.version, THE.permitted)
+  f = open(file_name, "wb")
+  keys = ["Single", "Small", "Large"]
+  for interval in sorted(year_authors_map.keys()):
+    print(interval)
+    authors_count = year_authors_map[interval]
+    percent_map = []
+    for key in keys:
+      cites = authors_count.get(key, [0])
+      percent_map.append([key] + cites)
+    f.write("\n## %s\n" % interval)
+    sk(percent_map, f)
   f.close()
 
 
@@ -902,11 +1015,11 @@ def yearly_compare_gender_topics(years, source="topic_contribution", target="sta
 
 
 def _main():
-  reporter()
-  diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
+  # reporter()
+  # diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
   # diversity("heatmap_01_08", range(2001, 2009))
   # diversity("heatmap_93_00", range(1992, 2001))
-  topic_evolution(venue="all")
+  # topic_evolution(venue="all", reverse=True)
   # topic_evolution(venue="conferences")
   # topic_evolution(venue="journals")
   # gender_over_time()
@@ -929,6 +1042,8 @@ def _main():
   # print_gender_topics("yearly_stat_11_12")
   # print_gender_topics("yearly_stat_13_14")
   # print_gender_topics("yearly_stat_15_16")
+  # stat_author_counts_vs_cites_per_year()
+  get_top_authors_per_topic(year_from=2007)
 
 
 if __name__ == "__main__":
