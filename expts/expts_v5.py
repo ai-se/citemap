@@ -174,11 +174,21 @@ def reporter():
   report(lda_model, vocab, n_top_words=12)
 
 
+def get_documents(graph):
+  docs = []
+  for paper_id, paper in graph.paper_nodes.items():
+    if paper.abstract is not None and paper.abstract != 'None':
+      raw = paper.abstract
+    else:
+      raw = paper.title
+    docs.append(raw)
+  return docs
+
+
 def split_perplexity(splits):
   topics = range(2, 51, 1)
   graph = retrieve_graph()
-  miner = Miner(graph, permitted=THE.permitted)
-  raw_docs = np.array([doc['raw'] for key, doc in miner.get_documents().items()])
+  raw_docs = np.array([doc for doc in get_documents()])
   k_folds = KFold(n_splits=splits, random_state=THE.random_state, shuffle=True)
   for train_index, test_index in k_folds.split(raw_docs):
     train_docs = raw_docs[train_index]
