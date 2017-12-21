@@ -17,6 +17,8 @@ import cPickle as cPkl
 from sklearn.externals import joblib
 import lda
 from utils import perplexity
+import logging
+logging.getLogger('lda').setLevel(logging.ERROR)
 
 GRAPH_CSV = "data/citemap_v10.csv"
 
@@ -186,22 +188,50 @@ def get_documents(graph):
 
 
 def split_perplexity(splits):
+  result_file = "cache/%s/%s/perplexity.pkl" % (THE.version, THE.permitted)
+
+  def get_cached_result():
+    if os.path.isfile(result_file):
+      with open(result_file) as f:
+        cached_result = cPkl.load(f)
+    else:
+      cached_result = {}
+    return cached_result
+
+  def save_cached_result(cached_result):
+    with open(result_file, "wb") as f:
+      cPkl.dump(cached_result, f, cPkl.HIGHEST_PROTOCOL)
+
   topics = range(2, 51, 1)
   graph = retrieve_graph()
   raw_docs = np.array([doc for doc in get_documents(graph)])
   k_folds = KFold(n_splits=splits, random_state=THE.random_state, shuffle=True)
+  results = get_cached_result()
+  split = 0
   for train_index, test_index in k_folds.split(raw_docs):
+    print("## SPLIT %d" % split)
     train_docs = raw_docs[train_index]
     test_docs = raw_docs[test_index]
     vectorizer = CountVectorizer(stop_words=STOP_WORDS, token_pattern=TOKEN_PATTERN)
     train_doc_vec = vectorizer.fit_transform(train_docs).toarray()
     test_doc_vec = vectorizer.transform(test_docs).toarray()
     for topic in topics:
+      print("#### N_Topics = %d" % topic)
+      if topic in results and split in results[topic]:
+        print("Split %d exists for n_topics = %d" % (split, topic))
+        continue
       lda_model = lda.LDA(n_topics=topic, alpha=0.1, eta=0.01, n_iter=100)
       lda_model.fit(train_doc_vec)
       log_perplexity = perplexity.log_perplexity(lda_model, test_doc_vec)
-      print(log_perplexity)
-      exit()
+      # log_perplexity = np.random.random()
+      topic_results = results.get(topic, {})
+      topic_results[split] = log_perplexity
+      results[topic] = topic_results
+      save_cached_result(results)
+      # print(log_perplexity)
+    split += 1
+  print(get_cached_result())
+
 
 def _main():
   reporter()
