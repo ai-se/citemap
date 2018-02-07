@@ -1016,7 +1016,7 @@ def yearly_compare_gender_topics(years, source="topic_contribution", target="sta
 
 def _main():
   # reporter()
-  # diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
+  diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
   # diversity("heatmap_01_08", range(2001, 2009))
   # diversity("heatmap_93_00", range(1992, 2001))
   # topic_evolution(venue="all", reverse=True)
@@ -1043,7 +1043,7 @@ def _main():
   # print_gender_topics("yearly_stat_13_14")
   # print_gender_topics("yearly_stat_15_16")
   # stat_author_counts_vs_cites_per_year()
-  get_top_authors_per_topic(year_from=2007)
+  # get_top_authors_per_topic(year_from=2007)
 
 
 if __name__ == "__main__":

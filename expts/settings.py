@@ -103,6 +103,7 @@ dend = {
     "dend_7_9": _dend_7_9,
     "dend_7_13": _dend_7_13,
     "dend_7_14": _dend_7_14,
+    "dend_10_30": _dend_11_30,
     "dend_10_34": _dend_11_34,
     "dend_11_18": _dend_11_18,
     "dend_11_23": _dend_11_23,

@@ -20,6 +20,16 @@ BETA = None
 STOP_WORDS = text.ENGLISH_STOP_WORDS.union(['software', 'engineering'])
 
 
+def shorter_name(name):
+  name_map = {
+      "SOFTWARE": "S/W",
+      "SIGSOFT": "NOTES",
+      "MODELS": "MDLS"
+  }
+  if name in name_map:
+    return name_map[name]
+  return name
+
 class StemTokenizer(object):
   def __init__(self):
     self.stemmer = PorterStemmer()
@@ -48,12 +58,13 @@ class Document(O):
 
 
 class Miner(O):
-  def __init__(self, graph, permitted="conferences"):
+  def __init__(self, graph, permitted="conferences", ignores=set()):
     O.__init__(self, graph=graph)
     self.vectorizer = None
     self.doc_2_vec = None
     self.documents = None
     self.permitted = permitted
+    self.ignores = ignores
 
   def get_documents(self):
     if self.documents: return self.documents
@@ -62,6 +73,8 @@ class Miner(O):
     venues = mysqldb.get_venues()
     for paper_id, paper in paper_nodes.items():
       venue = venues[paper.venue]
+      acronym = shorter_name(venue.acronym)
+      if acronym in self.ignores: continue
       if venue.is_conference and self.permitted == 'journals': continue
       if not venue.is_conference and self.permitted == 'conferences': continue
       if paper.abstract is not None and paper.abstract != 'None':
