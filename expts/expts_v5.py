@@ -549,9 +549,11 @@ def venue_distributions(save_file, venues, paper_range=None, save_labels=False):
     print("DIVERSITY for %s in venues %s" % (THE.permitted, venues))
   miner, graph, lda_model, vocab = retrieve_graph_lda_data()
   paper_map = graph.get_papers_by_venue(THE.permitted)
-  # all_venues = mysqldb.get_venues()
+  all_venues = mysqldb.get_venues()
   venue_dists = {str(venue): None for venue in venues}
   dataset_dist = np.array([0] * lda_model.n_topics)
+  conf_dist = np.array([0]*lda_model.n_topics)
+  jour_dist = np.array([0]*lda_model.n_topics)
   for venue_id, papers in paper_map.items():
     topics = np.array([0] * lda_model.n_topics)
     for tup in yearize(papers).items():
@@ -563,8 +565,15 @@ def venue_distributions(save_file, venues, paper_range=None, save_labels=False):
     if sum(topics) > 0:
       if venue_id in venue_dists:
         venue_dists[venue_id] = topics
+        if all_venues[venue_id].is_conference:
+          conf_dist = np.add(conf_dist, topics)
+        else:
+          jour_dist = np.add(jour_dist, topics)
       dataset_dist = np.add(dataset_dist, topics)
+
   venue_dists["all"] = dataset_dist
+  venue_dists["conference"] = conf_dist
+  venue_dists["journal"] = jour_dist
   header = ["Venue"] + get_topics()
   rows = [", ".join(header)]
   for venue_id, vals in venue_dists.items():
@@ -578,26 +587,36 @@ def venue_distributions(save_file, venues, paper_range=None, save_labels=False):
 
 def venue_dist_similarity(save_file):
   def cosine(a, b):
-    return 1 - spatial.distance.cosine(a, b)
+    return round(1 - spatial.distance.cosine(a, b), 3)
 
   def eucledian(a, b):
-    return spatial.distance.euclidean(a, b)
+    return round(spatial.distance.euclidean(a, b), 3)
 
   with open(save_file, 'rb') as f:
     content = f.read()
   full = None
+  conf = None
+  jour = None
   venues = {}
+  all_venues = mysqldb.get_venues()
   for row in content.split("\n"):
     cells = row.split(", ")
     if cells[0] == "Venue": continue
     if cells[0] == "all":
       full = map(float, cells[1:])
+    elif cells[0] == "conference":
+      conf = map(float, cells[1:])
+    elif cells[0] == "journal":
+      jour = map(float, cells[1:])
     else:
       key = cells[0]
       venues[key] = map(float, cells[1:])
-  print("Venue", "Cosine+", "Eucledian-")
+  print("Venue", "Cosine+", "Eucledian-", "Loc-Cosine", "Loc-Eucledian")
+  print("%s, %0.3f, %0.3f, , " % ("Conference", cosine(full, conf), eucledian(full, conf)))
+  print("%s, %0.3f, %0.3f, , " % ("Journal", cosine(full, jour), eucledian(full, jour)))
   for key, val in venues.items():
-    print("%s, %f, %f" % (key, cosine(full, val), eucledian(full, val)))
+    loc = conf if all_venues[key].is_conference else jour
+    print("%s, %0.3f, %0.3f, %0.3f, %0.3f" % (shorter_names(all_venues[key].acronym), cosine(full, val), eucledian(full, val), cosine(loc, val), eucledian(loc, val)))
 
 
 def test_dendo_heatmap(col_size, paper_range, save_labels):
@@ -606,6 +625,8 @@ def test_dendo_heatmap(col_size, paper_range, save_labels):
   heatmap_arr = np.random.rand(len(row_labels), len(column_labels))
   make_dendo_heatmap(heatmap_arr, row_labels, column_labels,
                      "temp.png", paper_range, save_labels)
+
+
 
 
 if __name__ == "__main__":
@@ -617,6 +638,7 @@ if __name__ == "__main__":
   # topic_overlap()
   # diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
   # test_dendo_heatmap(30, range(1992, 2016), False)
-  # venue_distributions("figs/%s/%s/venues/distribution.csv" % (THE.version, THE.permitted), venues=['1', '9', '20', '29'],
+  # venue_distributions("figs/%s/%s/venues/distribution_cj.csv" % (THE.version, THE.permitted),
+  #                     venues=['1', '9', '14', '18', '20', '28', '29', '34'],
   #                     paper_range=range(2009, 2017), save_labels=True)
-  venue_dist_similarity("figs/%s/%s/venues/distribution.csv" % (THE.version, THE.permitted))
+  venue_dist_similarity("figs/%s/%s/venues/distribution_cj.csv" % (THE.version, THE.permitted))
