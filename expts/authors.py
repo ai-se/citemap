@@ -382,7 +382,7 @@ def plot_top_authors_with_genders():
   plt.clf()
 
 
-def plot_single_top_authors_with_genders():
+def plot_single_top_authors_with_genders(data, x_axis, fig_name, measure, color):
   def autolabel(line, labels):
     """
     Attach a text label above each bar displaying its height
@@ -391,33 +391,23 @@ def plot_single_top_authors_with_genders():
       plt.text(x_coord, y_coord + 1,
                '%d:%d' % (label[1], label[0]),
                ha='center', va='bottom')
-  pr = [[10, 0, 0, 0.0],
-        [17, 3, 0, 15.0],
-        [41, 8, 1, 16.3265306122449],
-        [73, 22, 5, 23.157894736842106],
-        [145, 43, 12, 22.872340425531913],
-        [367, 100, 33, 21.41327623126338],
-        [738, 188, 74, 20.302375809935207]]
 
-  width = 0.5
-  x_axis = [10, 20, 50, 100, 200, 500, 1000]
-  metrics = ["naive", "cite", "publ"]
   ind = np.arange(len(x_axis))
   percenter = lambda x: round(x[-1], 2)
-  scores = map(percenter, pr)
+  scores = map(percenter, data)
   plt.figure(figsize=(8, 2))
-  lines = plt.plot(ind, scores, color='r')
+  lines = plt.plot(ind, scores, color=color)
   plt.ylabel('% of women in top authors')
-  plt.xlabel('top authors under consideration')
-  plt.title('% of women in top X authors where X is varied b/w 10-1000')
+  plt.xlabel('# top authors under consideration')
+  plt.title('%% of women in top authors ranked via %s' % measure)
   plt.xticks(ind, x_axis)
   # plt.xticklabels(x_axis)
   plt.ylim([0, 38])
-  autolabel(lines[0], pr)
+  autolabel(lines[0], data)
   # autolabel(cite_bar, y_axes['cite'])
   # autolabel(publ_bar, y_axes['publ'])
   # plt.legend((naive_bar, cite_bar, publ_bar), ("PR", "PR_cite", "PR_publ"))
-  plt.savefig("figs/%s/%s/authors/for_gender/women_line.png" % (THE.version, THE.permitted), bbox_inches='tight')
+  plt.savefig("figs/%s/%s/authors/for_gender/%s.png" % (THE.version, THE.permitted, fig_name), bbox_inches='tight')
   plt.clf()
 
 
@@ -529,6 +519,28 @@ def author_bar(min_year=2000, max_year=2015):
   plt.savefig("figs/%s/%s/authors/author_count.png" % (THE.version, THE.permitted), bbox_inches='tight')
   plt.clf()
 
+
+def _plot_single_top_authors_with_genders():
+  infl_data = [[9, 1, 0, 10.0],
+        [17, 3, 0, 15.0],
+        [41, 8, 1, 16.3265306122449],
+        [73, 22, 5, 23.157894736842106],
+        [145, 43, 12, 22.872340425531913],
+        [367, 100, 33, 21.41327623126338],
+        [738, 188, 74, 20.302375809935207]]
+  x_axis = [10, 20, 50, 100, 200, 500, 1000]
+  coa_data = [[10, 0, 0, 0.0],
+        [16, 4, 0, 20.0],
+        [40, 9, 1, 18.36734],
+        [72, 24, 4, 25],
+        [142, 41, 17, 22.65],
+        [368, 99, 33, 21.119914],
+        [734, 190, 76, 20.56277]]
+  plot_single_top_authors_with_genders(infl_data, x_axis, "infl", '"INFL"', color='r')
+  plot_single_top_authors_with_genders(coa_data, x_axis, "coa", '"COA"', color='b')
+
+
+
 if __name__ == "__main__":
   # author_bar()
   # _damp_scores()
@@ -540,5 +552,5 @@ if __name__ == "__main__":
   # _top_authors_for_gender()
   # plot_top_authors_with_genders()
   # print_top_author_names("figs/%s/%s/authors/%s.pkl" % (THE.version, THE.permitted, "for_gender/cite_page_rank"))
-  plot_single_top_authors_with_genders()
+  _plot_single_top_authors_with_genders()
 
