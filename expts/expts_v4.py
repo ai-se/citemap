@@ -477,7 +477,7 @@ def gender_over_time(min_year=1992):
   plt.xlabel("Year")
   plt.ylabel("% of Female Authors")
   plt.ylim([10, 27])
-  autolabel(bars)
+  # autolabel(bars)
   plt.savefig(percent_fig_name, bbox_inches='tight')
   plt.clf()
 
@@ -1016,7 +1016,7 @@ def yearly_compare_gender_topics(years, source="topic_contribution", target="sta
 
 def _main():
   # reporter()
-  diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
+  # diversity("heatmap_09_16", range(2009, 2017), save_labels=True)
   # diversity("heatmap_01_08", range(2001, 2009))
   # diversity("heatmap_93_00", range(1992, 2001))
   # topic_evolution(venue="all", reverse=True)
@@ -1043,7 +1043,8 @@ def _main():
   # print_gender_topics("yearly_stat_13_14")
   # print_gender_topics("yearly_stat_15_16")
   # stat_author_counts_vs_cites_per_year()
-  # get_top_authors_per_topic(year_from=2007)
+  get_top_authors_per_topic(year_from=2007, force=True)
+  get_top_authors_per_topic(force=True)
 
 
 if __name__ == "__main__":

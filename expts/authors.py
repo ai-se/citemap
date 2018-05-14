@@ -389,21 +389,25 @@ def plot_single_top_authors_with_genders(data, x_axis, fig_name, measure, color)
     """
     for x_coord, y_coord, label in zip(line.get_xdata(), line.get_ydata(), labels):
       plt.text(x_coord, y_coord + 1,
-               '%d:%d' % (label[1], label[0]),
+               # '%d:%d' % (label[1], label[0]),
+               '%d:%d' % (1, int(round(label[0] / label[1]))),
                ha='center', va='bottom')
 
   ind = np.arange(len(x_axis))
-  percenter = lambda x: round(x[-1], 2)
+  percenter = lambda x: round(x[1] * 100 / (x[1] + x[0]), 2)
   scores = map(percenter, data)
   plt.figure(figsize=(8, 2))
-  lines = plt.plot(ind, scores, color=color)
+  line1, = plt.plot(ind, scores, color=color)
+  line2, = plt.plot(ind, [22]*len(ind), 'b--')
   plt.ylabel('% of women in top authors')
   plt.xlabel('# top authors under consideration')
-  plt.title('%% of women in top authors ranked via %s' % measure)
+  # plt.title('%% of women in top authors ranked via %s' % measure)
+  plt.title('%% of women in top authors ranked using citations')
   plt.xticks(ind, x_axis)
   # plt.xticklabels(x_axis)
   plt.ylim([0, 38])
-  autolabel(lines[0], data)
+  plt.legend([line1, line2], ["Actual Female %", "Expected Female %"])
+  # autolabel(lines[0], data)
   # autolabel(cite_bar, y_axes['cite'])
   # autolabel(publ_bar, y_axes['publ'])
   # plt.legend((naive_bar, cite_bar, publ_bar), ("PR", "PR_cite", "PR_publ"))
@@ -526,8 +530,8 @@ def _plot_single_top_authors_with_genders():
         [41, 8, 1, 16.3265306122449],
         [73, 22, 5, 23.157894736842106],
         [145, 43, 12, 22.872340425531913],
-        [367, 100, 33, 21.41327623126338],
-        [738, 188, 74, 20.302375809935207]]
+        [333, 100, 33 + 34, 21.41327623126338],
+        [700, 188, 74 + 38, 20.302375809935207]]
   x_axis = [10, 20, 50, 100, 200, 500, 1000]
   coa_data = [[10, 0, 0, 0.0],
         [16, 4, 0, 20.0],
@@ -537,7 +541,7 @@ def _plot_single_top_authors_with_genders():
         [368, 99, 33, 21.119914],
         [734, 190, 76, 20.56277]]
   plot_single_top_authors_with_genders(infl_data, x_axis, "infl", '"INFL"', color='r')
-  plot_single_top_authors_with_genders(coa_data, x_axis, "coa", '"COA"', color='b')
+  # plot_single_top_authors_with_genders(coa_data, x_axis, "coa", '"COA"', color='b')
 
 
 
